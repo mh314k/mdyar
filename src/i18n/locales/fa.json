@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "MDyar",
+    "tagline": "ویرایشگر مارک‌داون با پشتیبانی کامل دوجهته"
+  },
+  "toolbar": {
+    "open": "باز کردن",
+    "save": "ذخیره",
+    "saveAs": "ذخیره با نام",
+    "exportHtml": "خروجی HTML",
+    "previewOnly": "پیش‌نمایش",
+    "splitView": "اسپلیت",
+    "editOnly": "ویرایش",
+    "themes": "تم‌ها",
+    "language": "زبان",
+    "newFile": "جدید"
+  },
+  "themes": {
+    "title": "مدیریت تم",
+    "create": "تم جدید",
+    "duplicate": "کپی",
+    "delete": "حذف",
+    "save": "ذخیره تم",
+    "name": "نام",
+    "bg": "پس‌زمینه",
+    "fg": "متن",
+    "accent": "تأکید",
+    "surface": "سطح",
+    "border": "حاشیه",
+    "editorFont": "فونت ادیتور",
+    "previewFont": "فونت پیش‌نمایش",
+    "fontSize": "اندازه فونت",
+    "lineHeight": "فاصله خطوط",
+    "builtin": "پیش‌فرض",
+    "custom": "سفارشی",
+    "apply": "اعمال",
+    "cannotDeleteBuiltin": "تم‌های پیش‌فرض قابل حذف نیستند"
+  },
+  "status": {
+    "unsaved": "ذخیره‌نشده",
+    "saved": "ذخیره‌شده",
+    "chars": "{{count}} نویسه",
+    "webHint": "حالت وب — فایل‌ها در مرورگر می‌مانند"
+  },
+  "dialogs": {
+    "unsavedTitle": "تغییرات ذخیره‌نشده",
+    "unsavedBody": "تغییرات دور ریخته شود و ادامه دهیم؟",
+    "confirm": "ادامه",
+    "cancel": "انصراف"
+  },
+  "roadmap": {
+    "title": "به‌زودی",
+    "word": "خروجی ورد (.docx)",
+    "langPacks": "افزودن بسته زبان از رابط کاربری",
+    "fileAssoc": "باز شدن فایل .md با دوبار کلیک"
+  }
+}

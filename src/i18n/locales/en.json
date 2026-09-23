@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "MDyar",
+    "tagline": "BiDi-first Markdown editor"
+  },
+  "toolbar": {
+    "open": "Open",
+    "save": "Save",
+    "saveAs": "Save as",
+    "exportHtml": "Export HTML",
+    "previewOnly": "Preview",
+    "splitView": "Split",
+    "editOnly": "Edit",
+    "themes": "Themes",
+    "language": "Language",
+    "newFile": "New"
+  },
+  "themes": {
+    "title": "Theme manager",
+    "create": "New theme",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "save": "Save theme",
+    "name": "Name",
+    "bg": "Background",
+    "fg": "Foreground",
+    "accent": "Accent",
+    "surface": "Surface",
+    "border": "Border",
+    "editorFont": "Editor font",
+    "previewFont": "Preview font",
+    "fontSize": "Font size",
+    "lineHeight": "Line height",
+    "builtin": "Built-in",
+    "custom": "Custom",
+    "apply": "Apply",
+    "cannotDeleteBuiltin": "Built-in themes cannot be deleted"
+  },
+  "status": {
+    "unsaved": "Unsaved",
+    "saved": "Saved",
+    "chars": "{{count}} characters",
+    "webHint": "Web mode — files stay in the browser"
+  },
+  "dialogs": {
+    "unsavedTitle": "Unsaved changes",
+    "unsavedBody": "Discard changes and continue?",
+    "confirm": "Continue",
+    "cancel": "Cancel"
+  },
+  "roadmap": {
+    "title": "Coming soon",
+    "word": "Word (.docx) export",
+    "langPacks": "Import language packs from UI",
+    "fileAssoc": "Open .md files on double-click"
+  }
+}

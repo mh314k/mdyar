@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "MDyar",
+    "tagline": "محرر ماركداون بدعم كامل للنص ثنائي الاتجاه"
+  },
+  "toolbar": {
+    "open": "فتح",
+    "save": "حفظ",
+    "saveAs": "حفظ باسم",
+    "exportHtml": "تصدير HTML",
+    "previewOnly": "معاينة",
+    "splitView": "مقسّم",
+    "editOnly": "تحرير",
+    "themes": "السمات",
+    "language": "اللغة",
+    "newFile": "جديد"
+  },
+  "themes": {
+    "title": "إدارة السمات",
+    "create": "سمة جديدة",
+    "duplicate": "نسخ",
+    "delete": "حذف",
+    "save": "حفظ السمة",
+    "name": "الاسم",
+    "bg": "الخلفية",
+    "fg": "النص",
+    "accent": "التأكيد",
+    "surface": "السطح",
+    "border": "الحد",
+    "editorFont": "خط المحرر",
+    "previewFont": "خط المعاينة",
+    "fontSize": "حجم الخط",
+    "lineHeight": "ارتفاع السطر",
+    "builtin": "مدمج",
+    "custom": "مخصص",
+    "apply": "تطبيق",
+    "cannotDeleteBuiltin": "لا يمكن حذف السمات المدمجة"
+  },
+  "status": {
+    "unsaved": "غير محفوظ",
+    "saved": "محفوظ",
+    "chars": "{{count}} حرفًا",
+    "webHint": "وضع الويب — تبقى الملفات في المتصفح"
+  },
+  "dialogs": {
+    "unsavedTitle": "تغييرات غير محفوظة",
+    "unsavedBody": "هل تريد تجاهل التغييرات والمتابعة؟",
+    "confirm": "متابعة",
+    "cancel": "إلغاء"
+  },
+  "roadmap": {
+    "title": "قريبًا",
+    "word": "تصدير Word (.docx)",
+    "langPacks": "استيراد حزم اللغات من الواجهة",
+    "fileAssoc": "فتح ملفات .md بالنقر المزدوج"
+  }
+}
