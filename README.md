@@ -4,15 +4,16 @@
 
 License: **GPL-3.0-or-later** (copyleft).
 
-## Features (v0.1)
+## Features (v0.2)
 
 - Live Markdown preview with **split** editor | preview layout
 - Full **bidirectional text** (Persian / Arabic / English mixed)
 - **GFM** + **KaTeX** math + **Mermaid** diagrams
+- **Markdown syntax highlighting** and **snippet autocomplete** in the editor
 - **Theme manager** with colors, editor font, preview font, size, line-height
 - UI languages: **English**, **فارسی**, **العربية** (RTL/LTR switches cleanly)
-- **HTML export** (theme-aware)
-- Desktop shell via **Tauri 2** (open / save `.md`)
+- **HTML** and **Word (`.docx`)** export
+- Desktop shell via **Tauri 2** (open / save `.md`, file association)
 - Free online use via **GitHub Pages** (no install)
 
 ## Try the web app

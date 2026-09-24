@@ -1,6 +1,6 @@
 [package]
 name = "mdyar"
-version = "0.1.0"
+version = "0.2.0"
 description = "MDyar — BiDi-first Markdown editor"
 authors = ["MDyar contributors"]
 edition = "2021"

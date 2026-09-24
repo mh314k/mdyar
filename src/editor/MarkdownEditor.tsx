@@ -1,5 +1,5 @@
 import CodeMirror from "@uiw/react-codemirror";
-import { markdown } from "@codemirror/lang-markdown";
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { RangeSetBuilder } from "@codemirror/state";
 import {
   Decoration,
@@ -16,6 +16,11 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  markdownSyntaxHighlighting,
+  markdownSyntaxThemeVars,
+} from "./markdownHighlight";
+import { markdownAutocompletion } from "./markdownAutocomplete";
 
 export type EditorScrollHandle = {
   scrollToLine: (line: number) => void;
@@ -108,7 +113,9 @@ export const MarkdownEditor = forwardRef<EditorScrollHandle, Props>(
 
     const extensions = useMemo(
       () => [
-        markdown(),
+        markdown({ base: markdownLanguage }),
+        markdownSyntaxHighlighting,
+        markdownAutocompletion,
         EditorView.lineWrapping,
         EditorView.perLineTextDirection.of(true),
         perLineDirection,
@@ -118,6 +125,7 @@ export const MarkdownEditor = forwardRef<EditorScrollHandle, Props>(
             direction: "ltr",
             fontSize: "var(--mdyar-font-size)",
             fontFamily: "var(--mdyar-font-editor)",
+            ...markdownSyntaxThemeVars(dark),
           },
           ".cm-scroller, .cm-content": {
             direction: "ltr",
@@ -140,9 +148,36 @@ export const MarkdownEditor = forwardRef<EditorScrollHandle, Props>(
           ".cm-activeLine": {
             backgroundColor: "color-mix(in srgb, var(--mdyar-accent) 8%, transparent)",
           },
+          ".cm-tooltip.cm-tooltip-autocomplete": {
+            backgroundColor: "var(--mdyar-surface)",
+            color: "var(--mdyar-fg)",
+            border: "1px solid var(--mdyar-border)",
+            borderRadius: "8px",
+            boxShadow: "0 8px 24px color-mix(in srgb, var(--mdyar-fg) 12%, transparent)",
+          },
+          ".cm-tooltip.cm-tooltip-autocomplete > ul": {
+            fontFamily: "var(--mdyar-font-editor)",
+            fontSize: "0.92em",
+          },
+          ".cm-tooltip.cm-tooltip-autocomplete > ul > li": {
+            padding: "0.35rem 0.65rem",
+            lineHeight: "1.35",
+          },
+          ".cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected]": {
+            background: "color-mix(in srgb, var(--mdyar-accent) 18%, var(--mdyar-surface))",
+            color: "var(--mdyar-fg)",
+          },
+          ".cm-completionLabel": {
+            fontFamily: "var(--mdyar-font-editor)",
+          },
+          ".cm-completionDetail": {
+            color: "var(--mdyar-muted)",
+            fontStyle: "normal",
+            marginInlineStart: "0.55rem",
+          },
         }),
       ],
-      [],
+      [dark],
     );
 
     useEffect(() => {
