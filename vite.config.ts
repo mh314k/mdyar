@@ -19,7 +19,8 @@ export default defineConfig({
   server: {
     port: 1420,
     strictPort: true,
-    host: host || false,
+    // Force IPv4 — WebView2 on Windows often fails with localhost → ::1
+    host: host || "127.0.0.1",
     hmr: host
       ? {
           protocol: "ws",
