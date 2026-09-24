@@ -1,6 +1,6 @@
 import type { MdyarTheme } from "../themes/types";
 import { themeToCssVariables } from "../themes/types";
-import { downloadBlob } from "../platform/fs";
+import { saveTextDocument } from "../platform/fs";
 
 const PREVIEW_CSS = `
 body {
@@ -86,9 +86,13 @@ for (const code of blocks) {
 </body>
 </html>`;
 
-  const blob = new Blob([doc], { type: "text/html;charset=utf-8" });
   const name = (filename ?? title).replace(/\.md$/i, "") + ".html";
-  await downloadBlob(name, blob);
+  return saveTextDocument(
+    doc,
+    name,
+    { name: "HTML", extensions: ["html"] },
+    "text/html;charset=utf-8",
+  );
 }
 
 function escapeHtml(s: string) {

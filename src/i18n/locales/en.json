@@ -45,6 +45,9 @@
   "dialogs": {
     "unsavedTitle": "Unsaved changes",
     "unsavedBody": "Discard changes and continue?",
+    "openFailed": "Could not open {{name}}.",
+    "exportFailed": "Could not save the HTML file.",
+    "saveFailed": "Could not save the file.",
     "confirm": "Continue",
     "cancel": "Cancel"
   },

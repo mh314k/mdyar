@@ -16,6 +16,7 @@ type Props = {
   onNew: () => void;
   onOpen: () => void;
   onSave: () => void;
+  onSaveAs?: () => void;
   onExportHtml: () => void;
   onThemes: () => void;
   language: AppLanguage;
@@ -61,6 +62,15 @@ const ICONS = {
       <path d="M5 13.5v-4h6v4" />
     </Icon>
   ),
+  saveAs: (
+    <Icon>
+      <path d="M2.5 2.5h6.2L10.8 4.6V7" />
+      <path d="M4.2 2.5v2.2h4.2V2.5" />
+      <path d="M8.2 13.5h5.2" />
+      <path d="M10.8 10.2v3.3" />
+      <path d="M9 12.2 10.8 13.8 12.6 12.2" />
+    </Icon>
+  ),
   export: (
     <Icon>
       <path d="M8 2.5v7" />
@@ -103,6 +113,7 @@ export function Toolbar({
   onNew,
   onOpen,
   onSave,
+  onSaveAs,
   onExportHtml,
   onThemes,
   language,
@@ -158,6 +169,17 @@ export function Toolbar({
         >
           {ICONS.save}
         </button>
+        {onSaveAs ? (
+          <button
+            type="button"
+            className="mdyar-icon-btn"
+            onClick={onSaveAs}
+            title={t("toolbar.saveAs")}
+            aria-label={t("toolbar.saveAs")}
+          >
+            {ICONS.saveAs}
+          </button>
+        ) : null}
         <button
           type="button"
           className="mdyar-icon-btn"

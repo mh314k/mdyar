@@ -72,7 +72,7 @@ These are intentional follow-ups, stubbed in code and tracked here:
 
 1. **Word (`.docx`) export** — `src/export/html.ts` (`exportWordStub`)
 2. **Import language packs from the UI** — `src/i18n/index.ts` (`importLanguagePackStub`)
-3. **File association**: double-click `.md` opens MDyar in preview — `src/platform/fs.ts` + `src-tauri` `fileAssociations` / setup TODO
+3. **File association**: implemented for the desktop installer. After install, double-click `.md` / `.markdown` / `.mdown` opens that file in preview (one window). Registry registration happens at install time, not in `tauri dev`.
 4. Advanced theme import/export & sharing
 5. Desktop polish: system menu, recent files, multi-file drag-and-drop
 

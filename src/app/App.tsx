@@ -10,7 +10,14 @@ import {
 } from "../preview/MarkdownPreview";
 import { markdownToHtml } from "../preview/markdown";
 import { exportHtmlDocument } from "../export/html";
-import { openMarkdownFile, saveMarkdownFile, runningOnDesktop } from "../platform/fs";
+import {
+  drainOsOpenPaths,
+  listenForOsOpen,
+  openMarkdownFile,
+  readMarkdownAtPath,
+  runningOnDesktop,
+  saveMarkdownFile,
+} from "../platform/fs";
 import {
   applyThemeToDocument,
   getActiveThemeId,
@@ -33,9 +40,15 @@ export function App() {
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
   const [theme, setTheme] = useState<MdyarTheme>(() => resolveTheme(getActiveThemeId()));
   const [themesOpen, setThemesOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window,
+  );
   const language = (i18n.language?.slice(0, 2) as AppLanguage) || getStoredLanguage();
   const syncScroll = viewMode === "split";
+
+  const dirtyRef = useRef(false);
+  dirtyRef.current = dirty;
+  const loadOsPathsRef = useRef<(paths: string[]) => Promise<void>>(async () => {});
 
   const editorRef = useRef<EditorScrollHandle>(null);
   const previewRef = useRef<PreviewScrollHandle>(null);
@@ -83,6 +96,45 @@ export function App() {
     void runningOnDesktop().then(setIsDesktop);
   }, []);
 
+  loadOsPathsRef.current = async (paths: string[]) => {
+    if (paths.length === 0) return;
+    if (dirtyRef.current && !window.confirm(t("dialogs.unsavedBody"))) return;
+    for (const path of paths) {
+      const result = await readMarkdownAtPath(path);
+      if (!result) {
+        window.alert(t("dialogs.openFailed", { name: path }));
+        continue;
+      }
+      setContent(result.content);
+      setFileName(result.name);
+      setFilePath(result.path);
+      setDirty(false);
+      dirtyRef.current = false;
+      setViewMode("preview");
+    }
+  };
+
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    let cancelled = false;
+    void (async () => {
+      const stop = await listenForOsOpen(() => {
+        void drainOsOpenPaths().then((paths) => loadOsPathsRef.current(paths));
+      });
+      if (cancelled) {
+        stop();
+        return;
+      }
+      unlisten = stop;
+      const paths = await drainOsOpenPaths();
+      if (!cancelled) await loadOsPathsRef.current(paths);
+    })();
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  }, []);
+
   const onChange = useCallback((value: string) => {
     setContent(value);
     setDirty(true);
@@ -108,22 +160,31 @@ export function App() {
     setViewMode("preview");
   };
 
-  const handleSave = async () => {
-    const result = await saveMarkdownFile(content, filePath, fileName);
-    if (!result) return;
-    setFilePath(result.path);
-    setFileName(result.name);
-    setDirty(false);
+  const handleSave = async (saveAs = false) => {
+    try {
+      const result = await saveMarkdownFile(content, filePath, fileName, saveAs);
+      if (!result) return;
+      setFilePath(result.path);
+      setFileName(result.name);
+      setDirty(false);
+    } catch {
+      window.alert(t("dialogs.saveFailed"));
+    }
   };
 
   const handleExport = async () => {
-    const htmlBody = await markdownToHtml(content);
-    await exportHtmlDocument({
-      title: fileName,
-      htmlBody,
-      theme,
-      filename: fileName,
-    });
+    try {
+      const htmlBody = await markdownToHtml(content);
+      const saved = await exportHtmlDocument({
+        title: fileName,
+        htmlBody,
+        theme,
+        filename: fileName,
+      });
+      if (!saved) return;
+    } catch {
+      window.alert(t("dialogs.exportFailed"));
+    }
   };
 
   const applyTheme = (next: MdyarTheme) => {
@@ -141,7 +202,8 @@ export function App() {
         onViewMode={setViewMode}
         onNew={handleNew}
         onOpen={() => void handleOpen()}
-        onSave={() => void handleSave()}
+        onSave={() => void handleSave(false)}
+        onSaveAs={isDesktop ? () => void handleSave(true) : undefined}
         onExportHtml={() => void handleExport()}
         onThemes={() => setThemesOpen(true)}
         language={language}

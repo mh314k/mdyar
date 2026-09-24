@@ -45,6 +45,9 @@
   "dialogs": {
     "unsavedTitle": "تغییرات ذخیره‌نشده",
     "unsavedBody": "تغییرات دور ریخته شود و ادامه دهیم؟",
+    "openFailed": "باز کردن {{name}} انجام نشد.",
+    "exportFailed": "ذخیرهٔ فایل HTML انجام نشد.",
+    "saveFailed": "ذخیرهٔ فایل انجام نشد.",
     "confirm": "ادامه",
     "cancel": "انصراف"
   },

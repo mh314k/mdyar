@@ -45,6 +45,9 @@
   "dialogs": {
     "unsavedTitle": "تغييرات غير محفوظة",
     "unsavedBody": "هل تريد تجاهل التغييرات والمتابعة؟",
+    "openFailed": "تعذر فتح {{name}}.",
+    "exportFailed": "تعذر حفظ ملف HTML.",
+    "saveFailed": "تعذر حفظ الملف.",
     "confirm": "متابعة",
     "cancel": "إلغاء"
   },
