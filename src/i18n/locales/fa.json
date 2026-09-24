@@ -8,6 +8,7 @@
     "save": "ذخیره",
     "saveAs": "ذخیره با نام",
     "exportHtml": "خروجی HTML",
+    "exportWord": "خروجی ورد",
     "previewOnly": "پیش‌نمایش",
     "splitView": "اسپلیت",
     "editOnly": "ویرایش",
@@ -47,6 +48,7 @@
     "unsavedBody": "تغییرات دور ریخته شود و ادامه دهیم؟",
     "openFailed": "باز کردن {{name}} انجام نشد.",
     "exportFailed": "ذخیرهٔ فایل HTML انجام نشد.",
+    "exportWordFailed": "ذخیرهٔ فایل ورد انجام نشد.",
     "saveFailed": "ذخیرهٔ فایل انجام نشد.",
     "confirm": "ادامه",
     "cancel": "انصراف"

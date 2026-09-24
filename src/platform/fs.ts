@@ -123,6 +123,38 @@ export async function saveTextDocument(
   return { path: null, name };
 }
 
+export async function saveBinaryDocument(
+  data: Uint8Array,
+  suggestedName: string,
+  filter: { name: string; extensions: string[] },
+  mime: string,
+): Promise<SaveResult | null> {
+  const extension = filter.extensions[0] ?? "bin";
+  const name = suggestedName.toLowerCase().endsWith(`.${extension}`)
+    ? suggestedName
+    : `${suggestedName}.${extension}`;
+
+  if (await isTauri()) {
+    const { save } = await import("@tauri-apps/plugin-dialog");
+    const { writeFile } = await import("@tauri-apps/plugin-fs");
+    const picked = await save({
+      defaultPath: name,
+      filters: [filter],
+    });
+    if (!picked) return null;
+    const target = picked.toLowerCase().endsWith(`.${extension}`)
+      ? picked
+      : `${picked}.${extension}`;
+    await writeFile(target, data);
+    const fileName = target.split(/[/\\]/).pop() ?? name;
+    return { path: target, name: fileName };
+  }
+
+  const blob = new Blob([data], { type: mime });
+  await downloadBlob(name, blob);
+  return { path: null, name };
+}
+
 export async function runningOnDesktop(): Promise<boolean> {
   return isTauri();
 }

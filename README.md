@@ -62,7 +62,7 @@ src/           Shared React app (web + desktop)
 src-tauri/     Tauri 2 native shell
 src/i18n/      Locales (en / fa / ar)
 src/themes/    Theme engine + manager UI
-src/export/    HTML export (+ Word stub)
+src/export/    HTML and Word export
 src/platform/  Web vs Tauri file APIs
 ```
 
@@ -70,7 +70,7 @@ src/platform/  Web vs Tauri file APIs
 
 These are intentional follow-ups, stubbed in code and tracked here:
 
-1. **Word (`.docx`) export** — `src/export/html.ts` (`exportWordStub`)
+1. **Word (`.docx`) export** — toolbar button writes `.docx` with headings, lists, tables, and bidirectional text. Mermaid stays as source.
 2. **Import language packs from the UI** — `src/i18n/index.ts` (`importLanguagePackStub`)
 3. **File association**: implemented for the desktop installer. After install, double-click `.md` / `.markdown` / `.mdown` opens that file in preview (one window). Registry registration happens at install time, not in `tauri dev`.
 4. Advanced theme import/export & sharing

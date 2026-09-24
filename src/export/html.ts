@@ -102,10 +102,3 @@ function escapeHtml(s: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 }
-
-/**
- * TODO (roadmap): export to Word (.docx) using a GPL-compatible library.
- */
-export function exportWordStub(): never {
-  throw new Error("Word export is planned — see README Roadmap");
-}

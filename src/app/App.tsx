@@ -10,6 +10,7 @@ import {
 } from "../preview/MarkdownPreview";
 import { markdownToHtml } from "../preview/markdown";
 import { exportHtmlDocument } from "../export/html";
+import { exportWordDocument } from "../export/docx";
 import {
   drainOsOpenPaths,
   listenForOsOpen,
@@ -187,6 +188,19 @@ export function App() {
     }
   };
 
+  const handleExportWord = async () => {
+    try {
+      const saved = await exportWordDocument({
+        markdown: content,
+        filename: fileName,
+        language,
+      });
+      if (!saved) return;
+    } catch {
+      window.alert(t("dialogs.exportWordFailed"));
+    }
+  };
+
   const applyTheme = (next: MdyarTheme) => {
     setTheme(next);
     setActiveThemeId(next.id);
@@ -205,6 +219,7 @@ export function App() {
         onSave={() => void handleSave(false)}
         onSaveAs={isDesktop ? () => void handleSave(true) : undefined}
         onExportHtml={() => void handleExport()}
+        onExportWord={() => void handleExportWord()}
         onThemes={() => setThemesOpen(true)}
         language={language}
       />

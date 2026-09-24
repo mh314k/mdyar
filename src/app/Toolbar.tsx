@@ -18,6 +18,7 @@ type Props = {
   onSave: () => void;
   onSaveAs?: () => void;
   onExportHtml: () => void;
+  onExportWord: () => void;
   onThemes: () => void;
   language: AppLanguage;
 };
@@ -78,6 +79,13 @@ const ICONS = {
       <path d="M3 10.5v2.5h10v-2.5" />
     </Icon>
   ),
+  word: (
+    <Icon>
+      <path d="M3 2.5h7.2L13 5.2V13.5H3z" />
+      <path d="M10.2 2.5V5.2H13" />
+      <path d="M5.1 7.4 6.3 11.4 8 8.6l1.7 2.8 1.2-4" />
+    </Icon>
+  ),
   themes: (
     <Icon>
       <circle cx="8" cy="8" r="5.5" />
@@ -115,6 +123,7 @@ export function Toolbar({
   onSave,
   onSaveAs,
   onExportHtml,
+  onExportWord,
   onThemes,
   language,
 }: Props) {
@@ -188,6 +197,15 @@ export function Toolbar({
           aria-label={t("toolbar.exportHtml")}
         >
           {ICONS.export}
+        </button>
+        <button
+          type="button"
+          className="mdyar-icon-btn"
+          onClick={onExportWord}
+          title={t("toolbar.exportWord")}
+          aria-label={t("toolbar.exportWord")}
+        >
+          {ICONS.word}
         </button>
       </div>
 

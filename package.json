@@ -24,6 +24,7 @@
     "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-fs": "^2.2.0",
     "@uiw/react-codemirror": "^4.23.10",
+    "docx": "^9.7.2",
     "i18next": "^24.2.3",
     "katex": "^0.16.21",
     "mermaid": "^11.6.0",

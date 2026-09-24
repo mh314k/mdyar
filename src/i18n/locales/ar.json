@@ -8,6 +8,7 @@
     "save": "حفظ",
     "saveAs": "حفظ باسم",
     "exportHtml": "تصدير HTML",
+    "exportWord": "تصدير Word",
     "previewOnly": "معاينة",
     "splitView": "مقسّم",
     "editOnly": "تحرير",
@@ -47,6 +48,7 @@
     "unsavedBody": "هل تريد تجاهل التغييرات والمتابعة؟",
     "openFailed": "تعذر فتح {{name}}.",
     "exportFailed": "تعذر حفظ ملف HTML.",
+    "exportWordFailed": "تعذر حفظ ملف Word.",
     "saveFailed": "تعذر حفظ الملف.",
     "confirm": "متابعة",
     "cancel": "إلغاء"
