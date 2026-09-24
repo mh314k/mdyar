@@ -54,6 +54,7 @@ Generate proper multi-size icons (recommended on macOS/Windows):
 npx tauri icon public/mdyar.svg
 ```
 
+**Windows + Proxifier:** Proxifier **Portable** injects into WebView2 and crashes the desktop window (`WS2_32.dll`). Quit Portable, or use the **installed** Proxifier edition (WFP). MDyar shows a warning dialog when it detects Proxifier. The web app (`npm run dev`) is unaffected.
 ## Project layout
 
 ```
