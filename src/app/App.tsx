@@ -8,6 +8,7 @@ import { openMarkdownFile, saveMarkdownFile, runningOnDesktop } from "../platfor
 import {
   applyThemeToDocument,
   getActiveThemeId,
+  isDarkTheme,
   resolveTheme,
   setActiveThemeId,
   type MdyarTheme,
@@ -112,6 +113,7 @@ export function App() {
           <MarkdownEditor
             value={content}
             onChange={onChange}
+            dark={isDarkTheme(theme)}
             onScrollRatio={(r) => {
               setScrollSource("editor");
               setScrollRatio(r);
@@ -132,7 +134,9 @@ export function App() {
       </main>
 
       <footer className="mdyar-status">
-        <span>{dirty ? t("status.unsaved") : t("status.saved")}</span>
+        <span className={dirty ? "is-dirty" : undefined}>
+          {dirty ? t("status.unsaved") : t("status.saved")}
+        </span>
         <span>{t("status.chars", { count: content.length })}</span>
         {!isDesktop && <span>{t("status.webHint")}</span>}
       </footer>

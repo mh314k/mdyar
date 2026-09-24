@@ -20,58 +20,58 @@ export type MdyarTheme = {
 
 export const BUILTIN_THEMES: MdyarTheme[] = [
   {
-    id: "pine-light",
-    name: "Pine Light",
+    id: "signal-light",
+    name: "Signal Light",
     builtin: true,
     colors: {
-      bg: "#f4f7f5",
-      fg: "#1a2e26",
-      accent: "#2d6a4f",
-      surface: "#ffffff",
-      border: "#c5d5cc",
-      muted: "#5c7368",
+      bg: "#e8eeeb",
+      fg: "#0b1612",
+      accent: "#0f8a5f",
+      surface: "#f7faf8",
+      border: "#9eb5aa",
+      muted: "#456055",
     },
     fonts: {
-      editor: '"IBM Plex Mono", "Vazirmatn", ui-monospace, monospace',
-      preview: '"Vazirmatn", "IBM Plex Sans", system-ui, sans-serif',
+      editor: '"JetBrains Mono", "Vazirmatn", ui-monospace, monospace',
+      preview: '"Vazirmatn", "Sora", system-ui, sans-serif',
     },
     fontSize: 15,
     lineHeight: 1.65,
   },
   {
-    id: "pine-dark",
-    name: "Pine Dark",
+    id: "signal-dark",
+    name: "Signal Dark",
     builtin: true,
     colors: {
-      bg: "#0f1a16",
-      fg: "#e4efe9",
-      accent: "#6bbf8a",
-      surface: "#16241e",
+      bg: "#07110e",
+      fg: "#e8f2ec",
+      accent: "#2dd4a0",
+      surface: "#0f1c17",
       border: "#2a4036",
       muted: "#8aa899",
     },
     fonts: {
-      editor: '"IBM Plex Mono", "Vazirmatn", ui-monospace, monospace',
-      preview: '"Vazirmatn", "IBM Plex Sans", system-ui, sans-serif',
+      editor: '"JetBrains Mono", "Vazirmatn", ui-monospace, monospace',
+      preview: '"Vazirmatn", "Sora", system-ui, sans-serif',
     },
     fontSize: 15,
     lineHeight: 1.65,
   },
   {
-    id: "slate-paper",
-    name: "Slate Paper",
+    id: "signal-slate",
+    name: "Signal Slate",
     builtin: true,
     colors: {
-      bg: "#eceff3",
-      fg: "#1c2430",
-      accent: "#3d5a80",
-      surface: "#f8f9fb",
-      border: "#c8d0db",
-      muted: "#5d6b7c",
+      bg: "#e4e9ef",
+      fg: "#101820",
+      accent: "#2a6f97",
+      surface: "#f4f6f9",
+      border: "#a8b4c4",
+      muted: "#4d5d70",
     },
     fonts: {
-      editor: '"IBM Plex Mono", "Vazirmatn", ui-monospace, monospace',
-      preview: '"IBM Plex Sans", "Vazirmatn", system-ui, sans-serif',
+      editor: '"JetBrains Mono", "Vazirmatn", ui-monospace, monospace',
+      preview: '"Sora", "Vazirmatn", system-ui, sans-serif',
     },
     fontSize: 15,
     lineHeight: 1.7,
@@ -80,6 +80,12 @@ export const BUILTIN_THEMES: MdyarTheme[] = [
 
 const THEMES_KEY = "mdyar.customThemes";
 const ACTIVE_KEY = "mdyar.activeTheme";
+
+const LEGACY_THEME_IDS: Record<string, string> = {
+  "pine-light": "signal-light",
+  "pine-dark": "signal-dark",
+  "slate-paper": "signal-slate",
+};
 
 export function loadCustomThemes(): MdyarTheme[] {
   try {
@@ -101,7 +107,8 @@ export function getAllThemes(): MdyarTheme[] {
 }
 
 export function getActiveThemeId(): string {
-  return localStorage.getItem(ACTIVE_KEY) ?? "pine-light";
+  const stored = localStorage.getItem(ACTIVE_KEY) ?? "signal-light";
+  return LEGACY_THEME_IDS[stored] ?? stored;
 }
 
 export function setActiveThemeId(id: string) {
@@ -109,7 +116,18 @@ export function setActiveThemeId(id: string) {
 }
 
 export function resolveTheme(id: string): MdyarTheme {
-  return getAllThemes().find((t) => t.id === id) ?? BUILTIN_THEMES[0];
+  const mapped = LEGACY_THEME_IDS[id] ?? id;
+  return getAllThemes().find((t) => t.id === mapped) ?? BUILTIN_THEMES[0];
+}
+
+export function isDarkTheme(theme: MdyarTheme): boolean {
+  const hex = theme.colors.bg.replace("#", "");
+  if (hex.length !== 6) return false;
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return luminance < 0.45;
 }
 
 export function applyThemeToDocument(theme: MdyarTheme) {
@@ -124,6 +142,12 @@ export function applyThemeToDocument(theme: MdyarTheme) {
   root.style.setProperty("--mdyar-font-preview", theme.fonts.preview);
   root.style.setProperty("--mdyar-font-size", `${theme.fontSize}px`);
   root.style.setProperty("--mdyar-line-height", String(theme.lineHeight));
+  root.style.setProperty(
+    "--mdyar-danger",
+    isDarkTheme(theme) ? "#f07178" : "#c0392b",
+  );
+  root.dataset.theme = isDarkTheme(theme) ? "dark" : "light";
+  root.style.colorScheme = isDarkTheme(theme) ? "dark" : "light";
 }
 
 export function createBlankTheme(name = "Custom theme"): MdyarTheme {

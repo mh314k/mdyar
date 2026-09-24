@@ -8,9 +8,16 @@ type Props = {
   onChange: (value: string) => void;
   onScrollRatio?: (ratio: number) => void;
   scrollRatio?: number;
+  dark?: boolean;
 };
 
-export function MarkdownEditor({ value, onChange, onScrollRatio, scrollRatio }: Props) {
+export function MarkdownEditor({
+  value,
+  onChange,
+  onScrollRatio,
+  scrollRatio,
+  dark = false,
+}: Props) {
   const viewRef = useRef<EditorView | null>(null);
   const applyingScroll = useRef(false);
 
@@ -75,7 +82,7 @@ export function MarkdownEditor({ value, onChange, onScrollRatio, scrollRatio }: 
       <CodeMirror
         value={value}
         height="100%"
-        theme="light"
+        theme={dark ? "dark" : "light"}
         basicSetup={{
           lineNumbers: true,
           foldGutter: true,
