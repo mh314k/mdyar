@@ -1,7 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MarkdownEditor } from "../editor/MarkdownEditor";
-import { MarkdownPreview } from "../preview/MarkdownPreview";
+import {
+  MarkdownEditor,
+  type EditorScrollHandle,
+} from "../editor/MarkdownEditor";
+import {
+  MarkdownPreview,
+  type PreviewScrollHandle,
+} from "../preview/MarkdownPreview";
 import { markdownToHtml } from "../preview/markdown";
 import { exportHtmlDocument } from "../export/html";
 import { openMarkdownFile, saveMarkdownFile, runningOnDesktop } from "../platform/fs";
@@ -27,10 +33,47 @@ export function App() {
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
   const [theme, setTheme] = useState<MdyarTheme>(() => resolveTheme(getActiveThemeId()));
   const [themesOpen, setThemesOpen] = useState(false);
-  const [scrollRatio, setScrollRatio] = useState(0);
-  const [scrollSource, setScrollSource] = useState<"editor" | "preview" | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const language = (i18n.language?.slice(0, 2) as AppLanguage) || getStoredLanguage();
+  const syncScroll = viewMode === "split";
+
+  const editorRef = useRef<EditorScrollHandle>(null);
+  const previewRef = useRef<PreviewScrollHandle>(null);
+  const driverRef = useRef<"editor" | "preview" | null>(null);
+  const lastLineRef = useRef(0);
+  const clearDriverTimer = useRef(0);
+
+  const onEditorScrollLine = useCallback(
+    (line: number) => {
+      if (!syncScroll) return;
+      if (driverRef.current === "preview") return;
+      if (line === lastLineRef.current) return;
+      lastLineRef.current = line;
+      driverRef.current = "editor";
+      previewRef.current?.scrollToLine(line);
+      window.clearTimeout(clearDriverTimer.current);
+      clearDriverTimer.current = window.setTimeout(() => {
+        if (driverRef.current === "editor") driverRef.current = null;
+      }, 180);
+    },
+    [syncScroll],
+  );
+
+  const onPreviewScrollLine = useCallback(
+    (line: number) => {
+      if (!syncScroll) return;
+      if (driverRef.current === "editor") return;
+      if (line === lastLineRef.current) return;
+      lastLineRef.current = line;
+      driverRef.current = "preview";
+      editorRef.current?.scrollToLine(line);
+      window.clearTimeout(clearDriverTimer.current);
+      clearDriverTimer.current = window.setTimeout(() => {
+        if (driverRef.current === "preview") driverRef.current = null;
+      }, 180);
+    },
+    [syncScroll],
+  );
 
   useEffect(() => {
     applyThemeToDocument(theme);
@@ -111,24 +154,18 @@ export function App() {
       >
         {(viewMode === "edit" || viewMode === "split") && (
           <MarkdownEditor
+            ref={editorRef}
             value={content}
             onChange={onChange}
             dark={isDarkTheme(theme)}
-            onScrollRatio={(r) => {
-              setScrollSource("editor");
-              setScrollRatio(r);
-            }}
-            scrollRatio={scrollSource === "preview" ? scrollRatio : undefined}
+            onScrollLine={syncScroll ? onEditorScrollLine : undefined}
           />
         )}
         {(viewMode === "preview" || viewMode === "split") && (
           <MarkdownPreview
+            ref={previewRef}
             source={content}
-            onScrollRatio={(r) => {
-              setScrollSource("preview");
-              setScrollRatio(r);
-            }}
-            scrollRatio={scrollSource === "editor" ? scrollRatio : undefined}
+            onScrollLine={syncScroll ? onPreviewScrollLine : undefined}
           />
         )}
       </main>

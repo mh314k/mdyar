@@ -7,6 +7,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import type { Schema } from "hast-util-sanitize";
+import { rehypeSourceLine } from "./rehypeSourceLine";
 
 const schema: Schema = {
   ...defaultSchema,
@@ -18,7 +19,11 @@ const schema: Schema = {
     ],
     span: [...(defaultSchema.attributes?.span ?? []), ["className"], ["style"]],
     div: [...(defaultSchema.attributes?.div ?? []), ["className"], ["style"]],
-    "*": [...(defaultSchema.attributes?.["*"] ?? []), ["dir"]],
+    "*": [
+      ...(defaultSchema.attributes?.["*"] ?? []),
+      ["dir"],
+      ["dataSourceLine"],
+    ],
   },
   tagNames: [...(defaultSchema.tagNames ?? []), "span", "div"],
 };
@@ -28,6 +33,7 @@ const processor = unified()
   .use(remarkGfm)
   .use(remarkMath)
   .use(remarkRehype, { allowDangerousHtml: false })
+  .use(rehypeSourceLine)
   .use(rehypeKatex)
   .use(rehypeSanitize, schema)
   .use(rehypeStringify);

@@ -1,11 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { markdownToHtml } from "./markdown";
+import { findPreviewLineAtScroll, scrollPreviewToLine } from "./scrollSync";
 import "katex/dist/katex.min.css";
+
+export type PreviewScrollHandle = {
+  scrollToLine: (line: number) => void;
+  getTopLine: () => number;
+};
 
 type Props = {
   source: string;
-  onScrollRatio?: (ratio: number) => void;
-  scrollRatio?: number;
+  onScrollLine?: (line: number) => void;
 };
 
 let mermaidReady = false;
@@ -24,87 +35,102 @@ async function ensureMermaid() {
   return mermaid;
 }
 
-export function MarkdownPreview({ source, onScrollRatio, scrollRatio }: Props) {
-  const [html, setHtml] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const applyingScroll = useRef(false);
+export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
+  function MarkdownPreview({ source, onScrollLine }, ref) {
+    const [html, setHtml] = useState("");
+    const containerRef = useRef<HTMLDivElement>(null);
+    const suppressScroll = useRef(false);
+    const onScrollLineRef = useRef(onScrollLine);
+    onScrollLineRef.current = onScrollLine;
+    const rafRef = useRef(0);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const rendered = await markdownToHtml(source);
-      if (cancelled) return;
-      setHtml(rendered);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [source]);
+    useImperativeHandle(ref, () => ({
+      scrollToLine(line: number) {
+        const el = containerRef.current;
+        if (!el) return;
+        suppressScroll.current = true;
+        scrollPreviewToLine(el, line);
+        window.setTimeout(() => {
+          suppressScroll.current = false;
+        }, 150);
+      },
+      getTopLine() {
+        const el = containerRef.current;
+        return el ? findPreviewLineAtScroll(el) : 1;
+      },
+    }));
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    useEffect(() => {
+      let cancelled = false;
+      void (async () => {
+        const rendered = await markdownToHtml(source);
+        if (cancelled) return;
+        setHtml(rendered);
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }, [source]);
 
-    const blocks = el.querySelectorAll("pre > code.language-mermaid");
-    void (async () => {
-      if (blocks.length > 0) {
-        const mermaid = await ensureMermaid();
-        let idx = 0;
-        for (const code of Array.from(blocks)) {
-          const pre = code.parentElement;
-          if (!pre) continue;
-          const graph = code.textContent ?? "";
-          const host = document.createElement("div");
-          host.className = "mdyar-mermaid";
-          host.dir = "ltr";
-          host.setAttribute("data-mermaid-id", `m-${idx++}`);
-          try {
-            const id = `mdyar-mmd-${crypto.randomUUID()}`;
-            const { svg } = await mermaid.render(id, graph);
-            host.innerHTML = svg;
-            pre.replaceWith(host);
-          } catch (err) {
-            host.classList.add("mdyar-mermaid-error");
-            host.textContent = String(err);
-            pre.replaceWith(host);
+    useEffect(() => {
+      const el = containerRef.current;
+      if (!el) return;
+
+      const blocks = el.querySelectorAll("pre > code.language-mermaid");
+      void (async () => {
+        if (blocks.length > 0) {
+          const mermaid = await ensureMermaid();
+          let idx = 0;
+          for (const code of Array.from(blocks)) {
+            const pre = code.parentElement;
+            if (!pre) continue;
+            const graph = code.textContent ?? "";
+            const host = document.createElement("div");
+            host.className = "mdyar-mermaid";
+            host.dir = "ltr";
+            host.setAttribute("data-mermaid-id", `m-${idx++}`);
+            const sourceLine = pre.getAttribute("data-source-line");
+            if (sourceLine) host.setAttribute("data-source-line", sourceLine);
+            try {
+              const id = `mdyar-mmd-${crypto.randomUUID()}`;
+              const { svg } = await mermaid.render(id, graph);
+              host.innerHTML = svg;
+              pre.replaceWith(host);
+            } catch (err) {
+              host.classList.add("mdyar-mermaid-error");
+              host.textContent = String(err);
+              pre.replaceWith(host);
+            }
           }
         }
-      }
 
-      el.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th").forEach(
-        (node) => {
-          if (!node.getAttribute("dir")) node.setAttribute("dir", "auto");
-        },
-      );
-    })();
-  }, [html]);
+        el.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th").forEach(
+          (node) => {
+            if (!node.getAttribute("dir")) node.setAttribute("dir", "auto");
+          },
+        );
+      })();
+    }, [html]);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el || scrollRatio === undefined) return;
-    applyingScroll.current = true;
-    const max = el.scrollHeight - el.clientHeight;
-    el.scrollTop = max * scrollRatio;
-    requestAnimationFrame(() => {
-      applyingScroll.current = false;
-    });
-  }, [scrollRatio]);
-
-  return (
-    <div
-      className="mdyar-preview"
-      ref={containerRef}
-      onScroll={(e) => {
-        if (applyingScroll.current || !onScrollRatio) return;
-        const t = e.currentTarget;
-        const max = t.scrollHeight - t.clientHeight;
-        onScrollRatio(max > 0 ? t.scrollTop / max : 0);
-      }}
-    >
-      <article
-        className="mdyar-preview-article"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    </div>
-  );
-}
+    return (
+      <div
+        className="mdyar-preview"
+        ref={containerRef}
+        onScroll={() => {
+          const el = containerRef.current;
+          if (!el || suppressScroll.current || !onScrollLineRef.current) return;
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = requestAnimationFrame(() => {
+            if (!el || suppressScroll.current || !onScrollLineRef.current) return;
+            onScrollLineRef.current(findPreviewLineAtScroll(el));
+          });
+        }}
+      >
+        <article
+          className="mdyar-preview-article"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </div>
+    );
+  },
+);
