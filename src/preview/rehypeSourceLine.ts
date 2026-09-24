@@ -25,19 +25,27 @@ const BLOCK_TAGS = new Set([
   "section",
 ]);
 
-function visit(node: HastNode, fn: (el: HastNode) => void) {
+function visit(node: HastNode, fn: (el: HastNode, parent?: HastNode) => void, parent?: HastNode) {
   if (node.type === "element") {
-    fn(node);
-    for (const child of node.children ?? []) visit(child, fn);
+    fn(node, parent);
+    for (const child of node.children ?? []) visit(child, fn, node);
   } else if (node.type === "root") {
-    for (const child of node.children ?? []) visit(child, fn);
+    for (const child of node.children ?? []) visit(child, fn, node);
   }
 }
 
 /** Attach markdown source line numbers for editor ↔ preview scroll sync. */
 export function rehypeSourceLine() {
   return (tree: HastNode) => {
-    visit(tree, (el) => {
+    visit(tree, (el, parent) => {
+      if (el.tagName === "pre") {
+        el.properties ??= {};
+        el.properties.dir = "ltr";
+      } else if (el.tagName === "code" && parent?.tagName !== "pre") {
+        el.properties ??= {};
+        el.properties.dir = "auto";
+      }
+
       if (!el.tagName || !BLOCK_TAGS.has(el.tagName)) return;
       const line = el.position?.start?.line;
       if (!line) return;

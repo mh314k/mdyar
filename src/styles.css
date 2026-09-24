@@ -312,6 +312,18 @@ body {
   padding: 0.1em 0.35em;
 }
 
+/* Inline code follows its own letters, so Persian syntax is read from the right. */
+.mdyar-preview-article :not(pre) > code {
+  unicode-bidi: plaintext;
+  font-family: var(--mdyar-font-preview);
+}
+
+.mdyar-preview-article pre,
+.mdyar-preview-article .data-footnote-backref {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
 .mdyar-preview-article pre {
   padding: 1rem;
   overflow: auto;

@@ -11,6 +11,9 @@ import { rehypeSourceLine } from "./rehypeSourceLine";
 
 const schema: Schema = {
   ...defaultSchema,
+  // Footnote ids already start with `user-content-`. Prefixing again
+  // makes the back-link point at an id that is not in the page.
+  clobberPrefix: "",
   attributes: {
     ...defaultSchema.attributes,
     code: [

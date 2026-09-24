@@ -116,6 +116,23 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
       <div
         className="mdyar-preview"
         ref={containerRef}
+        onClick={(event) => {
+          const anchor = (event.target as Element | null)?.closest?.("a");
+          const root = containerRef.current;
+          if (!anchor || !root?.contains(anchor)) return;
+          const href = anchor.getAttribute("href");
+          if (!href?.startsWith("#") || href.length < 2) return;
+          let id = href.slice(1);
+          try {
+            id = decodeURIComponent(id);
+          } catch {
+            return;
+          }
+          const target = root.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+          if (!target) return;
+          event.preventDefault();
+          target.scrollIntoView({ block: "center", inline: "nearest" });
+        }}
         onScroll={() => {
           const el = containerRef.current;
           if (!el || suppressScroll.current || !onScrollLineRef.current) return;

@@ -21,8 +21,10 @@ code, pre {
   border: 1px solid var(--mdyar-border);
   border-radius: 6px;
 }
-pre { padding: 1rem; overflow: auto; }
+pre { padding: 1rem; overflow: auto; direction: ltr; unicode-bidi: isolate; }
 code { padding: 0.1em 0.35em; }
+:not(pre) > code { unicode-bidi: plaintext; font-family: var(--mdyar-font-preview); }
+.data-footnote-backref { direction: ltr; unicode-bidi: isolate; }
 pre code { border: none; padding: 0; background: transparent; }
 blockquote {
   border-inline-start: 3px solid var(--mdyar-accent);
