@@ -273,9 +273,21 @@ body {
   height: 100%;
 }
 
+/* The scroller stays LTR so a Persian UI does not move the gutters or clip the left edge. Each line still picks its own direction. */
+.mdyar-editor,
+.mdyar-editor .cm-editor,
+.mdyar-editor .cm-scroller,
+.mdyar-editor .cm-content {
+  direction: ltr;
+}
+
 .mdyar-editor .cm-editor {
   background: var(--mdyar-surface);
   color: var(--mdyar-fg);
+}
+
+.mdyar-editor .cm-line {
+  unicode-bidi: plaintext;
 }
 
 .mdyar-editor .cm-editor.cm-focused {

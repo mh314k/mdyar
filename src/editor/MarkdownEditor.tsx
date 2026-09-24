@@ -1,6 +1,13 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
-import { EditorView } from "@codemirror/view";
+import { RangeSetBuilder } from "@codemirror/state";
+import {
+  Decoration,
+  EditorView,
+  ViewPlugin,
+  type DecorationSet,
+  type ViewUpdate,
+} from "@codemirror/view";
 import {
   forwardRef,
   useEffect,
@@ -32,6 +39,37 @@ function topVisibleLine(view: EditorView): number {
   const block = view.lineBlockAtHeight(view.scrollDOM.scrollTop);
   return view.state.doc.lineAt(block.from).number;
 }
+
+const autoLineDir = Decoration.line({ attributes: { dir: "auto" } });
+
+/** Each visible line picks its own direction, so a Persian UI does not reorder every line. */
+function lineDirectionDecorations(view: EditorView): DecorationSet {
+  const builder = new RangeSetBuilder<Decoration>();
+  for (const { from, to } of view.visibleRanges) {
+    for (let pos = from; pos <= to; ) {
+      const line = view.state.doc.lineAt(pos);
+      builder.add(line.from, line.from, autoLineDir);
+      if (line.to >= view.state.doc.length) break;
+      pos = line.to + 1;
+    }
+  }
+  return builder.finish();
+}
+
+const perLineDirection = ViewPlugin.fromClass(
+  class {
+    decorations: DecorationSet;
+    constructor(view: EditorView) {
+      this.decorations = lineDirectionDecorations(view);
+    }
+    update(update: ViewUpdate) {
+      if (update.docChanged || update.viewportChanged) {
+        this.decorations = lineDirectionDecorations(update.view);
+      }
+    }
+  },
+  { decorations: (plugin) => plugin.decorations },
+);
 
 function scrollEditorToLine(view: EditorView, line: number) {
   const doc = view.state.doc;
@@ -72,11 +110,17 @@ export const MarkdownEditor = forwardRef<EditorScrollHandle, Props>(
       () => [
         markdown(),
         EditorView.lineWrapping,
+        EditorView.perLineTextDirection.of(true),
+        perLineDirection,
         EditorView.theme({
           "&": {
             height: "100%",
+            direction: "ltr",
             fontSize: "var(--mdyar-font-size)",
             fontFamily: "var(--mdyar-font-editor)",
+          },
+          ".cm-scroller, .cm-content": {
+            direction: "ltr",
           },
           ".cm-scroller": {
             fontFamily: "var(--mdyar-font-editor)",
@@ -122,7 +166,7 @@ export const MarkdownEditor = forwardRef<EditorScrollHandle, Props>(
     }, [editorEpoch]);
 
     return (
-      <div className="mdyar-editor" dir="auto">
+      <div className="mdyar-editor" dir="ltr">
         <CodeMirror
           value={value}
           height="100%"
