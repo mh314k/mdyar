@@ -16,7 +16,7 @@ MDyar is a free, open-source, BiDi-first Markdown editor for the web and for Win
 - پیش‌نمایش زنده؛ در نمای اسپلیت پیمایش دو طرف با شمارهٔ خط منبع هم‌گام می‌شود
 - متن دوجهته: جهت هر بلوک در پیش‌نمایش و هر سطر در ویرایشگر از محتوای خودش می‌آید، نه از زبان دکمه‌های رابط
 - **GFM** (جدول، چک‌لیست، خط‌خوردن، پاورقی)، فرمول **KaTeX** و نمودار **Mermaid**
-- برجسته‌سازی نحو مارک‌داون و تکمیل قطعه‌ها (عنوان، فهرست، جدول، کد، فرمول، پیوند و مانند آن)
+- برجسته‌سازی نحو مارک‌داون و قطعه‌های ساختاری با همان فهرست و شرط‌هایی که در ویرایشگر پیاده شده (پایین، بخش قطعه‌ها)
 - شمارهٔ خط، تا شدن بلوک‌ها، روشن شدن خط فعال و شکستن سطرهای بلند
 - مدیر تم: سه تم آماده، به‌علاوهٔ تم سفارشی با رنگ، فونت ویرایشگر، فونت پیش‌نمایش، اندازه و فاصلهٔ خط
 - زبان رابط: **English**، **فارسی**، **العربية** — جهت کل پنجره با زبان عوض می‌شود و زبان سند مستقل می‌ماند
@@ -108,7 +108,40 @@ npx tauri icon public/mdyar.svg
 - جهت بلوک‌های پیش‌نمایش `auto` است. نمودار و بلوک کد چپ‌به‌راست می‌مانند تا شکل و کد به‌هم نریزد
 - کلیک روی پیوند داخلی (`#…`) همان صفحه را به هدف اسکرول می‌کند
 
-ویرایشگر روی CodeMirror 6 است. بدنهٔ ویرایشگر چپ‌به‌راست می‌ماند تا شمارهٔ خط جابه‌جا نشود؛ هر سطر جداگانه `dir="auto"` می‌گیرد. تکمیل خودکار فقط ساختار مارک‌داون را پیشنهاد می‌کند، نه واژه‌های معمولی جمله.
+ویرایشگر روی CodeMirror 6 است. بدنهٔ ویرایشگر چپ‌به‌راست می‌ماند تا شمارهٔ خط جابه‌جا نشود؛ هر سطر جداگانه `dir="auto"` می‌گیرد.
+
+### قطعه‌ها
+
+منبع: `src/editor/markdownAutocomplete.ts`. تکمیل پیش‌فرض واژه‌های CodeMirror خاموش است (`override`) و فقط همین قطعه‌ها پیشنهاد می‌شوند. منو با تایپ باز می‌شود، آیکون ندارد، و با رفتن فوکوس بسته می‌شود. هر `#{…}` در قالب یک جای توقف Tab است.
+
+توکن جاری از ابتدای سطر یا بعد از فاصله خوانده می‌شود و حداکثر ۲۴ نویسه است. منو وقتی باز می‌شود که این توکن با قطعه جور دربیاید: برچسب با توکن شروع شود، توضیح قطعه شامل آن باشد، یا نام مستعار با آن شروع شود یا شامل آن باشد. حروف بزرگ و کوچک یکی است.
+
+| برچسب | درج می‌شود | نام مستعار | کجا |
+| --- | --- | --- | --- |
+| `#` تا `######` | عنوان همان سطح | — | اول سطر |
+| `-` | فهرست گلوله‌ای | `ul`، `list` | اول سطر |
+| `1.` | فهرست شماره‌دار | `ol`، `ordered` | اول سطر |
+| `- [ ]` | چک‌لیست | `todo`، `task`، `checkbox` | اول سطر |
+| `>` | نقل‌قول | `quote`، `blockquote` | اول سطر |
+| ` ``` ` | بلوک کد، با جای زبان و بدنه | `code`، `fence` | اول سطر |
+| ` ```mermaid ` | نمودار Mermaid | `mermaid`، `diagram` | اول سطر |
+| `\|` | جدول دو ستون | `table` | اول سطر |
+| `---` | خط افقی | `hr`، `rule` | اول سطر |
+| `$$` | فرمول نمایشی | `equation` | اول سطر |
+| `[]()` | پیوند | `link`، `url` | هر جای سطر |
+| `![]()` | تصویر | `image`، `img` | هر جای سطر |
+| `**` | ضخیم | `bold`، `strong` | هر جای سطر |
+| `*` | کج | `italic`، `em` | هر جای سطر |
+| `~~` | خط‌خورده | `strike` | هر جای سطر |
+| `` ` `` | کد درون‌خط | `inline` | هر جای سطر |
+| `$` | فرمول درون‌خط | `math`، `katex` | هر جای سطر |
+| `[^]` | ارجاع پاورقی و تعریفش، با یک سطر خالی بینشان | `footnote` | هر جای سطر |
+
+عنوان‌های ۱ تا ۳ اولویت بالاتری دارند تا وقتی چند پیشنهاد با هم جور است بالاتر بیایند.
+
+«اول سطر» یعنی قبل از توکن فقط فاصلهٔ تورفتگی باشد. قطعه‌های اول‌سطر وسط جمله نشان داده نمی‌شوند، مگر تکمیل را صریح باز کنید، یا توکن با یکی از `#` `>` `*` `-` `|` `` ` `` `1` `.` `[` `]` شروع شود و با همان قطعه جور باشد. برای همین `$` وسط جمله فرمول درون‌خط را می‌آورد، ولی `$$` را نه.
+
+اگر وسط سطر واژهٔ معمولی تایپ شود (حرف، عدد یا `_`) و هیچ نام مستعاری با آن شروع نشود، منو اصلاً باز نمی‌شود. این قاعده برای فارسی، عربی و لاتین یکی است. توکن خالی هم منو را باز نمی‌کند؛ در آن حالت فقط باز کردن صریح تکمیل (در CodeMirror معمولاً Ctrl+Space) همهٔ قطعه‌ها را نشان می‌دهد.
 
 ## خروجی
 
@@ -201,7 +234,7 @@ Web app (after GitHub Pages is enabled): **https://mh314k.github.io/mdyar/**
 - **Preview**, **split**, and **edit** layouts. Split view keeps editor and preview scroll in step by source line.
 - Per-block direction in the preview and per-line direction in the editor, independent of the UI language.
 - **GFM**, **KaTeX** math, and **Mermaid** diagrams. Raw HTML in the document is stripped.
-- Markdown syntax highlighting and snippet autocomplete (headings, lists, tables, fences, math, links, footnotes). Completions do not suggest ordinary words.
+- Markdown syntax highlighting and the snippet list implemented in the editor (see [Snippets](#snippets)).
 - Line numbers, code folding, active-line highlight, and line wrapping. The editor surface stays left-to-right so the gutter does not flip; each line is `dir="auto"`.
 - Theme manager: Signal Light, Signal Dark, Signal Slate, plus custom themes (colors, editor font, preview font, size, line height) stored in `localStorage`.
 - UI languages: English, فارسی, العربية. The window direction follows the UI language; document direction does not.
@@ -252,6 +285,39 @@ File associations are registered by the installer, not by `tauri dev`. The app i
 | Save as | No | Yes |
 | HTML / Word export | Download | Native save dialog |
 | Double-click `.md` | No | Yes, after install |
+
+### Snippets
+
+Defined in `src/editor/markdownAutocomplete.ts`. Default CodeMirror word completion is replaced (`override`). The menu opens while typing, has no icons, and closes on blur. Each `#{…}` in a template is a Tab stop.
+
+The current token is the run after the start of the line or after whitespace, at most 24 characters. A snippet matches when its label starts with that token, its detail contains it, or an alias starts with or contains it. Matching is case-insensitive.
+
+| Label | Inserts | Aliases | Where |
+| --- | --- | --- | --- |
+| `#` … `######` | Heading of that level | — | Line start |
+| `-` | Bullet list | `ul`, `list` | Line start |
+| `1.` | Numbered list | `ol`, `ordered` | Line start |
+| `- [ ]` | Task list | `todo`, `task`, `checkbox` | Line start |
+| `>` | Quote | `quote`, `blockquote` | Line start |
+| ` ``` ` | Fenced code, with language and body fields | `code`, `fence` | Line start |
+| ` ```mermaid ` | Mermaid diagram | `mermaid`, `diagram` | Line start |
+| `\|` | Two-column table | `table` | Line start |
+| `---` | Horizontal rule | `hr`, `rule` | Line start |
+| `$$` | Display math | `equation` | Line start |
+| `[]()` | Link | `link`, `url` | Anywhere on the line |
+| `![]()` | Image | `image`, `img` | Anywhere on the line |
+| `**` | Bold | `bold`, `strong` | Anywhere on the line |
+| `*` | Italic | `italic`, `em` | Anywhere on the line |
+| `~~` | Strikethrough | `strike` | Anywhere on the line |
+| `` ` `` | Inline code | `inline` | Anywhere on the line |
+| `$` | Inline math | `math`, `katex` | Anywhere on the line |
+| `[^]` | Footnote reference plus its definition, with a blank line between them | `footnote` | Anywhere on the line |
+
+Headings 1–3 are boosted so they sort above other matches.
+
+Line start means only indentation before the token. Block snippets stay hidden mid-line unless completion is invoked explicitly, or the token begins with `#`, `>`, `*`, `-`, `|`, `` ` ``, `1`, `.`, `[`, or `]` and matches that snippet. So `$` mid-sentence offers inline math, and `$$` does not.
+
+A mid-line token made only of letters, digits, or `_` opens nothing when no alias starts with it. That covers Persian, Arabic, and Latin prose. An empty token also opens nothing; an explicit completion request (Ctrl+Space in CodeMirror) lists every snippet.
 
 ### Export notes
 
