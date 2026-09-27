@@ -1,10 +1,21 @@
-import type { ReactNode, SVGProps } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LANGUAGE_META,
   setAppLanguage,
   type AppLanguage,
 } from "../i18n";
+import {
+  IconEdit,
+  IconExportHtml,
+  IconExportWord,
+  IconNew,
+  IconOpen,
+  IconPreview,
+  IconSave,
+  IconSaveAs,
+  IconSplit,
+  IconThemes,
+} from "./icons";
 
 export type ViewMode = "preview" | "split" | "edit";
 
@@ -21,96 +32,6 @@ type Props = {
   onExportWord: () => void;
   onThemes: () => void;
   language: AppLanguage;
-};
-
-function Icon({ children, ...props }: SVGProps<SVGSVGElement> & { children: ReactNode }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      {children}
-    </svg>
-  );
-}
-
-const ICONS = {
-  new: (
-    <Icon>
-      <path d="M4 2.5h5.5L12.5 5.5V13.5H4z" />
-      <path d="M9.5 2.5V5.5H12.5" />
-      <path d="M6 9h4M8 7v4" />
-    </Icon>
-  ),
-  open: (
-    <Icon>
-      <path d="M2.5 5.5h4l1.2 1.5H13.5v6H2.5z" />
-      <path d="M2.5 5.5V3.5h4l1 1.2" />
-    </Icon>
-  ),
-  save: (
-    <Icon>
-      <path d="M3 2.5h8.5L13.5 5v8.5H3z" />
-      <path d="M5 2.5v3.5h5.5V2.5" />
-      <path d="M5 13.5v-4h6v4" />
-    </Icon>
-  ),
-  saveAs: (
-    <Icon>
-      <path d="M2.5 2.5h6.2L10.8 4.6V7" />
-      <path d="M4.2 2.5v2.2h4.2V2.5" />
-      <path d="M8.2 13.5h5.2" />
-      <path d="M10.8 10.2v3.3" />
-      <path d="M9 12.2 10.8 13.8 12.6 12.2" />
-    </Icon>
-  ),
-  export: (
-    <Icon>
-      <path d="M8 2.5v7" />
-      <path d="M5.5 6.5 8 4l2.5 2.5" />
-      <path d="M3 10.5v2.5h10v-2.5" />
-    </Icon>
-  ),
-  word: (
-    <Icon>
-      <path d="M3 2.5h7.2L13 5.2V13.5H3z" />
-      <path d="M10.2 2.5V5.2H13" />
-      <path d="M5.1 7.4 6.3 11.4 8 8.6l1.7 2.8 1.2-4" />
-    </Icon>
-  ),
-  themes: (
-    <Icon>
-      <circle cx="8" cy="8" r="5.5" />
-      <path d="M8 2.5v11" />
-      <path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="currentColor" stroke="none" />
-    </Icon>
-  ),
-  preview: (
-    <Icon>
-      <rect x="2.5" y="3.5" width="11" height="9" rx="1.5" />
-      <path d="M5 8h6M5 10.5h4" />
-    </Icon>
-  ),
-  split: (
-    <Icon>
-      <rect x="2.5" y="3.5" width="11" height="9" rx="1.5" />
-      <path d="M8 3.5v9" />
-    </Icon>
-  ),
-  edit: (
-    <Icon>
-      <path d="M3 12.5 4.2 8.5 11.5 1.2l2.3 2.3L6.5 10.8z" />
-      <path d="M10 2.7l2.3 2.3" />
-    </Icon>
-  ),
 };
 
 export function Toolbar({
@@ -158,7 +79,7 @@ export function Toolbar({
           title={t("toolbar.newFile")}
           aria-label={t("toolbar.newFile")}
         >
-          {ICONS.new}
+          <IconNew />
         </button>
         <button
           type="button"
@@ -167,7 +88,7 @@ export function Toolbar({
           title={t("toolbar.open")}
           aria-label={t("toolbar.open")}
         >
-          {ICONS.open}
+          <IconOpen />
         </button>
         <button
           type="button"
@@ -176,7 +97,7 @@ export function Toolbar({
           title={t("toolbar.save")}
           aria-label={t("toolbar.save")}
         >
-          {ICONS.save}
+          <IconSave />
         </button>
         {onSaveAs ? (
           <button
@@ -186,7 +107,7 @@ export function Toolbar({
             title={t("toolbar.saveAs")}
             aria-label={t("toolbar.saveAs")}
           >
-            {ICONS.saveAs}
+            <IconSaveAs />
           </button>
         ) : null}
         <button
@@ -196,7 +117,7 @@ export function Toolbar({
           title={t("toolbar.exportHtml")}
           aria-label={t("toolbar.exportHtml")}
         >
-          {ICONS.export}
+          <IconExportHtml />
         </button>
         <button
           type="button"
@@ -205,18 +126,18 @@ export function Toolbar({
           title={t("toolbar.exportWord")}
           aria-label={t("toolbar.exportWord")}
         >
-          {ICONS.word}
+          <IconExportWord />
         </button>
       </div>
 
       <div className="mdyar-toolbar-group mdyar-segmented" role="group" aria-label="View">
         {(
           [
-            ["preview", "toolbar.previewOnly", ICONS.preview],
-            ["split", "toolbar.splitView", ICONS.split],
-            ["edit", "toolbar.editOnly", ICONS.edit],
+            ["preview", "toolbar.previewOnly", IconPreview],
+            ["split", "toolbar.splitView", IconSplit],
+            ["edit", "toolbar.editOnly", IconEdit],
           ] as const
-        ).map(([mode, key, icon]) => (
+        ).map(([mode, key, Icon]) => (
           <button
             key={mode}
             type="button"
@@ -226,7 +147,7 @@ export function Toolbar({
             aria-label={t(key)}
             aria-pressed={viewMode === mode}
           >
-            {icon}
+            <Icon />
           </button>
         ))}
       </div>
@@ -239,7 +160,7 @@ export function Toolbar({
           title={t("toolbar.themes")}
           aria-label={t("toolbar.themes")}
         >
-          {ICONS.themes}
+          <IconThemes />
         </button>
         <label className="mdyar-lang">
           <span className="sr-only">{t("toolbar.language")}</span>

@@ -195,6 +195,15 @@ body {
   line-height: 1;
 }
 
+.mdyar-icon-btn svg,
+.mdyar-segmented button svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
 .mdyar-segmented {
   padding: 3px;
   border: 1px solid var(--mdyar-border);
@@ -364,6 +373,11 @@ body {
 .mdyar-preview-article table {
   border-collapse: collapse;
   width: 100%;
+  margin: 1rem 0;
+}
+
+.mdyar-preview-article table + table {
+  margin-top: 1.75rem;
 }
 
 .mdyar-preview-article th,
