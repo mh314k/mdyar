@@ -5,6 +5,9 @@ on:
     tags: ["v*"]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -50,6 +53,6 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: MDyar ${{ github.ref_name }}
           releaseBody: "See README for features and license (GPL-3.0)."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
