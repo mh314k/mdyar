@@ -32,7 +32,8 @@ blockquote {
   padding-inline-start: 1rem;
   color: var(--mdyar-muted);
 }
-table { border-collapse: collapse; width: 100%; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+table + table { margin-top: 1.75rem; }
 th, td { border: 1px solid var(--mdyar-border); padding: 0.4rem 0.6rem; }
 .mdyar-mermaid { direction: ltr; margin: 1.25rem 0; overflow-x: auto; }
 .katex-display { overflow-x: auto; }
