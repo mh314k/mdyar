@@ -32,6 +32,11 @@ import { getStoredLanguage, type AppLanguage } from "../i18n";
 import { SAMPLE_MARKDOWN } from "./sample";
 import { Toolbar, type ViewMode } from "./Toolbar";
 
+/** Keeps each filename on its own line so mixed LTR/RTL text does not reorder the prompt. */
+function closeUnsavedMessage(prompt: string, names: string[]): string {
+  return `${prompt}\n\n${names.join("\n")}`;
+}
+
 export function App() {
   const { t, i18n } = useTranslation();
   const [content, setContent] = useState(SAMPLE_MARKDOWN);
@@ -49,7 +54,14 @@ export function App() {
 
   const dirtyRef = useRef(false);
   dirtyRef.current = dirty;
+  const fileNameRef = useRef(fileName);
+  fileNameRef.current = fileName;
+  const contentRef = useRef(content);
+  contentRef.current = content;
+  const filePathRef = useRef(filePath);
+  filePathRef.current = filePath;
   const loadOsPathsRef = useRef<(paths: string[]) => Promise<void>>(async () => {});
+  const saveRef = useRef<(saveAs?: boolean) => Promise<boolean>>(async () => false);
 
   const editorRef = useRef<EditorScrollHandle>(null);
   const previewRef = useRef<PreviewScrollHandle>(null);
@@ -161,17 +173,99 @@ export function App() {
     setViewMode("preview");
   };
 
-  const handleSave = async (saveAs = false) => {
+  const handleSave = async (saveAs = false): Promise<boolean> => {
     try {
-      const result = await saveMarkdownFile(content, filePath, fileName, saveAs);
-      if (!result) return;
+      const result = await saveMarkdownFile(
+        contentRef.current,
+        filePathRef.current,
+        fileNameRef.current,
+        saveAs,
+      );
+      if (!result) return false;
       setFilePath(result.path);
       setFileName(result.name);
       setDirty(false);
+      dirtyRef.current = false;
+      return true;
     } catch {
       window.alert(t("dialogs.saveFailed"));
+      return false;
     }
   };
+  saveRef.current = handleSave;
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    let unlisten: (() => void) | undefined;
+    let disposed = false;
+    let prompting = false;
+
+    void (async () => {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      const { message } = await import("@tauri-apps/plugin-dialog");
+      const win = getCurrentWindow();
+      const stop = await win.onCloseRequested(async (event) => {
+        if (!dirtyRef.current) return;
+        if (prompting) {
+          event.preventDefault();
+          return;
+        }
+        prompting = true;
+        try {
+          const yes = i18n.t("dialogs.yes");
+          const no = i18n.t("dialogs.no");
+          const cancel = i18n.t("dialogs.cancel");
+          const choice = await message(
+            closeUnsavedMessage(i18n.t("dialogs.closeUnsavedBody"), [
+              fileNameRef.current,
+            ]),
+            {
+              title: i18n.t("dialogs.closeUnsavedTitle"),
+              kind: "warning",
+              buttons: {
+                yes,
+                no,
+                cancel,
+              },
+            },
+          );
+          if (disposed) {
+            event.preventDefault();
+            return;
+          }
+          const saveAndClose = choice === yes || choice === "Yes";
+          const discardAndClose = choice === no || choice === "No";
+          if (saveAndClose) {
+            const saved = await saveRef.current(false);
+            if (!saved || disposed) {
+              event.preventDefault();
+              return;
+            }
+            // Allow the pending close to finish (destroy after this handler).
+            return;
+          }
+          if (discardAndClose) {
+            dirtyRef.current = false;
+            setDirty(false);
+            return;
+          }
+          event.preventDefault();
+        } finally {
+          prompting = false;
+        }
+      });
+      if (disposed) {
+        stop();
+        return;
+      }
+      unlisten = stop;
+    })();
+
+    return () => {
+      disposed = true;
+      unlisten?.();
+    };
+  }, [isDesktop, i18n]);
 
   const handleExport = async () => {
     try {

@@ -50,6 +50,10 @@
     "exportFailed": "Could not save the HTML file.",
     "exportWordFailed": "Could not save the Word file.",
     "saveFailed": "Could not save the file.",
+    "closeUnsavedTitle": "Save changes?",
+    "closeUnsavedBody": "Do you want to save the changes?",
+    "yes": "Yes",
+    "no": "No",
     "confirm": "Continue",
     "cancel": "Cancel"
   },
