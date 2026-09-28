@@ -50,6 +50,10 @@
     "exportFailed": "ذخیرهٔ فایل HTML انجام نشد.",
     "exportWordFailed": "ذخیرهٔ فایل ورد انجام نشد.",
     "saveFailed": "ذخیرهٔ فایل انجام نشد.",
+    "closeUnsavedTitle": "ذخیرهٔ تغییرات؟",
+    "closeUnsavedBody": "می‌خواهید تغییرات ذخیره شود؟",
+    "yes": "بله",
+    "no": "خیر",
     "confirm": "ادامه",
     "cancel": "انصراف"
   },

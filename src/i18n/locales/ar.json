@@ -50,6 +50,10 @@
     "exportFailed": "تعذر حفظ ملف HTML.",
     "exportWordFailed": "تعذر حفظ ملف Word.",
     "saveFailed": "تعذر حفظ الملف.",
+    "closeUnsavedTitle": "حفظ التغييرات؟",
+    "closeUnsavedBody": "هل تريد حفظ التغييرات؟",
+    "yes": "نعم",
+    "no": "لا",
     "confirm": "متابعة",
     "cancel": "إلغاء"
   },
