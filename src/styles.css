@@ -279,6 +279,8 @@ body {
   overflow: auto;
   contain: paint;
   background: var(--mdyar-surface);
+  /* Keep document BiDi independent of the UI chrome html[dir]. */
+  unicode-bidi: isolate;
 }
 
 .mdyar-editor {
@@ -304,9 +306,8 @@ body {
   color: var(--mdyar-fg);
 }
 
-.mdyar-editor .cm-line {
-  unicode-bidi: plaintext;
-}
+/* Explicit dir=rtl|ltr is set per line in JS — do not use unicode-bidi:plaintext
+   here; Firefox mis-lays out nested highlight spans inside plaintext. */
 
 .mdyar-editor .cm-editor.cm-focused {
   outline: none;
@@ -323,6 +324,12 @@ body {
   font-family: var(--mdyar-font-preview);
   font-size: var(--mdyar-font-size);
   line-height: var(--mdyar-line-height);
+  unicode-bidi: isolate;
+}
+
+.mdyar-preview-article [dir="rtl"],
+.mdyar-preview-article [dir="ltr"] {
+  unicode-bidi: isolate;
 }
 
 .mdyar-preview-article h1,
@@ -349,14 +356,16 @@ body {
   padding: 0.1em 0.35em;
 }
 
-/* Inline code follows its own letters, so Persian syntax is read from the right. */
+/* Inline code is isolated so Latin paths inside Persian stay intact (Firefox). */
 .mdyar-preview-article :not(pre) > code {
-  unicode-bidi: plaintext;
+  unicode-bidi: isolate;
   font-family: var(--mdyar-font-preview);
 }
 
 .mdyar-preview-article pre,
-.mdyar-preview-article .data-footnote-backref {
+.mdyar-preview-article .data-footnote-backref,
+.mdyar-preview-article .katex,
+.mdyar-preview-article .katex-display {
   direction: ltr;
   unicode-bidi: isolate;
 }

@@ -43,7 +43,8 @@ export function rehypeSourceLine() {
         el.properties.dir = "ltr";
       } else if (el.tagName === "code" && parent?.tagName !== "pre") {
         el.properties ??= {};
-        el.properties.dir = "auto";
+        // Isolate from surrounding RTL/LTR; CSS sets unicode-bidi.
+        el.properties.dir = "ltr";
       }
 
       if (!el.tagName || !BLOCK_TAGS.has(el.tagName)) return;

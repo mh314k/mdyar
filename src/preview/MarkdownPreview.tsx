@@ -7,6 +7,7 @@ import {
 } from "react";
 import { markdownToHtml } from "./markdown";
 import { findPreviewLineAtScroll, scrollPreviewToLine } from "./scrollSync";
+import { applyExplicitDir } from "../bidi/direction";
 import "katex/dist/katex.min.css";
 
 export type PreviewScrollHandle = {
@@ -104,11 +105,11 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
           }
         }
 
-        el.querySelectorAll("p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th").forEach(
-          (node) => {
-            if (!node.getAttribute("dir")) node.setAttribute("dir", "auto");
-          },
-        );
+        el.querySelectorAll(
+          "p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th, figcaption",
+        ).forEach((node) => {
+          applyExplicitDir(node);
+        });
       })();
     }, [html]);
 
@@ -145,6 +146,7 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
       >
         <article
           className="mdyar-preview-article"
+          dir="ltr"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>

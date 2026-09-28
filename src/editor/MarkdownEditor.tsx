@@ -21,6 +21,7 @@ import {
   markdownSyntaxThemeVars,
 } from "./markdownHighlight";
 import { markdownAutocompletion } from "./markdownAutocomplete";
+import { firstStrongDirection } from "../bidi/direction";
 
 export type EditorScrollHandle = {
   scrollToLine: (line: number) => void;
@@ -45,15 +46,17 @@ function topVisibleLine(view: EditorView): number {
   return view.state.doc.lineAt(block.from).number;
 }
 
-const autoLineDir = Decoration.line({ attributes: { dir: "auto" } });
+const lineDirRtl = Decoration.line({ attributes: { dir: "rtl" } });
+const lineDirLtr = Decoration.line({ attributes: { dir: "ltr" } });
 
-/** Each visible line picks its own direction, so a Persian UI does not reorder every line. */
+/** Explicit per-line dir from first-strong — avoids Firefox bugs with dir=auto + plaintext. */
 function lineDirectionDecorations(view: EditorView): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
   for (const { from, to } of view.visibleRanges) {
     for (let pos = from; pos <= to; ) {
       const line = view.state.doc.lineAt(pos);
-      builder.add(line.from, line.from, autoLineDir);
+      const dir = firstStrongDirection(line.text);
+      builder.add(line.from, line.from, dir === "rtl" ? lineDirRtl : lineDirLtr);
       if (line.to >= view.state.doc.length) break;
       pos = line.to + 1;
     }

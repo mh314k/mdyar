@@ -8,6 +8,52 @@ import rehypeStringify from "rehype-stringify";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import type { Schema } from "hast-util-sanitize";
 import { rehypeSourceLine } from "./rehypeSourceLine";
+import { firstStrongDirection } from "../bidi/direction";
+
+type HastNode = {
+  type: string;
+  tagName?: string;
+  value?: string;
+  properties?: Record<string, unknown>;
+  children?: HastNode[];
+};
+
+const DIR_TAGS = new Set([
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "li",
+  "blockquote",
+  "td",
+  "th",
+  "figcaption",
+]);
+
+function hastText(node: HastNode): string {
+  if (node.type === "text") return node.value ?? "";
+  if (node.tagName === "pre") return "";
+  return (node.children ?? []).map(hastText).join("");
+}
+
+/** Set explicit rtl/ltr from first-strong text — more reliable than dir=auto in Firefox. */
+export function rehypeBidiDir() {
+  return (tree: HastNode) => {
+    const walk = (node: HastNode) => {
+      if (node.type === "element" && node.tagName && DIR_TAGS.has(node.tagName)) {
+        node.properties ??= {};
+        if (node.properties.dir !== "ltr" && node.properties.dir !== "rtl") {
+          node.properties.dir = firstStrongDirection(hastText(node));
+        }
+      }
+      for (const child of node.children ?? []) walk(child);
+    };
+    walk(tree);
+  };
+}
 
 const schema: Schema = {
   ...defaultSchema,
@@ -37,6 +83,7 @@ const processor = unified()
   .use(remarkMath)
   .use(remarkRehype, { allowDangerousHtml: false })
   .use(rehypeSourceLine)
+  .use(rehypeBidiDir)
   .use(rehypeKatex)
   .use(rehypeSanitize, schema)
   .use(rehypeStringify);
