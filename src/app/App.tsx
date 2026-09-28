@@ -31,6 +31,8 @@ import { ThemeManager } from "../themes/ThemeManager";
 import { getStoredLanguage, type AppLanguage } from "../i18n";
 import { SAMPLE_MARKDOWN } from "./sample";
 import { Toolbar, type ViewMode } from "./Toolbar";
+import { AboutDialog } from "./AboutDialog";
+import { appWindowTitle } from "./meta";
 
 /** Keeps each filename on its own line so mixed LTR/RTL text does not reorder the prompt. */
 function closeUnsavedMessage(prompt: string, names: string[]): string {
@@ -46,6 +48,7 @@ export function App() {
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
   const [theme, setTheme] = useState<MdyarTheme>(() => resolveTheme(getActiveThemeId()));
   const [themesOpen, setThemesOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window,
   );
@@ -108,6 +111,16 @@ export function App() {
   useEffect(() => {
     void runningOnDesktop().then(setIsDesktop);
   }, []);
+
+  useEffect(() => {
+    const title = appWindowTitle();
+    document.title = title;
+    if (!isDesktop) return;
+    void (async () => {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().setTitle(title);
+    })();
+  }, [isDesktop]);
 
   loadOsPathsRef.current = async (paths: string[]) => {
     if (paths.length === 0) return;
@@ -315,6 +328,7 @@ export function App() {
         onExportHtml={() => void handleExport()}
         onExportWord={() => void handleExportWord()}
         onThemes={() => setThemesOpen(true)}
+        onAbout={() => setAboutOpen(true)}
         language={language}
       />
 
@@ -356,6 +370,7 @@ export function App() {
           onClose={() => setThemesOpen(false)}
         />
       )}
+      {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }

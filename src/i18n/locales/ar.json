@@ -14,7 +14,8 @@
     "editOnly": "تحرير",
     "themes": "السمات",
     "language": "اللغة",
-    "newFile": "جديد"
+    "newFile": "جديد",
+    "about": "حول البرنامج"
   },
   "themes": {
     "title": "إدارة السمات",
@@ -56,6 +57,12 @@
     "no": "لا",
     "confirm": "متابعة",
     "cancel": "إلغاء"
+  },
+  "about": {
+    "title": "حول MDyar",
+    "license": "برمجية حرة بموجب رخصة GPL-3.0-or-later.",
+    "github": "GitHub",
+    "website": "تطبيق الويب"
   },
   "roadmap": {
     "title": "قريبًا",

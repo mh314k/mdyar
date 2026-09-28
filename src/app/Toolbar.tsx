@@ -5,6 +5,7 @@ import {
   type AppLanguage,
 } from "../i18n";
 import {
+  IconAbout,
   IconEdit,
   IconExportHtml,
   IconExportWord,
@@ -16,6 +17,7 @@ import {
   IconSplit,
   IconThemes,
 } from "./icons";
+import { APP_VERSION } from "./meta";
 
 export type ViewMode = "preview" | "split" | "edit";
 
@@ -31,6 +33,7 @@ type Props = {
   onExportHtml: () => void;
   onExportWord: () => void;
   onThemes: () => void;
+  onAbout: () => void;
   language: AppLanguage;
 };
 
@@ -46,6 +49,7 @@ export function Toolbar({
   onExportHtml,
   onExportWord,
   onThemes,
+  onAbout,
   language,
 }: Props) {
   const { t } = useTranslation();
@@ -61,7 +65,10 @@ export function Toolbar({
           height={30}
         />
         <div>
-          <strong className="mdyar-brand-name">{t("app.name")}</strong>
+          <strong className="mdyar-brand-name">
+            {t("app.name")}
+            <span className="mdyar-brand-version">v{APP_VERSION}</span>
+          </strong>
           <span className="mdyar-file-name">
             {fileName}
             {dirty ? (
@@ -161,6 +168,15 @@ export function Toolbar({
           aria-label={t("toolbar.themes")}
         >
           <IconThemes />
+        </button>
+        <button
+          type="button"
+          className="mdyar-icon-btn"
+          onClick={onAbout}
+          title={t("toolbar.about")}
+          aria-label={t("toolbar.about")}
+        >
+          <IconAbout />
         </button>
         <label className="mdyar-lang">
           <span className="sr-only">{t("toolbar.language")}</span>
