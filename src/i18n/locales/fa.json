@@ -14,7 +14,8 @@
     "editOnly": "ویرایش",
     "themes": "تم‌ها",
     "language": "زبان",
-    "newFile": "جدید"
+    "newFile": "جدید",
+    "about": "درباره"
   },
   "themes": {
     "title": "مدیریت تم",
@@ -56,6 +57,12 @@
     "no": "خیر",
     "confirm": "ادامه",
     "cancel": "انصراف"
+  },
+  "about": {
+    "title": "دربارهٔ MDyar",
+    "license": "نرم‌افزار آزاد با مجوز GPL-3.0-or-later.",
+    "github": "گیت‌هاب",
+    "website": "وب‌اپ"
   },
   "roadmap": {
     "title": "به‌زودی",

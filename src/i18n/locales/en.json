@@ -14,7 +14,8 @@
     "editOnly": "Edit",
     "themes": "Themes",
     "language": "Language",
-    "newFile": "New"
+    "newFile": "New",
+    "about": "About"
   },
   "themes": {
     "title": "Theme manager",
@@ -56,6 +57,12 @@
     "no": "No",
     "confirm": "Continue",
     "cancel": "Cancel"
+  },
+  "about": {
+    "title": "About MDyar",
+    "license": "Free software under GPL-3.0-or-later.",
+    "github": "GitHub",
+    "website": "Web app"
   },
   "roadmap": {
     "title": "Coming soon",

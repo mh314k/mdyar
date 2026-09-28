@@ -3,6 +3,8 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import pkg from "./package.json";
+
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const host = process.env.TAURI_DEV_HOST;
 
@@ -12,6 +14,9 @@ export default defineConfig({
     alias: {
       "@": path.resolve(rootDir, "src"),
     },
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
   },
   // GitHub project pages: https://<user>.github.io/mdyar/
   base: process.env.GITHUB_PAGES === "true" ? "/mdyar/" : "/",

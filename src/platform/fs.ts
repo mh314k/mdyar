@@ -159,6 +159,16 @@ export async function runningOnDesktop(): Promise<boolean> {
   return isTauri();
 }
 
+/** Open an https URL in the system browser (desktop) or a new tab (web). */
+export async function openExternalUrl(url: string): Promise<void> {
+  if (await isTauri()) {
+    const { openUrl } = await import("@tauri-apps/plugin-opener");
+    await openUrl(url);
+    return;
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 export async function readMarkdownAtPath(path: string): Promise<OpenResult | null> {
   if (!(await isTauri())) return null;
   try {
