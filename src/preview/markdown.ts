@@ -8,6 +8,7 @@ import rehypeStringify from "rehype-stringify";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import type { Schema } from "hast-util-sanitize";
 import { rehypeSourceLine } from "./rehypeSourceLine";
+import { remarkDirDirective } from "./remarkDirDirective";
 import { firstStrongDirection } from "../bidi/direction";
 
 type HastNode = {
@@ -26,8 +27,11 @@ const DIR_TAGS = new Set([
   "h4",
   "h5",
   "h6",
+  "ul",
+  "ol",
   "li",
   "blockquote",
+  "table",
   "td",
   "th",
   "figcaption",
@@ -39,17 +43,22 @@ function hastText(node: HastNode): string {
   return (node.children ?? []).map(hastText).join("");
 }
 
-/** Set explicit rtl/ltr from first-strong text — more reliable than dir=auto in Firefox. */
+/** Set explicit rtl/ltr from forced directive or first-strong text — more reliable than dir=auto in Firefox. */
 export function rehypeBidiDir() {
   return (tree: HastNode) => {
-    const walk = (node: HastNode) => {
-      if (node.type === "element" && node.tagName && DIR_TAGS.has(node.tagName)) {
+    const walk = (node: HastNode, inheritedDir?: "ltr" | "rtl") => {
+      let currentDir = inheritedDir;
+      if (node.type === "element" && node.tagName) {
         node.properties ??= {};
-        if (node.properties.dir !== "ltr" && node.properties.dir !== "rtl") {
-          node.properties.dir = firstStrongDirection(hastText(node));
+        const explicit = node.properties.dir;
+        if (explicit === "ltr" || explicit === "rtl") {
+          currentDir = explicit;
+        } else if (DIR_TAGS.has(node.tagName)) {
+          const resolved = currentDir ?? firstStrongDirection(hastText(node));
+          node.properties.dir = resolved;
         }
       }
-      for (const child of node.children ?? []) walk(child);
+      for (const child of node.children ?? []) walk(child, currentDir);
     };
     walk(tree);
   };
@@ -81,6 +90,7 @@ const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
   .use(remarkMath)
+  .use(remarkDirDirective)
   .use(remarkRehype, { allowDangerousHtml: false })
   .use(rehypeSourceLine)
   .use(rehypeBidiDir)

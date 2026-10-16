@@ -36,7 +36,8 @@ blockquote {
 table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
 table + table { margin-top: 1.75rem; }
 th, td { border: 1px solid var(--mdyar-border); padding: 0.4rem 0.6rem; }
-.mdyar-mermaid { direction: ltr; margin: 1.25rem 0; overflow-x: auto; }
+.mdyar-mermaid { direction: ltr; margin: 1.25rem 0; overflow-x: auto; padding: 0.75rem; border: 1px solid var(--mdyar-border); border-radius: var(--mdyar-radius, 8px); background: var(--mdyar-surface); }
+.mdyar-mermaid-error { color: var(--mdyar-danger, #c0392b); white-space: pre-wrap; font-family: var(--mdyar-font-editor); font-size: 0.85em; }
 .katex-display { overflow-x: auto; }
 `;
 
@@ -54,14 +55,14 @@ export async function exportHtmlDocument(options: {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${escapeHtml(title)}</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@400;500;600&family=Vazirmatn:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
 ${themeToCssVariables(theme)}
 ${PREVIEW_CSS}
 </style>
 </head>
 <body>
-<article class="mdyar-export" dir="auto">
+<article class="mdyar-export" dir="ltr">
 ${htmlBody}
 </article>
 <script type="module">
@@ -80,6 +81,7 @@ for (const code of blocks) {
     host.innerHTML = svg;
     pre.replaceWith(host);
   } catch (e) {
+    host.classList.add("mdyar-mermaid-error");
     host.textContent = String(e);
     pre.replaceWith(host);
   }
@@ -88,7 +90,7 @@ for (const code of blocks) {
 </body>
 </html>`;
 
-  const name = (filename ?? title).replace(/\.md$/i, "") + ".html";
+  const name = (filename ?? title).replace(/\.(md|markdown|mdown)$/i, "") + ".html";
   return saveTextDocument(
     doc,
     name,

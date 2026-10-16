@@ -135,6 +135,7 @@ export function ThemeManager({ activeId, onApply, onClose }: Props) {
                   ["accent", "themes.accent"],
                   ["surface", "themes.surface"],
                   ["border", "themes.border"],
+                  ["muted", "themes.muted"],
                 ] as const
               ).map(([key, label]) => (
                 <label key={key}>
@@ -193,14 +194,16 @@ export function ThemeManager({ activeId, onApply, onClose }: Props) {
                 type="button"
                 className="mdyar-btn"
                 onClick={() => {
-                  const copy = beginEdit({
+                  const copy: MdyarTheme = {
                     ...editing,
-                    builtin: true,
-                    name: editing.name,
-                  });
-                  copy.name = `${editing.name} copy`;
+                    id: `custom-${crypto.randomUUID()}`,
+                    name: `${editing.name} copy`,
+                    builtin: false,
+                    colors: { ...editing.colors },
+                    fonts: { ...editing.fonts },
+                  };
                   persist([...custom, copy]);
-                  setDraft(copy);
+                  setDraft(null);
                   onApply(copy);
                 }}
               >

@@ -29,6 +29,7 @@
     "accent": "Accent",
     "surface": "Surface",
     "border": "Border",
+    "muted": "Muted",
     "editorFont": "Editor font",
     "previewFont": "Preview font",
     "fontSize": "Font size",

@@ -205,7 +205,46 @@ export function App() {
       return false;
     }
   };
+  const newRef = useRef<() => void>(() => {});
+  const openRef = useRef<() => Promise<void>>(async () => {});
+  newRef.current = handleNew;
+  openRef.current = handleOpen;
   saveRef.current = handleSave;
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (aboutOpen) {
+          setAboutOpen(false);
+          e.preventDefault();
+          return;
+        }
+        if (themesOpen) {
+          setThemesOpen(false);
+          e.preventDefault();
+          return;
+        }
+      }
+
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod || e.altKey) return;
+      const key = e.key.toLowerCase();
+
+      if (key === "s") {
+        e.preventDefault();
+        void saveRef.current(e.shiftKey && isDesktop);
+      } else if (key === "o" && !e.shiftKey) {
+        e.preventDefault();
+        void openRef.current();
+      } else if (key === "n" && !e.shiftKey) {
+        e.preventDefault();
+        newRef.current();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [aboutOpen, themesOpen, isDesktop]);
 
   useEffect(() => {
     if (!isDesktop) return;
