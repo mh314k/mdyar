@@ -77,40 +77,51 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
       const el = containerRef.current;
       if (!el) return;
 
+      el.querySelectorAll(
+        "p, ul, ol, li, h1, h2, h3, h4, h5, h6, blockquote, table, td, th, figcaption",
+      ).forEach((node) => {
+        applyExplicitDir(node);
+      });
+
       const blocks = el.querySelectorAll("pre > code.language-mermaid");
+      if (blocks.length === 0) return;
+
+      let cancelled = false;
       void (async () => {
-        if (blocks.length > 0) {
-          const mermaid = await ensureMermaid();
-          let idx = 0;
-          for (const code of Array.from(blocks)) {
-            const pre = code.parentElement;
-            if (!pre) continue;
-            const graph = code.textContent ?? "";
-            const host = document.createElement("div");
-            host.className = "mdyar-mermaid";
-            host.dir = "ltr";
-            host.setAttribute("data-mermaid-id", `m-${idx++}`);
-            const sourceLine = pre.getAttribute("data-source-line");
-            if (sourceLine) host.setAttribute("data-source-line", sourceLine);
-            try {
-              const id = `mdyar-mmd-${crypto.randomUUID()}`;
-              const { svg } = await mermaid.render(id, graph);
-              host.innerHTML = svg;
-              pre.replaceWith(host);
-            } catch (err) {
-              host.classList.add("mdyar-mermaid-error");
-              host.textContent = String(err);
-              pre.replaceWith(host);
-            }
+        const mermaid = await ensureMermaid();
+        let idx = 0;
+        for (const code of Array.from(blocks)) {
+          if (cancelled) return;
+          const pre = code.parentElement;
+          if (!pre || !el.contains(pre)) continue;
+          const graph = code.textContent ?? "";
+          const host = document.createElement("div");
+          host.className = "mdyar-mermaid";
+          host.dir = "ltr";
+          host.setAttribute("data-mermaid-id", `m-${idx++}`);
+          const sourceLine = pre.getAttribute("data-source-line");
+          if (sourceLine) host.setAttribute("data-source-line", sourceLine);
+          const id = `mdyar-mmd-${crypto.randomUUID()}`;
+          try {
+            const { svg } = await mermaid.render(id, graph);
+            if (cancelled) return;
+            host.innerHTML = svg;
+            pre.replaceWith(host);
+          } catch (err) {
+            // Mermaid leaves an orphan `#d<id>` / `#<id>` error element in the body on syntax errors.
+            document.getElementById(id)?.remove();
+            document.getElementById(`d${id}`)?.remove();
+            if (cancelled) return;
+            host.classList.add("mdyar-mermaid-error");
+            host.textContent = String(err);
+            pre.replaceWith(host);
           }
         }
-
-        el.querySelectorAll(
-          "p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th, figcaption",
-        ).forEach((node) => {
-          applyExplicitDir(node);
-        });
       })();
+
+      return () => {
+        cancelled = true;
+      };
     }, [html]);
 
     return (

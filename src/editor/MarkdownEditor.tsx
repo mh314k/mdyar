@@ -21,7 +21,12 @@ import {
   markdownSyntaxThemeVars,
 } from "./markdownHighlight";
 import { markdownAutocompletion } from "./markdownAutocomplete";
-import { firstStrongDirection } from "../bidi/direction";
+import {
+  firstStrongDirection,
+  parseDirDirective,
+  scanDirDirectivesInText,
+  type TextDirection,
+} from "../bidi/direction";
 
 export type EditorScrollHandle = {
   scrollToLine: (line: number) => void;
@@ -49,18 +54,70 @@ function topVisibleLine(view: EditorView): number {
 const lineDirRtl = Decoration.line({ attributes: { dir: "rtl" } });
 const lineDirLtr = Decoration.line({ attributes: { dir: "ltr" } });
 
-/** Explicit per-line dir from first-strong — avoids Firefox bugs with dir=auto + plaintext. */
+const FENCE_RE = /^\s*(```+|~~~+)/;
+
+/** Explicit per-line dir from forced MDyar directives or first-strong — avoids Firefox bugs with dir=auto + plaintext. */
 function lineDirectionDecorations(view: EditorView): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
-  for (const { from, to } of view.visibleRanges) {
-    for (let pos = from; pos <= to; ) {
-      const line = view.state.doc.lineAt(pos);
-      const dir = firstStrongDirection(line.text);
+  const doc = view.state.doc;
+  if (view.visibleRanges.length === 0) return builder.finish();
+
+  const lastVisiblePos = view.visibleRanges[view.visibleRanges.length - 1].to;
+  const lastVisibleLine = doc.lineAt(lastVisiblePos).number;
+
+  // Walk from line 1 up to lastVisibleLine so `<!-- mdyar:dir=... -->` directives
+  // and fenced code blocks above the viewport are respected.
+  const stack: TextDirection[] = [];
+  let inFence: string | null = null;
+  let rangeIdx = 0;
+
+  for (let lineNo = 1; lineNo <= lastVisibleLine; lineNo++) {
+    const line = doc.line(lineNo);
+    const text = line.text;
+
+    const fenceMatch = text.match(FENCE_RE);
+    if (fenceMatch) {
+      const marker = fenceMatch[1][0];
+      if (!inFence) inFence = marker;
+      else if (inFence === marker) inFence = null;
+    }
+
+    let isDirectiveLine = false;
+    if (!inFence) {
+      const single = parseDirDirective(text);
+      if (single) {
+        isDirectiveLine = true;
+        if (single.kind === "open") stack.push(single.dir);
+        else if (stack.length > 0) stack.pop();
+      } else if (text.includes("<!--")) {
+        const { directives } = scanDirDirectivesInText(text);
+        for (const d of directives) {
+          if (d.kind === "open") stack.push(d.dir);
+          else if (stack.length > 0) stack.pop();
+        }
+      }
+    }
+
+    while (
+      rangeIdx < view.visibleRanges.length &&
+      view.visibleRanges[rangeIdx].to < line.from
+    ) {
+      rangeIdx++;
+    }
+    const inViewport =
+      rangeIdx < view.visibleRanges.length &&
+      view.visibleRanges[rangeIdx].from <= line.to;
+
+    if (inViewport) {
+      const forced = stack[stack.length - 1];
+      const dir: TextDirection =
+        inFence || fenceMatch || isDirectiveLine
+          ? "ltr"
+          : (forced ?? firstStrongDirection(text));
       builder.add(line.from, line.from, dir === "rtl" ? lineDirRtl : lineDirLtr);
-      if (line.to >= view.state.doc.length) break;
-      pos = line.to + 1;
     }
   }
+
   return builder.finish();
 }
 

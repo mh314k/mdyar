@@ -63,17 +63,19 @@ export async function saveMarkdownFile(
     if (!target) {
       const picked = await save({
         defaultPath: path ?? suggestedName,
-        filters: [{ name: "Markdown", extensions: ["md"] }],
+        filters: [{ name: "Markdown", extensions: ["md", "markdown", "mdown"] }],
       });
       if (!picked) return null;
-      target = picked.toLowerCase().endsWith(".md") ? picked : `${picked}.md`;
+      target = /\.(md|markdown|mdown)$/i.test(picked) ? picked : `${picked}.md`;
     }
     await writeTextFile(target, content);
     const name = target.split(/[/\\]/).pop() ?? suggestedName;
     return { path: target, name };
   }
 
-  const webName = suggestedName.endsWith(".md") ? suggestedName : `${suggestedName}.md`;
+  const webName = /\.(md|markdown|mdown)$/i.test(suggestedName)
+    ? suggestedName
+    : `${suggestedName}.md`;
   const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
   await downloadBlob(webName, blob);
   return { path: null, name: webName };

@@ -22,6 +22,8 @@ import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 import type { AppLanguage } from "../i18n";
+import type { TextDirection } from "../bidi/direction";
+import { remarkDirDirective } from "../preview/remarkDirDirective";
 import { saveBinaryDocument, type SaveResult } from "../platform/fs";
 
 type MdNode = {
@@ -35,6 +37,10 @@ type MdNode = {
   alt?: string;
   lang?: string;
   identifier?: string;
+  data?: {
+    mdyarDir?: TextDirection;
+    [key: string]: unknown;
+  };
   children?: MdNode[];
 };
 
@@ -68,9 +74,20 @@ const HEADING = [
   HeadingLevel.HEADING_6,
 ] as const;
 
-const parser = unified().use(remarkParse).use(remarkGfm).use(remarkMath);
+const parser = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkDirDirective);
 
 const RTL_CHAR = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
+
+function forcedRtl(node: MdNode): boolean | undefined {
+  const dir = node.data?.mdyarDir;
+  if (dir === "rtl") return true;
+  if (dir === "ltr") return false;
+  return undefined;
+}
 
 function bidiLanguage(language: AppLanguage): string {
   if (language === "ar") return "ar-SA";
@@ -135,7 +152,8 @@ export async function markdownToDocxBlob(options: {
   title?: string;
 }): Promise<Blob> {
   const { markdown, language, title } = options;
-  const tree = parser.parse(markdown) as MdNode;
+  const rawTree = parser.parse(markdown);
+  const tree = (await parser.run(rawTree)) as MdNode;
   const ctx: Ctx = {
     seq: { n: 0 },
     numbering: [],
@@ -262,7 +280,7 @@ function convertBlock(node: MdNode, ctx: Ctx): Array<Paragraph | Table> {
 function heading(node: MdNode, ctx: Ctx): Paragraph {
   const depth = Math.min(Math.max(node.depth ?? 1, 1), 6);
   const text = nodeText(node);
-  const rtl = paragraphIsRtl(text, ctx.docRtl);
+  const rtl = forcedRtl(node) ?? paragraphIsRtl(text, ctx.docRtl);
   return paragraph(phrasing(node.children ?? [], rtl, {}, ctx), ctx, {
     rtl,
     heading: HEADING[depth],
@@ -275,7 +293,7 @@ function flowParagraph(
   extra?: { numbering?: { reference: string; level: number }; taskPrefix?: string; rtl?: boolean },
 ): Paragraph {
   const text = `${extra?.taskPrefix ?? ""}${nodeText(node)}`;
-  const rtl = extra?.rtl ?? paragraphIsRtl(text, ctx.docRtl);
+  const rtl = forcedRtl(node) ?? extra?.rtl ?? paragraphIsRtl(text, ctx.docRtl);
   const children = phrasing(node.children ?? [], rtl, {}, ctx);
   if (extra?.taskPrefix) {
     children.unshift(run(extra.taskPrefix, rtl, {}, ctx));
@@ -323,7 +341,7 @@ function codeBlock(node: MdNode, ctx: Ctx): Paragraph[] {
 function table(node: MdNode, ctx: Ctx): Table {
   const rows = node.children ?? [];
   const headerText = rows[0] ? nodeText(rows[0]) : "";
-  const rtl = paragraphIsRtl(headerText, ctx.docRtl);
+  const rtl = forcedRtl(node) ?? paragraphIsRtl(headerText, ctx.docRtl);
   const edge = { style: BorderStyle.SINGLE, size: 4, color: "auto" };
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
@@ -334,7 +352,7 @@ function table(node: MdNode, ctx: Ctx): Table {
         tableHeader: rowIndex === 0,
         children: cells.map((cell) => {
           const cellText = nodeText(cell);
-          const cellRtl = paragraphIsRtl(cellText, rtl);
+          const cellRtl = forcedRtl(cell) ?? forcedRtl(node) ?? paragraphIsRtl(cellText, rtl);
           return new TableCell({
             width: { size: Math.floor(100 / Math.max(cells.length, 1)), type: WidthType.PERCENTAGE },
             margins: { top: 60, bottom: 60, left: 80, right: 80 },
@@ -354,7 +372,7 @@ function table(node: MdNode, ctx: Ctx): Table {
 
 function convertList(node: MdNode, ctx: Ctx): Array<Paragraph | Table> {
   const ordered = node.ordered === true;
-  const listRtl = paragraphIsRtl(nodeText(node), ctx.docRtl);
+  const listRtl = forcedRtl(node) ?? paragraphIsRtl(nodeText(node), ctx.docRtl);
   const reference = `mdyar-list-${++ctx.seq.n}`;
   const depth = Math.min(ctx.listDepth, 7);
   ctx.numbering.push({
@@ -364,6 +382,7 @@ function convertList(node: MdNode, ctx: Ctx): Array<Paragraph | Table> {
   const out: Array<Paragraph | Table> = [];
   for (const item of node.children ?? []) {
     if (item.type !== "listItem") continue;
+    const itemRtl = forcedRtl(item) ?? listRtl;
     const task = item.checked === true || item.checked === false;
     let usedNumber = false;
     const nested = { ...ctx, listDepth: depth + 1 };
@@ -373,7 +392,7 @@ function convertList(node: MdNode, ctx: Ctx): Array<Paragraph | Table> {
           flowParagraph(child, ctx, {
             numbering: task ? undefined : { reference, level: depth },
             taskPrefix: task ? (item.checked ? "☑ " : "☐ ") : undefined,
-            rtl: listRtl,
+            rtl: itemRtl,
           }),
         );
         usedNumber = true;

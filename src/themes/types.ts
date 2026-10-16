@@ -171,6 +171,8 @@ export function themeToCssVariables(theme: MdyarTheme): string {
   --mdyar-surface: ${theme.colors.surface};
   --mdyar-border: ${theme.colors.border};
   --mdyar-muted: ${theme.colors.muted};
+  --mdyar-danger: ${isDarkTheme(theme) ? "#f07178" : "#c0392b"};
+  --mdyar-radius: 8px;
   --mdyar-font-editor: ${theme.fonts.editor};
   --mdyar-font-preview: ${theme.fonts.preview};
   --mdyar-font-size: ${theme.fontSize}px;
