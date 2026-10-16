@@ -59,6 +59,14 @@
     "confirm": "Continue",
     "cancel": "Cancel"
   },
+  "preview": {
+    "dirMenu": "Text direction",
+    "forceRtl": "Right to left",
+    "forceLtr": "Left to right",
+    "clearDir": "Clear forced direction",
+    "switchToRtl": "Switch to right-to-left",
+    "switchToLtr": "Switch to left-to-right"
+  },
   "about": {
     "title": "About MDyar",
     "license": "Free software under GPL-3.0-or-later.",

@@ -42,34 +42,62 @@ function setForcedDir(node: MdNode, dir: TextDirection) {
   node.data.mdyarDir = dir;
   node.data.hProperties ??= {};
   node.data.hProperties.dir = dir;
+  node.data.hProperties.dataMdyarForced = dir;
 }
 
-/**
- * Strip inline `<!-- mdyar:dir=... -->` html nodes inside paragraphs/headings
- * and apply their direction to the enclosing block (and subsequent blocks).
- */
-function stripInlineDirectives(node: MdNode, stack: TextDirection[]) {
+function consumeHtmlDirectives(value: string, stack: TextDirection[]): string | null {
+  const single = parseDirDirective(value);
+  if (single) {
+    applyDirectiveToStack(stack, single);
+    return "";
+  }
+  const { cleaned, directives } = scanDirDirectivesInText(value);
+  if (directives.length === 0) return null;
+  for (const d of directives) applyDirectiveToStack(stack, d);
+  return cleaned;
+}
+
+/** Apply leading (and only leading) HTML direction comments, then stop. */
+function consumeLeadingDirectives(node: MdNode, stack: TextDirection[]) {
   if (!node.children?.length) return;
-  const nextChildren: MdNode[] = [];
+  const next: MdNode[] = [];
+  let leading = true;
   for (const child of node.children) {
-    if (child.type === "html" && typeof child.value === "string") {
-      const single = parseDirDirective(child.value);
-      if (single) {
-        applyDirectiveToStack(stack, single);
+    if (leading && child.type === "html" && typeof child.value === "string") {
+      const cleaned = consumeHtmlDirectives(child.value, stack);
+      if (cleaned !== null) {
+        if (!cleaned.trim()) continue;
+        child.value = cleaned;
+        leading = false;
+        next.push(child);
         continue;
       }
-      const { cleaned, directives } = scanDirDirectivesInText(child.value);
-      if (directives.length > 0) {
-        for (const d of directives) applyDirectiveToStack(stack, d);
+    }
+    if (leading && child.type === "text" && !child.value?.trim()) {
+      next.push(child);
+      continue;
+    }
+    leading = false;
+    next.push(child);
+  }
+  node.children = next;
+}
+
+/** Consume remaining sibling HTML direction comments (typically a trailing close). */
+function consumeDirectHtmlDirectives(node: MdNode, stack: TextDirection[]) {
+  if (!node.children?.length) return;
+  const next: MdNode[] = [];
+  for (const child of node.children) {
+    if (child.type === "html" && typeof child.value === "string") {
+      const cleaned = consumeHtmlDirectives(child.value, stack);
+      if (cleaned !== null) {
         if (!cleaned.trim()) continue;
         child.value = cleaned;
       }
-    } else if (child.children?.length) {
-      stripInlineDirectives(child, stack);
     }
-    nextChildren.push(child);
+    next.push(child);
   }
-  node.children = nextChildren;
+  node.children = next;
 }
 
 function processChildren(parent: MdNode, stack: TextDirection[]) {
@@ -78,26 +106,17 @@ function processChildren(parent: MdNode, stack: TextDirection[]) {
 
   for (const child of parent.children) {
     if (child.type === "html" && typeof child.value === "string") {
-      const single = parseDirDirective(child.value);
-      if (single) {
-        applyDirectiveToStack(stack, single);
-        continue;
-      }
-      const { cleaned, directives } = scanDirDirectivesInText(child.value);
-      if (directives.length > 0) {
-        for (const d of directives) applyDirectiveToStack(stack, d);
+      const cleaned = consumeHtmlDirectives(child.value, stack);
+      if (cleaned !== null) {
         if (!cleaned.trim()) continue;
         child.value = cleaned;
       }
     }
 
-    // Inline directives at the start of a paragraph/heading affect this block too.
-    stripInlineDirectives(child, stack);
-
+    consumeLeadingDirectives(child, stack);
     const active = stack[stack.length - 1];
-    if (active) {
-      setForcedDir(child, active);
-    }
+    if (active) setForcedDir(child, active);
+    consumeDirectHtmlDirectives(child, stack);
 
     if (BLOCK_CONTAINERS.has(child.type)) {
       processChildren(child, stack);

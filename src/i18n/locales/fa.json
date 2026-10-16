@@ -59,6 +59,14 @@
     "confirm": "ادامه",
     "cancel": "انصراف"
   },
+  "preview": {
+    "dirMenu": "جهت متن",
+    "forceRtl": "راست به چپ",
+    "forceLtr": "چپ به راست",
+    "clearDir": "حذف جهت اجباری",
+    "switchToRtl": "تغییر به راست‌به‌چپ",
+    "switchToLtr": "تغییر به چپ‌به‌راست"
+  },
   "about": {
     "title": "دربارهٔ MDyar",
     "license": "نرم‌افزار آزاد با مجوز GPL-3.0-or-later.",

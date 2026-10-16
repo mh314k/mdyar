@@ -46,19 +46,31 @@ function hastText(node: HastNode): string {
 /** Set explicit rtl/ltr from forced directive or first-strong text — more reliable than dir=auto in Firefox. */
 export function rehypeBidiDir() {
   return (tree: HastNode) => {
-    const walk = (node: HastNode, inheritedDir?: "ltr" | "rtl") => {
+    const walk = (
+      node: HastNode,
+      inheritedDir?: "ltr" | "rtl",
+      inheritedForced?: "ltr" | "rtl",
+    ) => {
       let currentDir = inheritedDir;
+      let currentForced = inheritedForced;
       if (node.type === "element" && node.tagName) {
         node.properties ??= {};
         const explicit = node.properties.dir;
+        const stamped = node.properties.dataMdyarForced;
+        if (stamped === "ltr" || stamped === "rtl") {
+          currentForced = stamped;
+        }
         if (explicit === "ltr" || explicit === "rtl") {
           currentDir = explicit;
         } else if (DIR_TAGS.has(node.tagName)) {
           const resolved = currentDir ?? firstStrongDirection(hastText(node));
           node.properties.dir = resolved;
+          if (currentForced) node.properties.dataMdyarForced = currentForced;
         }
       }
-      for (const child of node.children ?? []) walk(child, currentDir);
+      for (const child of node.children ?? []) {
+        walk(child, currentDir, currentForced);
+      }
     };
     walk(tree);
   };
@@ -81,6 +93,8 @@ const schema: Schema = {
       ...(defaultSchema.attributes?.["*"] ?? []),
       ["dir"],
       ["dataSourceLine"],
+      ["dataSourceEndLine"],
+      ["dataMdyarForced"],
     ],
   },
   tagNames: [...(defaultSchema.tagNames ?? []), "span", "div"],

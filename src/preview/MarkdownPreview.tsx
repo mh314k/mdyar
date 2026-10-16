@@ -8,6 +8,7 @@ import {
 import { markdownToHtml } from "./markdown";
 import { findPreviewLineAtScroll, scrollPreviewToLine } from "./scrollSync";
 import { applyExplicitDir } from "../bidi/direction";
+import { PreviewDirControls } from "./PreviewDirControls";
 import "katex/dist/katex.min.css";
 
 export type PreviewScrollHandle = {
@@ -17,6 +18,7 @@ export type PreviewScrollHandle = {
 
 type Props = {
   source: string;
+  onChange?: (value: string) => void;
   onScrollLine?: (line: number) => void;
 };
 
@@ -37,9 +39,14 @@ async function ensureMermaid() {
 }
 
 export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
-  function MarkdownPreview({ source, onScrollLine }, ref) {
+  function MarkdownPreview({ source, onChange, onScrollLine }, ref) {
     const [html, setHtml] = useState("");
+    const [previewEl, setPreviewEl] = useState<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const setContainer = (el: HTMLDivElement | null) => {
+      containerRef.current = el;
+      setPreviewEl(el);
+    };
     const suppressScroll = useRef(false);
     const onScrollLineRef = useRef(onScrollLine);
     onScrollLineRef.current = onScrollLine;
@@ -101,6 +108,8 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
           host.setAttribute("data-mermaid-id", `m-${idx++}`);
           const sourceLine = pre.getAttribute("data-source-line");
           if (sourceLine) host.setAttribute("data-source-line", sourceLine);
+          const sourceEnd = pre.getAttribute("data-source-end-line");
+          if (sourceEnd) host.setAttribute("data-source-end-line", sourceEnd);
           const id = `mdyar-mmd-${crypto.randomUUID()}`;
           try {
             const { svg } = await mermaid.render(id, graph);
@@ -127,7 +136,7 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
     return (
       <div
         className="mdyar-preview"
-        ref={containerRef}
+        ref={setContainer}
         onClick={(event) => {
           const anchor = (event.target as Element | null)?.closest?.("a");
           const root = containerRef.current;
@@ -160,6 +169,13 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
           dir="ltr"
           dangerouslySetInnerHTML={{ __html: html }}
         />
+        {onChange && html && (
+          <PreviewDirControls
+            container={previewEl}
+            source={source}
+            onChange={onChange}
+          />
+        )}
       </div>
     );
   },

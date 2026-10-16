@@ -389,6 +389,7 @@ export function App() {
           <MarkdownPreview
             ref={previewRef}
             source={content}
+            onChange={onChange}
             onScrollLine={syncScroll ? onPreviewScrollLine : undefined}
           />
         )}
