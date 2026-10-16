@@ -2,7 +2,7 @@
 
 **MDyar** ویرایشگر آزاد و متن‌باز مارک‌داون است که از اول برای متن دوجهته ساخته شده: فارسی، عربی و انگلیسی می‌توانند در یک پاراگراف، جدول یا فهرست کنار هم بنشینند و جهت هر تکه سر جایش بماند.
 
-نسخهٔ فعلی **۰.۲.۲** است. روی وب (بدون نصب) و به‌صورت برنامهٔ دسکتاپ برای ویندوز، مک و لینوکس کار می‌کند. مجوز: **GPL-3.0-or-later**.
+نسخهٔ فعلی **۰.۳.۰** است. روی وب (بدون نصب) و به‌صورت برنامهٔ دسکتاپ برای ویندوز، مک و لینوکس کار می‌کند. مجوز: **GPL-3.0-or-later**.
 
 MDyar is a free, open-source, BiDi-first Markdown editor for the web and for Windows, macOS, and Linux. [English](#english).
 
@@ -213,7 +213,7 @@ scripts/            اجرای Tauri و ساخت آیکون
 
 ## انتشار دسکتاپ
 
-تگ `v*` (مثلاً `v0.2.2`) ورک‌فلؤ `.github/workflows/tauri.yml` را اجرا می‌کند و پیش‌نویس Release می‌سازد:
+تگ `v*` (مثلاً `v0.3.0`) ورک‌فلؤ `.github/workflows/tauri.yml` را اجرا می‌کند و پیش‌نویس Release می‌سازد:
 
 - ویندوز
 - لینوکس (Ubuntu 22.04)
@@ -249,7 +249,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 **MDyar** is a free, open-source Markdown editor built for bidirectional text. Persian, Arabic, and English can share a paragraph, a table, or a list, and each run keeps its own direction.
 
-Version **0.2.2**. It runs in the browser and as a desktop app on Windows, macOS, and Linux. License: **GPL-3.0-or-later**.
+Version **0.3.0**. It runs in the browser and as a desktop app on Windows, macOS, and Linux. License: **GPL-3.0-or-later**.
 
 Web app (after GitHub Pages is enabled): **https://mh314k.github.io/mdyar/**
 
@@ -394,7 +394,7 @@ A `v*` tag runs `.github/workflows/tauri.yml` and opens a draft GitHub Release f
 2. Import, export, and share themes. Custom themes stay in local `localStorage`.
 3. Desktop polish: system menu, recent files, and dropping several files on the window.
 
-Word export and double-click open already ship in 0.2.2. Double-click open applies to the installed desktop app.
+Word export and double-click open already ship in 0.3.0. Double-click open applies to the installed desktop app.
 
 ### Contributing
 
