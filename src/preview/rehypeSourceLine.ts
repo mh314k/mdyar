@@ -2,7 +2,7 @@ type HastNode = {
   type: string;
   tagName?: string;
   properties?: Record<string, unknown>;
-  position?: { start?: { line?: number } };
+  position?: { start?: { line?: number }; end?: { line?: number } };
   children?: HastNode[];
 };
 
@@ -15,6 +15,8 @@ const BLOCK_TAGS = new Set([
   "h5",
   "h6",
   "li",
+  "ul",
+  "ol",
   "pre",
   "blockquote",
   "table",
@@ -52,6 +54,10 @@ export function rehypeSourceLine() {
       if (!line) return;
       el.properties ??= {};
       el.properties.dataSourceLine = line;
+      const endLine = el.position?.end?.line;
+      if (endLine && endLine >= line) {
+        el.properties.dataSourceEndLine = endLine;
+      }
     });
   };
 }

@@ -421,6 +421,78 @@ body {
   font-size: 0.85em;
 }
 
+.mdyar-preview-article .is-dir-target {
+  outline: 1.5px dashed color-mix(in srgb, var(--mdyar-accent) 60%, transparent);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.mdyar-dir-fab {
+  position: fixed;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+  padding: 0.12rem 0.45rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-family: "Sora", "Vazirmatn", system-ui, sans-serif;
+  color: var(--mdyar-muted);
+  background: color-mix(in srgb, var(--mdyar-surface) 82%, transparent);
+  border: 1px solid var(--mdyar-border);
+  border-radius: 999px;
+  opacity: 0.38;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.mdyar-dir-fab:hover,
+.mdyar-dir-fab:focus-visible {
+  opacity: 1;
+  color: var(--mdyar-fg);
+  border-color: var(--mdyar-accent);
+  background: var(--mdyar-surface);
+}
+
+.mdyar-dir-menu {
+  position: fixed;
+  z-index: 40;
+  min-width: 11.5rem;
+  padding: 0.28rem;
+  background: var(--mdyar-surface);
+  color: var(--mdyar-fg);
+  border: 1px solid var(--mdyar-border);
+  border-radius: 10px;
+  box-shadow: var(--mdyar-elev, 0 10px 28px color-mix(in srgb, #000 16%, transparent));
+}
+
+.mdyar-dir-menu button {
+  display: block;
+  width: 100%;
+  padding: 0.42rem 0.7rem;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.86rem;
+  text-align: start;
+  cursor: pointer;
+}
+
+.mdyar-dir-menu button:hover,
+.mdyar-dir-menu button:focus-visible {
+  background: color-mix(in srgb, var(--mdyar-accent) 12%, transparent);
+}
+
+.mdyar-dir-menu button.is-active {
+  color: var(--mdyar-accent);
+  font-weight: 600;
+}
+
 .mdyar-status {
   display: flex;
   align-items: center;

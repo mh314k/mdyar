@@ -79,6 +79,12 @@ Markdown یک زبان نشانه‌گذاری سبک است که در این ب
 <!-- /mdyar:dir -->
 \`\`\`
 
+در پیش‌نمایش می‌توانید روی یک بند نگه دارید و با دکمهٔ کمرنگ RTL/LTR جهت را عوض کنید، یا چند بند را انتخاب کنید و با راست‌کلیک «راست به چپ» یا «چپ به راست» بگذارید — همان تگ دور همان بخش نوشته می‌شود.
+
+<!-- mdyar:dir=rtl -->
+Markdown is a lightweight markup language — this paragraph is forced right-to-left so you can hover or right-click it in preview and switch sides.
+<!-- /mdyar:dir -->
+
 (فرم‌های \`<!-- mdyar:rtl --> ... <!-- /mdyar:rtl -->\` و \`<!-- mdyar:dir:rtl O --> ... <!-- mdyar:dir:rtl C -->\` هم پشتیبانی می‌شوند.)
 
 ### العربية
