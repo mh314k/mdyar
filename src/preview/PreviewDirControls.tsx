@@ -270,6 +270,7 @@ export function PreviewDirControls({ container, source, onChange }: PreviewDirCo
             fab.next === "rtl" ? t("preview.switchToRtl") : t("preview.switchToLtr")
           }
           onPointerDown={(event) => event.stopPropagation()}
+          onMouseDown={(event) => event.preventDefault()}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -292,6 +293,7 @@ export function PreviewDirControls({ container, source, onChange }: PreviewDirCo
             type="button"
             role="menuitem"
             className={menu.forced === "rtl" ? "is-active" : undefined}
+            onMouseDown={(event) => event.preventDefault()}
             onClick={() => apply(menu.range, "rtl")}
           >
             {t("preview.forceRtl")}
@@ -300,12 +302,18 @@ export function PreviewDirControls({ container, source, onChange }: PreviewDirCo
             type="button"
             role="menuitem"
             className={menu.forced === "ltr" ? "is-active" : undefined}
+            onMouseDown={(event) => event.preventDefault()}
             onClick={() => apply(menu.range, "ltr")}
           >
             {t("preview.forceLtr")}
           </button>
           {menu.forced && (
-            <button type="button" role="menuitem" onClick={() => apply(menu.range, null)}>
+            <button
+              type="button"
+              role="menuitem"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => apply(menu.range, null)}
+            >
               {t("preview.clearDir")}
             </button>
           )}
