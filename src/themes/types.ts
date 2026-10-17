@@ -18,6 +18,11 @@ export type MdyarTheme = {
   lineHeight: number;
 };
 
+const FONTS = {
+  editor: '"JetBrains Mono", "Vazirmatn", ui-monospace, monospace',
+  preview: '"Vazirmatn", "Sora", system-ui, sans-serif',
+} as const;
+
 export const BUILTIN_THEMES: MdyarTheme[] = [
   {
     id: "signal-light",
@@ -31,10 +36,7 @@ export const BUILTIN_THEMES: MdyarTheme[] = [
       border: "#9eb5aa",
       muted: "#456055",
     },
-    fonts: {
-      editor: '"JetBrains Mono", "Vazirmatn", ui-monospace, monospace',
-      preview: '"Vazirmatn", "Sora", system-ui, sans-serif',
-    },
+    fonts: { ...FONTS },
     fontSize: 15,
     lineHeight: 1.65,
   },
@@ -50,10 +52,7 @@ export const BUILTIN_THEMES: MdyarTheme[] = [
       border: "#2a4036",
       muted: "#8aa899",
     },
-    fonts: {
-      editor: '"JetBrains Mono", "Vazirmatn", ui-monospace, monospace',
-      preview: '"Vazirmatn", "Sora", system-ui, sans-serif',
-    },
+    fonts: { ...FONTS },
     fontSize: 15,
     lineHeight: 1.65,
   },
@@ -69,12 +68,105 @@ export const BUILTIN_THEMES: MdyarTheme[] = [
       border: "#a8b4c4",
       muted: "#4d5d70",
     },
-    fonts: {
-      editor: '"JetBrains Mono", "Vazirmatn", ui-monospace, monospace',
-      preview: '"Sora", "Vazirmatn", system-ui, sans-serif',
-    },
+    fonts: { ...FONTS, preview: '"Sora", "Vazirmatn", system-ui, sans-serif' },
     fontSize: 15,
     lineHeight: 1.7,
+  },
+  {
+    id: "paper",
+    name: "Paper",
+    builtin: true,
+    colors: {
+      bg: "#f3eee4",
+      fg: "#2a2418",
+      accent: "#8c4f2a",
+      surface: "#fbf7f0",
+      border: "#d2c4ae",
+      muted: "#6d614e",
+    },
+    fonts: { ...FONTS },
+    fontSize: 16,
+    lineHeight: 1.72,
+  },
+  {
+    id: "midnight",
+    name: "Midnight",
+    builtin: true,
+    colors: {
+      bg: "#0d1117",
+      fg: "#e6edf3",
+      accent: "#58a6ff",
+      surface: "#161b22",
+      border: "#30363d",
+      muted: "#8b949e",
+    },
+    fonts: { ...FONTS },
+    fontSize: 15,
+    lineHeight: 1.65,
+  },
+  {
+    id: "sand",
+    name: "Sand",
+    builtin: true,
+    colors: {
+      bg: "#f2e4cc",
+      fg: "#2b1d10",
+      accent: "#c26122",
+      surface: "#faf1de",
+      border: "#d3b48c",
+      muted: "#7a5a38",
+    },
+    fonts: { ...FONTS },
+    fontSize: 16,
+    lineHeight: 1.7,
+  },
+  {
+    id: "dusk",
+    name: "Dusk",
+    builtin: true,
+    colors: {
+      bg: "#2e3440",
+      fg: "#eceff4",
+      accent: "#88c0d0",
+      surface: "#3b4252",
+      border: "#4c566a",
+      muted: "#a3b1c4",
+    },
+    fonts: { ...FONTS },
+    fontSize: 15,
+    lineHeight: 1.68,
+  },
+  {
+    id: "contrast",
+    name: "Contrast",
+    builtin: true,
+    colors: {
+      bg: "#ffffff",
+      fg: "#111111",
+      accent: "#005fcc",
+      surface: "#f3f3f3",
+      border: "#444444",
+      muted: "#333333",
+    },
+    fonts: { ...FONTS },
+    fontSize: 16,
+    lineHeight: 1.7,
+  },
+  {
+    id: "ember",
+    name: "Ember",
+    builtin: true,
+    colors: {
+      bg: "#1a1210",
+      fg: "#f3e6dc",
+      accent: "#e07a3d",
+      surface: "#261a16",
+      border: "#4a3228",
+      muted: "#b89480",
+    },
+    fonts: { ...FONTS },
+    fontSize: 15,
+    lineHeight: 1.66,
   },
 ];
 

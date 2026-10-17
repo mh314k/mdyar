@@ -161,8 +161,7 @@ body {
 
 .mdyar-btn,
 .mdyar-segmented button,
-.mdyar-icon-btn,
-.mdyar-lang select {
+.mdyar-icon-btn {
   font: inherit;
   border: 1px solid var(--mdyar-border);
   background: var(--mdyar-surface);
@@ -188,7 +187,7 @@ body {
 .mdyar-btn:focus-visible,
 .mdyar-segmented button:focus-visible,
 .mdyar-icon-btn:focus-visible,
-.mdyar-lang select:focus-visible,
+.mdyar-lang:focus-within,
 .mdyar-theme-item:focus-visible {
   outline: 2px solid var(--mdyar-focus);
   outline-offset: 2px;
@@ -262,12 +261,48 @@ body {
   animation: segmentPop 180ms ease;
 }
 
-.mdyar-lang select {
-  min-width: 6.75rem;
+.mdyar-lang {
+  position: relative;
+  width: 2rem;
   height: 2rem;
-  padding: 0 0.55rem;
-  font-size: 0.8rem;
-  font-weight: 500;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--mdyar-border);
+  border-radius: 7px;
+  background: var(--mdyar-surface);
+  color: var(--mdyar-fg);
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    background 140ms ease;
+}
+
+.mdyar-lang:hover {
+  border-color: color-mix(in srgb, var(--mdyar-accent) 55%, var(--mdyar-border));
+  background: color-mix(in srgb, var(--mdyar-accent) 8%, var(--mdyar-surface));
+}
+
+.mdyar-lang svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.mdyar-lang select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
 }
 
 .mdyar-main {
@@ -708,6 +743,8 @@ body {
   padding: 0.85rem;
   border-inline-end: 1px solid var(--mdyar-border);
   background: color-mix(in srgb, var(--mdyar-bg) 65%, var(--mdyar-surface));
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .mdyar-theme-item {
@@ -854,17 +891,10 @@ body {
   }
 
   .mdyar-icon-btn,
-  .mdyar-lang select,
+  .mdyar-lang,
   .mdyar-segmented button {
     min-width: 2rem;
     min-height: 2rem;
-  }
-
-  .mdyar-lang select {
-    min-width: 0;
-    max-width: 6.25rem;
-    padding-inline: 0.35rem;
-    font-size: 0.75rem;
   }
 
   .mdyar-preview-article {
@@ -913,16 +943,12 @@ body {
   }
 
   .mdyar-icon-btn,
+  .mdyar-lang,
   .mdyar-segmented button {
     width: 1.85rem;
     height: 1.85rem;
     min-width: 1.85rem;
     min-height: 1.85rem;
-  }
-
-  .mdyar-lang select {
-    height: 1.85rem;
-    max-width: 5.4rem;
   }
 
   .mdyar-preview-article {

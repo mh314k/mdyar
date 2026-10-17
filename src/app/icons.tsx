@@ -132,6 +132,18 @@ export function IconEdit(props: IconProps) {
   );
 }
 
+/** Language — globe. Recognizable even if the current UI language is unknown. */
+export function IconLanguage(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9" />
+      <path d="M12 3a15 15 0 0 0-4 9 15 15 0 0 0 4 9" />
+    </Icon>
+  );
+}
+
 /** About — circled i. */
 export function IconAbout(props: IconProps) {
   return (
