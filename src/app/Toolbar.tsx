@@ -9,6 +9,7 @@ import {
   IconEdit,
   IconExportHtml,
   IconExportWord,
+  IconLanguage,
   IconNew,
   IconOpen,
   IconPreview,
@@ -189,10 +190,15 @@ export function Toolbar({
         >
           <IconAbout />
         </button>
-        <label className="mdyar-lang">
-          <span className="sr-only">{t("toolbar.language")}</span>
+        <label
+          className="mdyar-lang"
+          title="Language · زبان · اللغة"
+        >
+          <IconLanguage />
+          <span className="sr-only">Language · زبان · اللغة</span>
           <select
             value={language}
+            aria-label="Language · زبان · اللغة"
             onChange={(e) => void setAppLanguage(e.target.value as AppLanguage)}
           >
             {(Object.keys(LANGUAGE_META) as AppLanguage[]).map((code) => (

@@ -1,49 +1,44 @@
 # MDyar
 
-**MDyar** ویرایشگر آزاد و متن‌باز مارک‌داون است که از اول برای متن دوجهته ساخته شده: فارسی، عربی و انگلیسی می‌توانند در یک پاراگراف، جدول یا فهرست کنار هم بنشینند و جهت هر تکه سر جایش بماند.
+ویرایشگر مارک‌داون برای متن دوجهته. فارسی، عربی و انگلیسی در یک پاراگراف، جدول یا فهرست کنار هم می‌مانند و جهت هر بند از خود همان بند تعیین می‌شود.
 
-نسخهٔ فعلی **۰.۴.۱** است. روی وب (بدون نصب) و به‌صورت برنامهٔ دسکتاپ برای ویندوز، مک و لینوکس کار می‌کند. مجوز: **GPL-3.0-or-later**.
+نسخهٔ **۰٫۵٫۰**. وب و دسکتاپ (ویندوز، مک، لینوکس). مجوز: **GPL-3.0-or-later**.
 
-MDyar is a free, open-source, BiDi-first Markdown editor for the web and for Windows, macOS, and Linux. [English](#english).
+وب‌اپ: **https://mh314k.github.io/mdyar/**
 
-وب‌اپ، بعد از روشن کردن GitHub Pages:
-
-**https://mh314k.github.io/mdyar/**
+[English](#english)
 
 ## امکانات
 
-- سه نما: **پیش‌نمایش**، **اسپلیت** (ویرایشگر و پیش‌نمایش کنار هم) و **ویرایش**
-- پیش‌نمایش زنده؛ در نمای اسپلیت پیمایش دو طرف با شمارهٔ خط منبع هم‌گام می‌شود
-- متن دوجهته بر اساس الگوریتم UAX #9: جهت هر بلوک در پیش‌نمایش و هر سطر در ویرایشگر به‌طور صریح (`dir="rtl"` / `dir="ltr"`) از نخستین حرف قوی محتوای خودش تعیین می‌شود تا در همهٔ مرورگرها (از جمله Firefox) بدون باگ رندر شود
-- **تگ اختصاصی تعیین جهت اجباری** (`<!-- mdyar:dir=rtl --> ... <!-- /mdyar:dir -->`) برای قفل کردن جهت یک بخش در ویرایشگر، پیش‌نمایش، خروجی HTML و خروجی Word
-- **GFM** (جدول، چک‌لیست، خط‌خوردن، پاورقی)، فرمول **KaTeX** و نمودار **Mermaid**
-- تکمیل خودکار ساختاری مارک‌داون + **تکمیل خودکار هوشمند Mermaid** (هم قالب انواع نمودارها و هم دستورات و فلش‌ها در داخل بلوک ```` ```mermaid ````)
-- شمارهٔ خط، تا شدن بلوک‌ها، روشن شدن خط فعال و شکستن سطرهای بلند
-- مدیر تم: سه تم آماده، به‌علاوهٔ تم سفارشی با رنگ، فونت ویرایشگر، فونت پیش‌نمایش، اندازه و فاصلهٔ خط
-- زبان رابط: **English**، **فارسی**، **العربية** — جهت کل پنجره با زبان عوض می‌شود و زبان سند مستقل می‌ماند
-- میانبرهای صفحه‌کلید (`Ctrl+N`، `Ctrl+O`، `Ctrl+S`، `Ctrl+Shift+S`، `Escape`) و پنجرهٔ «درباره» با پیوندهای مخزن گیت‌هاب و نسخهٔ وب
-- خروجی **HTML** (صفحهٔ کامل با تم فعلی) و **Word (`.docx`)**
-- پوستهٔ دسکتاپ با **Tauri 2**: باز کردن و ذخیره روی دیسک، «ذخیره به‌عنوان»، هشدار تغییرات ذخیره‌نشده هنگام بستن پنجره (ذخیره / عدم ذخیره / انصراف)، و باز شدن `.md` / `.markdown` / `.mdown` با دوبار کلیک
+- سه نما: پیش‌نمایش، اسپلیت (پیمایش هم‌گام با شمارهٔ خط منبع)، ویرایش
+- جهت خودکار هر بلوک و هر سطر بر اساس نخستین حرف قوی (UAX #9)، مستقل از زبان رابط
+- قفل جهت با کامنت `<!-- mdyar:dir=rtl -->` — در MDyar اعمال می‌شود و در بقیهٔ برنامه‌ها دیده نمی‌شود
+- GFM، فرمول KaTeX، نمودار Mermaid
+- تکمیل ساختار مارک‌داون و دستورات Mermaid داخل فنس مربوط
+- تم‌های آماده به‌همراه مدیر تم سفارشی (رنگ، فونت، اندازه، فاصلهٔ خط)
+- رابط English / فارسی / العربية — انتخاب زبان با آیکون کره، حتی اگر برچسب فعلی خوانا نباشد
+- خروجی HTML و Word
+- پوستهٔ دسکتاپ با Tauri 2: ذخیره روی دیسک، ذخیره به‌عنوان، هشدار خروج با تغییر ذخیره‌نشده، باز شدن `.md` با دوبار کلیک
 
-با اولین اجرا سند نمونهٔ `welcome.md` باز می‌شود. نقطهٔ کنار نام فایل یعنی نسبت به آخرین ذخیره تغییری مانده است.
+اولین اجرا سند خوش‌آمد را باز می‌کند. نقطه کنار نام فایل یعنی بافر نسبت به آخرین ذخیره تغییر کرده است.
 
-## اجرای وب
+## وب
 
-پیش‌نیاز: [Node.js 22](https://nodejs.org/) (همان نسخه‌ای که در CI استفاده می‌شود).
+پیش‌نیاز: [Node.js 22](https://nodejs.org/).
 
 ```bash
 npm install
 npm run dev
 ```
 
-سپس http://127.0.0.1:1420 را باز کنید. پورت ثابت است تا پوستهٔ دسکتاپ هم به همین آدرس وصل شود.
+سپس http://127.0.0.1:1420. پورت ثابت است تا پوستهٔ دسکتاپ به همان سرور وصل شود.
 
-در مرورگر، «باز کردن» فایل را داخل صفحه می‌خواند و مسیر دیسک را نگه نمی‌دارد. «ذخیره» یعنی دانلود `.md`. «ذخیره به‌عنوان» فقط در دسکتاپ هست.
+در مرورگر، باز کردن فایل را داخل صفحه می‌خواند و مسیر دیسک را نگه نمی‌دارد. ذخیره یعنی دانلود `.md`. «ذخیره به‌عنوان» فقط در دسکتاپ هست.
 
-ساخت نسخهٔ استاتیک برای GitHub Pages (مسیر پایه `/mdyar/`):
+ساخت استاتیک برای GitHub Pages (پایهٔ `/mdyar/`):
 
 ```bash
-# Windows (cmd)
+# Windows cmd
 set GITHUB_PAGES=true
 npm run build
 
@@ -55,242 +50,11 @@ npm run build
 GITHUB_PAGES=true npm run build
 ```
 
-خروجی در `dist/` است. `npm run preview` همان بیلد را محلی سرو می‌کند.
-
-انتشار وب خودکار است: پوش به شاخهٔ `main` یا `master`، ورک‌فلؤ `.github/workflows/pages.yml` را اجرا می‌کند. در مخزن، Settings → Pages → Source را روی **GitHub Actions** بگذارید.
+خروجی در `dist/` است. پوش به `main` یا `master` ورک‌فلؤ Pages را اجرا می‌کند. در مخزن: Settings → Pages → Source → **GitHub Actions**.
 
 ## دسکتاپ
 
-پیش‌نیازها: Node.js 22، [Rust](https://rustup.rs/) (از طریق rustup) و WebView سیستم (WebView2 در ویندوز، WebKitGTK در لینوکس).
-
-```bash
-npm install
-npm run tauri:dev      # توسعه
-npm run tauri:build    # نصب‌کنندهٔ تولیدی
-```
-
-`tauri:build` قبل از بسته‌بندی آیکون‌ها را با `npm run icons` می‌سازد. برای مجموعهٔ آیکون چنداندازه‌ای از روی نشان برنامه:
-
-```bash
-npx tauri icon public/mdyar.svg
-```
-
-پنجرهٔ پیش‌فرض ۱۲۰۰×۸۰۰ است (حداقل ۷۲۰×۴۸۰). شناسهٔ بسته: `app.mdyar.desktop`.
-
-### باز شدن فایل از سیستم‌عامل
-
-نصب‌کننده پسوندهای `.md`، `.markdown` و `.mdown` را ثبت می‌کند. این ثبت هنگام نصب انجام می‌شود، نه در `tauri dev`.
-
-برنامه تک‌نمونه‌ای است: اگر MDyar باز باشد و دوباره روی فایلی دوبار کلیک کنید، همان پنجره جلو می‌آید و فایل در نمای پیش‌نمایش بارگذاری می‌شود. اگر تغییر ذخیره‌نشده داشته باشید، قبل از جایگزینی سند پرسیده می‌شود.
-
-### ویندوز و Proxifier
-
-**Proxifier Portable** داخل WebView2 تزریق می‌شود و پنجرهٔ دسکتاپ را با خطای `WS2_32.dll` می‌بندد. MDyar اگر `proxifier.exe` یا `helper64.exe` را در حال اجرا ببیند، قبل از باز شدن پنجره هشدار می‌دهد. Portable را ببندید، یا از نسخهٔ نصب‌شدهٔ Proxifier (حالت WFP) استفاده کنید. `npm run dev` در مرورگر تحت تأثیر این موضوع نیست.
-
-## وب و دسکتاپ
-
-| | وب | دسکتاپ |
-| --- | --- | --- |
-| باز کردن | انتخاب فایل در مرورگر؛ مسیر نگه داشته نمی‌شود | گفتگوی سیستم و خواندن از دیسک |
-| ذخیره | دانلود `.md` | نوشتن روی همان مسیر؛ اگر مسیری نباشد محل پرسیده می‌شود |
-| ذخیره به‌عنوان | ندارد | دارد |
-| خروجی HTML / Word | دانلود | گفتگوی ذخیره و نوشتن روی دیسک |
-| دوبار کلیک روی `.md` | ندارد | دارد (بعد از نصب) |
-| تم و زبان | `localStorage` مرورگر | `localStorage` داخل WebView |
-
-نوار وضعیت در وب یادآوری می‌کند که فایل‌ها داخل مرورگر می‌مانند.
-
-## مارک‌داون و پیش‌نمایش
-
-خط لوله: `remark-parse` + `remark-gfm` + `remark-math` + `remarkDirDirective`، سپس `rehype-katex`، `rehype-sanitize` و `rehypeBidiDir`. HTML خام داخل سند اجرا نمی‌شود.
-
-- جدول، فهرست کار، خط‌خوردن، پاورقی و پیوند
-- فرمول درون‌خط (`$…$`) و نمایشی (`$$…$$`) با KaTeX
-- بلوک ` ```mermaid ` در کلاینت رسم می‌شود (`securityLevel: strict`). خطا به‌جای نمودار نشان داده می‌شود
-- جهت هر بلوک در پیش‌نمایش به‌طور صریح (`dir="rtl"` یا `dir="ltr"`) از نخستین حرف قوی تعیین می‌شود. نمودار و بلوک کد چپ‌به‌راست می‌مانند تا شکل و کد به‌هم نریزد
-- کلیک روی پیوند داخلی (`#…`) همان صفحه را به هدف اسکرول می‌کند
-
-ویرایشگر روی CodeMirror 6 است. بدنهٔ ویرایشگر چپ‌به‌راست می‌ماند تا شمارهٔ خط جابه‌جا نشود؛ هر سطر جداگانه بر اساس نخستین حرف قوی یا تگ جهت فعال، `dir="rtl"` یا `dir="ltr"` می‌گیرد.
-
-### تگ جهت اجباری MDyar
-
-اگر پاراگراف یا بخشی از سند با واژهٔ انگلیسی شروع می‌شود ولی جمله فارسی است (یا برعکس)، می‌توانید جهت آن بخش را با کامنت مخصوص MDyar قفل کنید تا در ویرایشگر، پیش‌نمایش، خروجی HTML و خروجی Word دقیقاً همان جهت اعمال شود و در سایر مارک‌داون‌خوان‌ها نامرئی بماند:
-
-```markdown
-<!-- mdyar:dir=rtl -->
-Markdown یک زبان نشانه‌گذاری سبک است که در اینجا به اجبار راست‌به‌چپ می‌شود.
-<!-- /mdyar:dir -->
-
-<!-- mdyar:dir=ltr -->
-این بخش با کلمه فارسی شروع شده ولی به اجبار چپ‌به‌راست نمایش داده می‌شود.
-<!-- /mdyar:dir -->
-```
-
-فرم‌های کوتاه `<!-- mdyar:rtl --> ... <!-- /mdyar:rtl -->` و همچنین `<!-- mdyar:dir:rtl O --> ... <!-- mdyar:dir:rtl C -->` نیز پشتیبانی می‌شوند.
-
-### قطعه‌ها
-
-منبع: `src/editor/markdownAutocomplete.ts`. تکمیل پیش‌فرض واژه‌های CodeMirror خاموش است (`override`) و فقط همین قطعه‌ها پیشنهاد می‌شوند. منو با تایپ باز می‌شود، آیکون ندارد، و با رفتن فوکوس بسته می‌شود. هر `#{…}` در قالب یک جای توقف Tab است.
-
-توکن جاری از ابتدای سطر یا بعد از فاصله خوانده می‌شود و حداکثر ۲۴ نویسه است. منو وقتی باز می‌شود که این توکن با قطعه جور دربیاید: برچسب با توکن شروع شود، توضیح قطعه شامل آن باشد، یا نام مستعار با آن شروع شود یا شامل آن باشد. حروف بزرگ و کوچک یکی است.
-
-| برچسب | درج می‌شود | نام مستعار | کجا |
-| --- | --- | --- | --- |
-| `#` تا `######` | عنوان همان سطح | — | اول سطر |
-| `-` | فهرست گلوله‌ای | `ul`، `list` | اول سطر |
-| `1.` | فهرست شماره‌دار | `ol`، `ordered` | اول سطر |
-| `- [ ]` | چک‌لیست | `todo`، `task`، `checkbox` | اول سطر |
-| `>` | نقل‌قول | `quote`، `blockquote` | اول سطر |
-| ` ``` ` | بلوک کد، با جای زبان و بدنه | `code`، `fence` | اول سطر |
-| ` ```mermaid ` | نمودارهای Mermaid (`flowchart`، `sequence`، `class`، `state`، `er`، `gantt`، `pie`، `mindmap`، `timeline`، `gitGraph`) | `mermaid`، `diagram` و نام هر نمودار | اول سطر |
-| `<!-- mdyar:dir=rtl -->` | بلوک جهت اجباری راست‌به‌چپ | `rtl`، `dir`، `mdyar` | اول سطر |
-| `<!-- mdyar:dir=ltr -->` | بلوک جهت اجباری چپ‌به‌راست | `ltr`، `dir`، `mdyar` | اول سطر |
-| `<!-- /mdyar:dir -->` | بستن بلوک جهت اجباری | `enddir`، `mdyar` | اول سطر |
-| `\|` | جدول دو ستون | `table` | اول سطر |
-| `---` | خط افقی | `hr`، `rule` | اول سطر |
-| `$$` | فرمول نمایشی | `equation` | اول سطر |
-| `[]()` | پیوند | `link`، `url` | هر جای سطر |
-| `![]()` | تصویر | `image`، `img` | هر جای سطر |
-| `**` | ضخیم | `bold`، `strong` | هر جای سطر |
-| `*` | کج | `italic`، `em` | هر جای سطر |
-| `~~` | خط‌خورده | `strike` | هر جای سطر |
-| `` ` `` | کد درون‌خط | `inline` | هر جای سطر |
-| `$` | فرمول درون‌خط | `math`، `katex` | هر جای سطر |
-| `[^]` | ارجاع پاورقی و تعریفش، با یک سطر خالی بینشان | `footnote` | هر جای سطر |
-
-**درون بلوک ` ```mermaid `:** وقتی نشانگر داخل یک بلوک Mermaid باشد، تکمیل خودکار به حالت اختصاصی Mermaid می‌رود و دستورات (`flowchart`, `sequenceDiagram`, `subgraph`, `direction`, `participant`, `actor`, `loop`, `alt`, `opt`, `par`, `Note`, `state`, `classDef`, `style`, `section`, `commit`, `branch`, `merge` و ...)، انواع فلش‌ها (`-->`, `-.->`, `==>`, `->>`, `-->>`) و شکل گره‌ها را پیشنهاد می‌دهد.
-
-عنوان‌های ۱ تا ۳ اولویت بالاتری دارند تا وقتی چند پیشنهاد با هم جور است بالاتر بیایند.
-
-«اول سطر» یعنی قبل از توکن فقط فاصلهٔ تورفتگی باشد. قطعه‌های اول‌سطر وسط جمله نشان داده نمی‌شوند، مگر تکمیل را صریح باز کنید، یا توکن با یکی از `#` `>` `*` `-` `|` `` ` `` `1` `.` `[` `]` شروع شود و با همان قطعه جور باشد. برای همین `$` وسط جمله فرمول درون‌خط را می‌آورد، ولی `$$` را نه.
-
-اگر وسط سطر واژهٔ معمولی تایپ شود (حرف، عدد یا `_`) و هیچ نام مستعاری با آن شروع نشود، منو اصلاً باز نمی‌شود. این قاعده برای فارسی، عربی و لاتین یکی است. توکن خالی هم منو را باز نمی‌کند؛ در آن حالت فقط باز کردن صریح تکمیل (در CodeMirror معمولاً Ctrl+Space) همهٔ قطعه‌ها را نشان می‌دهد.
-
-## خروجی
-
-### HTML
-
-یک فایل HTML مستقل با متغیرهای رنگ و فونت تم فعال ساخته می‌شود. بدنهٔ `dir="auto"` دارد. استایل KaTeX و رسم Mermaid از CDN بارگذاری می‌شوند، پس صفحهٔ صادرشده برای فرمول و نمودار به شبکه نیاز دارد. اگر رسم نمودار شکست بخورد، بلوک کد سر جایش می‌ماند.
-
-### Word (`.docx`)
-
-دکمهٔ خروجی ورد این‌ها را نگه می‌دارد:
-
-- عنوان‌ها، پاراگراف، نقل‌قول، خط افقی
-- فهرست ساده، شماره‌دار و تودرتو، و چک‌لیست (☑ / ☐)
-- جدول، با جهت دیداری راست‌به‌چپ وقتی متن جدول راست‌به‌چپ است
-- ضخیم، کج، خط‌خورده، کد درون‌خط، پیوند `http` / `https` / `mailto`
-- پاورقی
-- جهت پاراگراف از متن همان پاراگراف؛ زبان bidi سند از زبان رابط (فارسی، عربی یا انگلیسی)
-
-این‌ها به شکل متن می‌مانند، نه شیء تعبیه‌شده: بلوک کد، فرمول، نمودار Mermaid (همان منبع کد) و تصویر (متن جایگزین یا نشانی، نه خود فایل تصویر).
-
-## تم و زبان
-
-تم‌های آماده: **Signal Light**، **Signal Dark**، **Signal Slate**. فونت پیش‌فرض پیش‌نمایش و رابط Vazirmatn و Sora است؛ فونت ویرایشگر JetBrains Mono به‌همراه Vazirmatn.
-
-تم سفارشی در همین دستگاه ذخیره می‌شود. می‌توان تم را ساخت، کپی کرد یا (اگر سفارشی باشد) حذف کرد. تم آماده حذف نمی‌شود؛ ویرایش آن یک کپی سفارشی می‌سازد. شناسه‌های قدیمی `pine-light`، `pine-dark` و `slate-paper` به تم‌های Signal نگاشت می‌شوند.
-
-زبان رابط از انتخاب قبلی در `localStorage` می‌آید و اگر نباشد از زبان مرورگر (`fa`، `ar`، و در غیر این صورت `en`).
-
-## ساختار پروژه
-
-```
-src/app/            پوستهٔ برنامه، نوار ابزار، پنجرهٔ درباره، سند نمونه
-src/bidi/           تشخیص جهت UAX #9 و پارسر تگ‌های جهت MDyar
-src/editor/         CodeMirror، برجسته‌سازی، تکمیل قطعه و Mermaid
-src/preview/        تبدیل مارک‌داون، دایرکتیو جهت، پیش‌نمایش، هم‌گام‌سازی پیمایش
-src/export/         خروجی HTML و Word
-src/themes/         مدل تم و پنجرهٔ مدیر تم
-src/i18n/           انگلیسی، فارسی، عربی
-src/platform/       فایل در وب در برابر Tauri
-src-tauri/          پوستهٔ بومی Tauri 2
-public/mdyar.svg    نشان برنامه
-scripts/            اجرای Tauri و ساخت آیکون
-```
-
-رابط با React 19 و TypeScript نوشته شده و با Vite 6 باندل می‌شود. پشتهٔ پیش‌نمایش unified است. خروجی ورد با کتابخانهٔ `docx` ساخته می‌شود. پوستهٔ دسکتاپ پلاگین‌های dialog، fs، opener و single-instance را دارد.
-
-## انتشار دسکتاپ
-
-تگ `v*` (مثلاً `v0.4.1`) ورک‌فلؤ `.github/workflows/tauri.yml` را اجرا می‌کند و پیش‌نویس Release می‌سازد:
-
-- ویندوز
-- لینوکس (Ubuntu 22.04)
-- مک، هر دو معماری Apple Silicon و Intel
-
-## نقشهٔ راه
-
-این‌ها هنوز ساخته نشده‌اند:
-
-1. **وارد کردن بستهٔ زبان از رابط** — `importLanguagePackStub` در `src/i18n/index.ts` فقط خطا می‌دهد. زبان‌های همراه برنامه انگلیسی، فارسی و عربی‌اند.
-2. **وارد و خارج کردن تم** و به اشتراک گذاشتن آن. تم سفارشی فقط در `localStorage` همین دستگاه است.
-3. **صیقل دسکتاپ:** منوی سیستم، فهرست فایل‌های اخیر، و رها کردن چند فایل با هم روی پنجره.
-
-خروجی ورد و باز شدن `.md` با دوبار کلیک در همین نسخه هستند؛ مورد سوم فقط برای نصب‌کنندهٔ دسکتاپ است، نه برای وب.
-
-## مشارکت
-
-مسئله و درخواست ادغام خوش‌آمد است. با مشارکت، می‌پذیرید که سهم شما تحت **GPL-3.0-or-later** منتشر شود.
-
-مجوز برنامه به محتوای فایل‌های `.md` شما سرایت نمی‌کند.
-
-## مجوز
-
-Copyright (C) 2026 MDyar contributors.
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-متن کامل در [LICENSE](./LICENSE) است.
-
----
-
-## English
-
-**MDyar** is a free, open-source Markdown editor built for bidirectional text. Persian, Arabic, and English can share a paragraph, a table, or a list, and each run keeps its own direction.
-
-Version **0.4.1**. It runs in the browser and as a desktop app on Windows, macOS, and Linux. License: **GPL-3.0-or-later**.
-
-Web app (after GitHub Pages is enabled): **https://mh314k.github.io/mdyar/**
-
-### Features
-
-- **Preview**, **split**, and **edit** layouts. Split view keeps editor and preview scroll in step by source line.
-- Explicit per-block direction in the preview and per-line direction in the editor using UAX #9 first-strong detection (`dir="rtl"` / `dir="ltr"`), independent of the UI language and reliable across all browsers (including Firefox).
-- **Custom forced-direction directives** (`<!-- mdyar:dir=rtl --> ... <!-- /mdyar:dir -->`) honored in the editor, live preview, HTML export, and Word export while remaining invisible in other Markdown viewers.
-- **GFM**, **KaTeX** math, and **Mermaid** diagrams. Raw HTML in the document is stripped.
-- Markdown syntax highlighting, structural snippets, and **context-aware Mermaid autocomplete** (see [Snippets](#snippets)).
-- Line numbers, code folding, active-line highlight, and line wrapping. The editor surface stays left-to-right so the gutter does not flip.
-- Theme manager: Signal Light, Signal Dark, Signal Slate, plus custom themes (colors, editor font, preview font, size, line height) stored in `localStorage`.
-- UI languages: English, فارسی, العربية. The window direction follows the UI language; document direction does not.
-- Keyboard shortcuts (`Ctrl+N`, `Ctrl+O`, `Ctrl+S`, `Ctrl+Shift+S`, `Escape`) and an About dialog with version, GitHub, and Web App links.
-- **HTML** and **Word (`.docx`)** export.
-- **Tauri 2** desktop shell: open, save, save as, native unsaved-changes confirmation on window close (Yes / No / Cancel), and double-click open for `.md`, `.markdown`, and `.mdown`.
-
-The first launch opens the bundled `welcome.md` sample. A dot beside the file name means the buffer is dirty. New, open, and an OS-opened file ask before discarding unsaved edits.
-
-### Web
-
-Requires Node.js 22.
-
-```bash
-npm install
-npm run dev
-```
-
-Open http://127.0.0.1:1420. The port is fixed so the desktop shell can attach to the same dev server.
-
-In the browser, Open reads a file into the page and does not keep a disk path. Save downloads a `.md` file. Save As exists only on the desktop.
-
-```bash
-GITHUB_PAGES=true npm run build
-```
-
-On Windows cmd use `set GITHUB_PAGES=true` before `npm run build`. On PowerShell, `$env:GITHUB_PAGES = "true"`. Output goes to `dist/`. Pushes to `main` or `master` deploy via GitHub Actions (Settings → Pages → GitHub Actions).
-
-### Desktop
-
-Requires Node.js 22, [Rust](https://rustup.rs/), and the system WebView (WebView2 on Windows, WebKitGTK on Linux).
+پیش‌نیاز: Node.js 22، [Rust](https://rustup.rs/)، و WebView سیستم (WebView2 در ویندوز، WebKitGTK در لینوکس).
 
 ```bash
 npm install
@@ -298,106 +62,157 @@ npm run tauri:dev
 npm run tauri:build
 ```
 
-`tauri:build` runs `npm run icons` first. For a full icon set from the mark: `npx tauri icon public/mdyar.svg`.
+`tauri:build` اول آیکون‌ها را می‌سازد. از روی نشان برنامه: `npx tauri icon public/mdyar.svg`.
 
-File associations are registered by the installer, not by `tauri dev`. The app is single-instance: a second double-click focuses the existing window and loads that file into preview.
+پنجرهٔ پیش‌فرض ۱۲۰۰×۸۰۰ (حداقل ۷۲۰×۴۸۰). شناسه: `app.mdyar.desktop`.
 
-**Windows + Proxifier Portable** injects into WebView2 and crashes the window (`WS2_32.dll`). MDyar warns if `proxifier.exe` or `helper64.exe` is running. Quit Portable, or use the installed Proxifier edition (WFP). `npm run dev` in a browser is unaffected.
+نصب‌کننده پسوندهای `.md`، `.markdown` و `.mdown` را ثبت می‌کند — این ثبت در `tauri dev` انجام نمی‌شود. برنامه تک‌نمونه‌ای است: دوبار کلیک بعدی همان پنجره را جلو می‌آورد. اگر تغییر ذخیره‌نشده باشد، قبل از جایگزینی سند پرسیده می‌شود.
 
-| | Web | Desktop |
+**Proxifier Portable** داخل WebView2 تزریق می‌شود و پنجره را با خطای `WS2_32.dll` می‌بندد. اگر `proxifier.exe` یا `helper64.exe` در حال اجرا باشد، MDyar قبل از باز شدن هشدار می‌دهد. Portable را ببندید یا از نسخهٔ نصب‌شده (WFP) استفاده کنید. `npm run dev` در مرورگر تحت تأثیر نیست.
+
+| | وب | دسکتاپ |
 | --- | --- | --- |
-| Open | Browser file picker; no path kept | Native dialog, read from disk |
-| Save | Download `.md` | Write the current path, or ask if there is none |
-| Save as | No | Yes |
-| HTML / Word export | Download | Native save dialog |
-| Double-click `.md` | No | Yes, after install |
+| باز کردن | انتخابگر مرورگر؛ مسیر نگه داشته نمی‌شود | گفتگوی سیستم، خواندن از دیسک |
+| ذخیره | دانلود `.md` | نوشتن روی مسیر جاری |
+| ذخیره به‌عنوان | ندارد | دارد |
+| HTML / Word | دانلود | گفتگوی ذخیره |
+| دوبار کلیک روی `.md` | ندارد | بعد از نصب |
 
-### Snippets
+## مارک‌داون
 
-Defined in `src/editor/markdownAutocomplete.ts`. Default CodeMirror word completion is replaced (`override`). The menu opens while typing, has no icons, and closes on blur. Each `#{…}` in a template is a Tab stop.
+خط لوله: remark-parse، remark-gfm، remark-math، دایرکتیو جهت MDyar، سپس rehype-katex و sanitize. HTML خام سند اجرا نمی‌شود.
 
-The current token is the run after the start of the line or after whitespace, at most 24 characters. A snippet matches when its label starts with that token, its detail contains it, or an alias starts with or contains it. Matching is case-insensitive.
-
-| Label | Inserts | Aliases | Where |
-| --- | --- | --- | --- |
-| `#` … `######` | Heading of that level | — | Line start |
-| `-` | Bullet list | `ul`, `list` | Line start |
-| `1.` | Numbered list | `ol`, `ordered` | Line start |
-| `- [ ]` | Task list | `todo`, `task`, `checkbox` | Line start |
-| `>` | Quote | `quote`, `blockquote` | Line start |
-| ` ``` ` | Fenced code, with language and body fields | `code`, `fence` | Line start |
-| ` ```mermaid ` | Mermaid diagram templates (`flowchart`, `sequence`, `class`, `state`, `er`, `gantt`, `pie`, `mindmap`, `timeline`, `gitGraph`) | `mermaid`, `diagram`, diagram names | Line start |
-| `<!-- mdyar:dir=rtl -->` | Force RTL direction block | `rtl`, `dir`, `mdyar` | Line start |
-| `<!-- mdyar:dir=ltr -->` | Force LTR direction block | `ltr`, `dir`, `mdyar` | Line start |
-| `<!-- /mdyar:dir -->` | Close forced direction block | `enddir`, `mdyar` | Line start |
-| `\|` | Two-column table | `table` | Line start |
-| `---` | Horizontal rule | `hr`, `rule` | Line start |
-| `$$` | Display math | `equation` | Line start |
-| `[]()` | Link | `link`, `url` | Anywhere on the line |
-| `![]()` | Image | `image`, `img` | Anywhere on the line |
-| `**` | Bold | `bold`, `strong` | Anywhere on the line |
-| `*` | Italic | `italic`, `em` | Anywhere on the line |
-| `~~` | Strikethrough | `strike` | Anywhere on the line |
-| `` ` `` | Inline code | `inline` | Anywhere on the line |
-| `$` | Inline math | `math`, `katex` | Anywhere on the line |
-| `[^]` | Footnote reference plus its definition, with a blank line between them | `footnote` | Anywhere on the line |
-
-Headings 1–3 are boosted so they sort above other matches.
-
-Line start means only indentation before the token. Block snippets stay hidden mid-line unless completion is invoked explicitly, or the token begins with `#`, `>`, `*`, `-`, `|`, `` ` ``, `1`, `.`, `[`, or `]` and matches that snippet. So `$` mid-sentence offers inline math, and `$$` does not.
-
-A mid-line token made only of letters, digits, or `_` opens nothing when no alias starts with it. That covers Persian, Arabic, and Latin prose. An empty token also opens nothing; an explicit completion request (Ctrl+Space in CodeMirror) lists every snippet.
-
-Inside a ` ```mermaid ` code fence, autocomplete switches to **Mermaid mode**, offering diagram headers, keywords (`subgraph`, `direction`, `participant`, `actor`, `loop`, `alt`, `opt`, `par`, `Note`, `state`, `classDef`, `style`, `section`, `commit`, `branch`, `merge`, etc.), arrows (`-->`, `-.->`, `==>`, `->>`, `-->>`), and node shapes.
-
-### Forced direction directive
-
-To lock the direction of a section regardless of its first strong character, wrap it in an MDyar direction comment:
+جهت هر بلوک پیش‌نمایش و هر سطر ویرایشگر صریح است (`dir="rtl"` / `dir="ltr"`). بدنهٔ ویرایشگر چپ‌به‌راست می‌ماند تا شمارهٔ خط جابه‌جا نشود. بلوک کد و نمودار همیشه LTR هستند.
 
 ```markdown
 <!-- mdyar:dir=rtl -->
-Markdown is a lightweight markup language, forced to render right-to-left here.
+Markdown یک زبان نشانه‌گذاری سبک است؛ این بخش به اجبار راست‌به‌چپ است.
 <!-- /mdyar:dir -->
 ```
 
-Shorthand `<!-- mdyar:rtl --> ... <!-- /mdyar:rtl -->` and `<!-- mdyar:dir:rtl O --> ... <!-- mdyar:dir:rtl C -->` are also supported.
+فرم کوتاه `<!-- mdyar:rtl -->` و فرم `<!-- mdyar:dir:rtl O --> … <!-- mdyar:dir:rtl C -->` هم پشتیبانی می‌شوند. در پیش‌نمایش می‌توان روی بند نگه داشت یا چند بند را انتخاب کرد و RTL/LTR گذاشت.
 
-### Export notes
+قطعه‌های تکمیل در `src/editor/markdownAutocomplete.ts` تعریف شده‌اند. تکمیل واژه‌ای پیش‌فرض CodeMirror خاموش است. وسط سطر با تایپ فارسی یا عربی منو باز نمی‌شود؛ Ctrl+Space همهٔ قطعه‌ها را نشان می‌دهد.
 
-HTML is a standalone page using the active theme. KaTeX CSS and Mermaid are loaded from a CDN, so formulas and diagrams in the exported file need a network. A failed diagram stays as a code block.
+## خروجی
 
-Word keeps headings, paragraphs, quotes, horizontal rules, nested lists, task lists, tables (including visual RTL), bold, italic, strike, inline code, `http` / `https` / `mailto` links, and footnotes. Paragraph direction follows that paragraph’s text (or an enclosing `mdyar:dir` directive). Code blocks, math, Mermaid, and images are written as text (Mermaid as its source; images as alt text or URL, not embedded files).
+**HTML.** صفحهٔ مستقل با متغیرهای تم فعال. استایل KaTeX و رسم Mermaid از CDN می‌آیند؛ فرمول و نمودار صادرشده به شبکه نیاز دارند.
 
-### Layout
+**Word.** عنوان، پاراگراف، نقل‌قول، فهرست تودرتو، چک‌لیست، جدول (با جهت دیداری مناسب)، ضخیم/کج/خط‌خورده، کد درون‌خط، پیوند وب، پاورقی، و جهت پاراگراف حفظ می‌شوند. بلوک کد، فرمول، Mermaid و تصویر به‌صورت متن می‌مانند.
+
+## تم و زبان
+
+تم‌های آماده: Signal Light، Signal Dark، Signal Slate، Paper، Midnight، Sand، Dusk، Contrast، Ember.
+
+فونت پیش‌نمایش Vazirmatn و Sora؛ ویرایشگر JetBrains Mono با Vazirmatn. تم سفارشی در `localStorage` همین دستگاه است. ویرایش تم آماده یک کپی می‌سازد. شناسه‌های قدیمی `pine-light`، `pine-dark` و `slate-paper` به Signal نگاشت می‌شوند.
+
+زبان رابط از انتخاب قبلی یا زبان مرورگر (`fa`، `ar`، در غیر این صورت `en`) می‌آید.
+
+## ساختار
 
 ```
-src/app/        Shell, toolbar, about dialog, sample document
-src/bidi/       UAX #9 direction detection and MDyar directive parser
-src/editor/     CodeMirror, highlighting, Markdown & Mermaid snippets
-src/preview/    Markdown pipeline, direction directive, preview, scroll sync
-src/export/     HTML and Word
-src/themes/     Theme model and manager
+src/app/        پوسته، نوار ابزار، درباره، سند نمونه
+src/bidi/       تشخیص جهت و پارسر تگ MDyar
+src/editor/     CodeMirror، برجسته‌سازی، تکمیل
+src/preview/    تبدیل مارک‌داون، پیش‌نمایش، هم‌گام‌سازی
+src/export/     HTML و Word
+src/themes/     مدل و مدیر تم
 src/i18n/       en / fa / ar
-src/platform/   Web vs Tauri file APIs
-src-tauri/      Tauri 2 native shell
+src/platform/   فایل در وب در برابر Tauri
+src-tauri/      پوستهٔ بومی
 ```
 
-The UI is React 19 and TypeScript, bundled with Vite 6. Preview uses unified. Word export uses the `docx` library.
+React 19، TypeScript، Vite 6، unified، `docx`، Tauri 2.
+
+## انتشار دسکتاپ
+
+تگ `v*` (مثلاً `v0.5.0`) ورک‌فلؤ `.github/workflows/tauri.yml` را اجرا می‌کند و Release برای ویندوز، لینوکس (Ubuntu 22.04) و مک (Apple Silicon و Intel) می‌سازد.
+
+## مشارکت
+
+مسئله و درخواست ادغام خوش‌آمد است. سهم شما تحت GPL-3.0-or-later منتشر می‌شود. مجوز برنامه به محتوای فایل‌های `.md` سرایت نمی‌کند.
+
+متن کامل مجوز در [LICENSE](./LICENSE). Copyright (C) 2026 MDyar contributors.
+
+---
+
+## English
+
+MDyar is a Markdown editor for bidirectional text. Persian, Arabic, and English can share a paragraph, table, or list; each block takes its direction from its own first strong character.
+
+Version **0.5.0**. Browser and desktop (Windows, macOS, Linux). License: **GPL-3.0-or-later**.
+
+Web app: **https://mh314k.github.io/mdyar/**
+
+### Features
+
+- Preview, split (scroll synced by source line), and edit
+- Per-block and per-line direction via UAX #9, independent of the UI language
+- Forced direction comments (`<!-- mdyar:dir=rtl -->`) honored in the editor, preview, HTML, and Word; ignored elsewhere
+- GFM, KaTeX, Mermaid
+- Structural Markdown snippets and Mermaid-aware completion inside fences
+- Built-in themes plus a custom theme manager
+- English / فارسی / العربية — globe control so the switcher stays findable
+- HTML and Word export
+- Tauri 2 desktop: disk save, save as, unsaved-close prompt, file-type association
+
+The first launch opens the bundled welcome document.
+
+### Web
+
+Node.js 22.
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://127.0.0.1:1420. In the browser, Open does not keep a disk path; Save downloads `.md`.
+
+```bash
+GITHUB_PAGES=true npm run build
+```
+
+On Windows cmd: `set GITHUB_PAGES=true`. On PowerShell: `$env:GITHUB_PAGES = "true"`. Output is `dist/`. Pushes to `main` or `master` deploy via GitHub Actions.
+
+### Desktop
+
+Node.js 22, [Rust](https://rustup.rs/), system WebView.
+
+```bash
+npm install
+npm run tauri:dev
+npm run tauri:build
+```
+
+File associations are registered by the installer, not by `tauri dev`. The app is single-instance.
+
+Proxifier Portable injects into WebView2 and crashes the window (`WS2_32.dll`). Quit Portable or use the installed WFP edition. Browser `npm run dev` is unaffected.
+
+| | Web | Desktop |
+| --- | --- | --- |
+| Open | File picker; no path kept | Native dialog |
+| Save | Download `.md` | Write current path |
+| Save as | No | Yes |
+| HTML / Word | Download | Save dialog |
+| Double-click `.md` | No | After install |
+
+### Markdown and export
+
+The preview pipeline is remark + GFM + math + the MDyar direction plugin, then KaTeX and sanitize. Raw HTML is stripped. Code and diagrams stay LTR.
+
+HTML export is a standalone page using the active theme; KaTeX and Mermaid load from a CDN. Word keeps structure, inline formatting, tables, footnotes, and paragraph direction. Code blocks, math, Mermaid, and images are written as text.
+
+Snippets live in `src/editor/markdownAutocomplete.ts`. Default word completion is off. Mid-line Persian or Arabic typing does not open the menu.
+
+### Themes
+
+Signal Light, Signal Dark, Signal Slate, Paper, Midnight, Sand, Dusk, Contrast, Ember. Custom themes stay in `localStorage`. Legacy ids `pine-light`, `pine-dark`, and `slate-paper` map to Signal.
 
 ### Desktop releases
 
-A `v*` tag runs `.github/workflows/tauri.yml` and opens a draft GitHub Release for Windows, Linux (Ubuntu 22.04), and macOS (Apple Silicon and Intel).
-
-### Roadmap
-
-1. Import extra language packs from the UI (`importLanguagePackStub` in `src/i18n/index.ts`).
-2. Import, export, and share themes. Custom themes stay in local `localStorage`.
-3. Desktop polish: system menu, recent files, and dropping several files on the window.
-
-Word export and double-click open already ship in 0.4.1. Double-click open applies to the installed desktop app.
+A `v*` tag runs `.github/workflows/tauri.yml` for Windows, Linux (Ubuntu 22.04), and macOS (Apple Silicon and Intel).
 
 ### Contributing
 
-Issues and pull requests are welcome. Contributions are licensed under **GPL-3.0-or-later**. The app license does not cover the contents of your `.md` files.
-
-Copyright (C) 2026 MDyar contributors. See [LICENSE](./LICENSE).
+Issues and pull requests are welcome under **GPL-3.0-or-later**. The app license does not cover the contents of your `.md` files. See [LICENSE](./LICENSE).

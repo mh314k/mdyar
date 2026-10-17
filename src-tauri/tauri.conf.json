@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "MDyar",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "identifier": "app.mdyar.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "MDyar 0.4.1",
+        "title": "MDyar 0.5.0",
         "width": 1200,
         "height": 800,
         "minWidth": 720,
