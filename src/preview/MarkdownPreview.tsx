@@ -1,7 +1,9 @@
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -19,7 +21,7 @@ export type PreviewScrollHandle = {
 type Props = {
   source: string;
   onChange?: (value: string) => void;
-  onScrollLine?: (line: number) => void;
+  onScrollLine?: (line: number, force?: boolean) => void;
 };
 
 let mermaidReady = false;
@@ -43,14 +45,50 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
     const [html, setHtml] = useState("");
     const [previewEl, setPreviewEl] = useState<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const setContainer = (el: HTMLDivElement | null) => {
+    const setContainer = useCallback((el: HTMLDivElement | null) => {
       containerRef.current = el;
-      setPreviewEl(el);
-    };
+      setPreviewEl((prev) => (prev === el ? prev : el));
+    }, []);
     const suppressScroll = useRef(false);
     const onScrollLineRef = useRef(onScrollLine);
     onScrollLineRef.current = onScrollLine;
     const rafRef = useRef(0);
+    const savedScroll = useRef({ top: 0, left: 0 });
+
+    const rememberScroll = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      savedScroll.current = { top: el.scrollTop, left: el.scrollLeft };
+    };
+
+    const restoreScroll = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      suppressScroll.current = true;
+      el.scrollTop = savedScroll.current.top;
+      el.scrollLeft = savedScroll.current.left;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const node = containerRef.current;
+          if (node) {
+            node.scrollTop = savedScroll.current.top;
+            node.scrollLeft = savedScroll.current.left;
+          }
+          suppressScroll.current = false;
+          if (node && onScrollLineRef.current) {
+            onScrollLineRef.current(findPreviewLineAtScroll(node), true);
+          }
+        });
+      });
+    };
+
+    const handleSourceChange = useCallback(
+      (next: string) => {
+        rememberScroll();
+        onChange?.(next);
+      },
+      [onChange],
+    );
 
     useImperativeHandle(ref, () => ({
       scrollToLine(line: number) {
@@ -69,6 +107,7 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
     }));
 
     useEffect(() => {
+      rememberScroll();
       let cancelled = false;
       void (async () => {
         const rendered = await markdownToHtml(source);
@@ -79,6 +118,10 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
         cancelled = true;
       };
     }, [source]);
+
+    useLayoutEffect(() => {
+      restoreScroll();
+    }, [html]);
 
     useEffect(() => {
       const el = containerRef.current;
@@ -126,6 +169,7 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
             pre.replaceWith(host);
           }
         }
+        if (!cancelled) restoreScroll();
       })();
 
       return () => {
@@ -156,7 +200,9 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
         }}
         onScroll={() => {
           const el = containerRef.current;
-          if (!el || suppressScroll.current || !onScrollLineRef.current) return;
+          if (!el || suppressScroll.current) return;
+          rememberScroll();
+          if (!onScrollLineRef.current) return;
           cancelAnimationFrame(rafRef.current);
           rafRef.current = requestAnimationFrame(() => {
             if (!el || suppressScroll.current || !onScrollLineRef.current) return;
@@ -173,7 +219,7 @@ export const MarkdownPreview = forwardRef<PreviewScrollHandle, Props>(
           <PreviewDirControls
             container={previewEl}
             source={source}
-            onChange={onChange}
+            onChange={handleSourceChange}
           />
         )}
       </div>

@@ -72,9 +72,12 @@ export function App() {
   const lastLineRef = useRef(0);
   const clearDriverTimer = useRef(0);
 
+  const ignoreEditorSyncUntil = useRef(0);
+
   const onEditorScrollLine = useCallback(
     (line: number) => {
       if (!syncScroll) return;
+      if (performance.now() < ignoreEditorSyncUntil.current) return;
       if (driverRef.current === "preview") return;
       if (line === lastLineRef.current) return;
       lastLineRef.current = line;
@@ -89,10 +92,10 @@ export function App() {
   );
 
   const onPreviewScrollLine = useCallback(
-    (line: number) => {
+    (line: number, force = false) => {
       if (!syncScroll) return;
-      if (driverRef.current === "editor") return;
-      if (line === lastLineRef.current) return;
+      if (!force && driverRef.current === "editor") return;
+      if (!force && line === lastLineRef.current) return;
       lastLineRef.current = line;
       driverRef.current = "preview";
       editorRef.current?.scrollToLine(line);
@@ -165,6 +168,16 @@ export function App() {
     setContent(value);
     setDirty(true);
   }, []);
+
+  const onPreviewChange = useCallback(
+    (value: string) => {
+      // CodeMirror may emit a top-of-doc scroll when the value is replaced.
+      // Keep preview in charge until it restores position and resyncs the editor.
+      ignoreEditorSyncUntil.current = performance.now() + 400;
+      onChange(value);
+    },
+    [onChange],
+  );
 
   const handleNew = () => {
     if (dirty && !window.confirm(t("dialogs.unsavedBody"))) return;
@@ -389,7 +402,7 @@ export function App() {
           <MarkdownPreview
             ref={previewRef}
             source={content}
-            onChange={onChange}
+            onChange={onPreviewChange}
             onScrollLine={syncScroll ? onPreviewScrollLine : undefined}
           />
         )}
