@@ -80,6 +80,7 @@ export function Toolbar({
         </div>
       </div>
 
+      <div className="mdyar-toolbar-actions">
       <div className="mdyar-toolbar-group" role="group" aria-label="File">
         <button
           type="button"
@@ -201,6 +202,7 @@ export function Toolbar({
             ))}
           </select>
         </label>
+      </div>
       </div>
     </header>
   );

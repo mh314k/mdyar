@@ -34,6 +34,7 @@ html,
 body,
 #root {
   height: 100%;
+  height: 100dvh;
   margin: 0;
   overflow: hidden;
 }
@@ -56,33 +57,44 @@ body {
 
 .mdyar-app {
   display: grid;
-  grid-template-rows: var(--mdyar-toolbar-h) 1fr var(--mdyar-status-h);
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
   height: 100%;
   background:
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--mdyar-accent) 7%, var(--mdyar-bg)) 0,
-      var(--mdyar-bg) var(--mdyar-toolbar-h)
+      var(--mdyar-bg) 52px
     );
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .mdyar-toolbar {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.65rem;
+  min-height: var(--mdyar-toolbar-h);
+  padding: 0.35rem 0.75rem;
+  padding-inline: max(0.75rem, env(safe-area-inset-left, 0px))
+    max(0.75rem, env(safe-area-inset-right, 0px));
   border-bottom: 1px solid var(--mdyar-border);
   background: color-mix(in srgb, var(--mdyar-surface) 92%, var(--mdyar-bg));
   box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--mdyar-accent) 12%, transparent);
-  overflow-x: auto;
 }
 
 .mdyar-brand {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  min-width: max-content;
+  min-width: 0;
+  flex: 1 1 9rem;
   margin-inline-end: 0.15rem;
+}
+
+.mdyar-brand > div {
+  min-width: 0;
 }
 
 .mdyar-brand-mark {
@@ -113,9 +125,13 @@ body {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  max-width: 100%;
   font-size: 0.72rem;
   color: var(--mdyar-muted);
   font-family: var(--mdyar-font-editor);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mdyar-dirty-dot {
@@ -127,15 +143,20 @@ body {
   animation: pulseDot 1.4s ease infinite;
 }
 
+.mdyar-toolbar-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.55rem;
+  min-width: 0;
+  margin-inline-start: auto;
+}
+
 .mdyar-toolbar-group {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.3rem;
-  min-width: max-content;
-}
-
-.mdyar-toolbar-group:last-child {
-  margin-inline-start: auto;
 }
 
 .mdyar-btn,
@@ -325,6 +346,7 @@ body {
   font-size: var(--mdyar-font-size);
   line-height: var(--mdyar-line-height);
   unicode-bidi: isolate;
+  overflow-wrap: break-word;
 }
 
 .mdyar-preview-article [dir="rtl"],
@@ -391,7 +413,10 @@ body {
 .mdyar-preview-article table {
   border-collapse: collapse;
   width: 100%;
+  max-width: 100%;
   margin: 1rem 0;
+  display: block;
+  overflow-x: auto;
 }
 
 .mdyar-preview-article table + table {
@@ -496,8 +521,12 @@ body {
 .mdyar-status {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  min-height: var(--mdyar-status-h);
+  padding: 0.2rem 0.85rem;
+  padding-inline: max(0.85rem, env(safe-area-inset-left, 0px))
+    max(0.85rem, env(safe-area-inset-right, 0px));
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -779,6 +808,11 @@ body {
 }
 
 @media (max-width: 860px) {
+  .mdyar-toolbar-actions {
+    margin-inline-start: 0;
+    flex: 1 1 100%;
+  }
+
   .mdyar-main.is-split {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
@@ -787,6 +821,10 @@ body {
   .mdyar-editor {
     border-inline-end: none;
     border-bottom: 1px solid var(--mdyar-border);
+  }
+
+  .mdyar-preview-article {
+    padding: 1.15rem 1.1rem 2.25rem;
   }
 
   .mdyar-theme-layout {
@@ -798,6 +836,97 @@ body {
     border-bottom: 1px solid var(--mdyar-border);
     max-height: 180px;
     overflow: auto;
+  }
+
+  .mdyar-modal {
+    width: min(920px, calc(100% - 1rem));
+  }
+}
+
+@media (max-width: 480px) {
+  .mdyar-brand-mark {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mdyar-brand-name {
+    font-size: 0.92rem;
+  }
+
+  .mdyar-icon-btn,
+  .mdyar-lang select,
+  .mdyar-segmented button {
+    min-width: 2rem;
+    min-height: 2rem;
+  }
+
+  .mdyar-lang select {
+    min-width: 0;
+    max-width: 6.25rem;
+    padding-inline: 0.35rem;
+    font-size: 0.75rem;
+  }
+
+  .mdyar-preview-article {
+    padding: 0.9rem 0.8rem 2rem;
+  }
+
+  .mdyar-preview-article pre,
+  .mdyar-mermaid {
+    padding: 0.7rem;
+  }
+
+  .mdyar-status {
+    gap: 0.3rem 0.65rem;
+    padding-block: 0.28rem;
+  }
+
+  .mdyar-update-link {
+    margin-inline-start: 0;
+  }
+
+  .mdyar-modal-backdrop {
+    padding: 0.4rem;
+    align-items: end;
+  }
+
+  .mdyar-modal,
+  .mdyar-about-modal {
+    width: 100%;
+    max-height: min(92dvh, 720px);
+    border-radius: 12px 12px 0 0;
+  }
+
+  .mdyar-color-grid {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
+}
+
+@media (max-width: 360px) {
+  .mdyar-toolbar {
+    gap: 0.35rem 0.4rem;
+    padding: 0.3rem 0.45rem;
+  }
+
+  .mdyar-toolbar-actions {
+    gap: 0.3rem 0.35rem;
+  }
+
+  .mdyar-icon-btn,
+  .mdyar-segmented button {
+    width: 1.85rem;
+    height: 1.85rem;
+    min-width: 1.85rem;
+    min-height: 1.85rem;
+  }
+
+  .mdyar-lang select {
+    height: 1.85rem;
+    max-width: 5.4rem;
+  }
+
+  .mdyar-preview-article {
+    padding: 0.75rem 0.65rem 1.75rem;
   }
 }
 
