@@ -33,6 +33,8 @@ import { SAMPLE_MARKDOWN } from "./sample";
 import { Toolbar, type ViewMode } from "./Toolbar";
 import { AboutDialog } from "./AboutDialog";
 import { appWindowTitle } from "./meta";
+import { checkLatestRelease, type UpdateInfo } from "./updateCheck";
+import { openExternalUrl } from "../platform/fs";
 
 /** Keeps each filename on its own line so mixed LTR/RTL text does not reorder the prompt. */
 function closeUnsavedMessage(prompt: string, names: string[]): string {
@@ -49,6 +51,7 @@ export function App() {
   const [theme, setTheme] = useState<MdyarTheme>(() => resolveTheme(getActiveThemeId()));
   const [themesOpen, setThemesOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [update, setUpdate] = useState<UpdateInfo | null>(null);
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window,
   );
@@ -113,6 +116,16 @@ export function App() {
 
   useEffect(() => {
     void runningOnDesktop().then(setIsDesktop);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void checkLatestRelease().then((info) => {
+      if (!cancelled) setUpdate(info);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -382,6 +395,7 @@ export function App() {
         onThemes={() => setThemesOpen(true)}
         onAbout={() => setAboutOpen(true)}
         language={language}
+        updateVersion={update?.outdated ? update.latest : undefined}
       />
 
       <main
@@ -414,6 +428,19 @@ export function App() {
         </span>
         <span>{t("status.chars", { count: content.length })}</span>
         {!isDesktop && <span>{t("status.webHint")}</span>}
+        {update?.outdated && (
+          <button
+            type="button"
+            className="mdyar-update-link"
+            onClick={() => {
+              void openExternalUrl(update.url).catch(() => {
+                window.alert(update.url);
+              });
+            }}
+          >
+            {t("status.updateAvailable", { version: update.latest })}
+          </button>
+        )}
       </footer>
 
       {themesOpen && (
@@ -423,7 +450,9 @@ export function App() {
           onClose={() => setThemesOpen(false)}
         />
       )}
-      {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
+      {aboutOpen && (
+        <AboutDialog onClose={() => setAboutOpen(false)} update={update} />
+      )}
     </div>
   );
 }

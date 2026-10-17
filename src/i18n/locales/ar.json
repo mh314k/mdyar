@@ -43,7 +43,8 @@
     "unsaved": "غير محفوظ",
     "saved": "محفوظ",
     "chars": "{{count}} حرفًا",
-    "webHint": "وضع الويب — تبقى الملفات في المتصفح"
+    "webHint": "وضع الويب — تبقى الملفات في المتصفح",
+    "updateAvailable": "إصدار جديد v{{version}}"
   },
   "dialogs": {
     "unsavedTitle": "تغييرات غير محفوظة",
@@ -71,7 +72,9 @@
     "title": "حول MDyar",
     "license": "برمجية حرة بموجب رخصة GPL-3.0-or-later.",
     "github": "GitHub",
-    "website": "تطبيق الويب"
+    "website": "تطبيق الويب",
+    "updateAvailableLong": "يتوفر إصدار أحدث: v{{version}}.",
+    "openLatest": "فتح أحدث إصدار"
   },
   "roadmap": {
     "title": "قريبًا",

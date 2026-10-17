@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { openExternalUrl } from "../platform/fs";
 import { APP_NAME, APP_VERSION, GITHUB_URL, WEB_APP_URL } from "./meta";
+import type { UpdateInfo } from "./updateCheck";
 
 type Props = {
   onClose: () => void;
+  update?: UpdateInfo | null;
 };
 
-export function AboutDialog({ onClose }: Props) {
+export function AboutDialog({ onClose, update }: Props) {
   const { t } = useTranslation();
 
   const openLink = (url: string) => {
@@ -49,6 +51,19 @@ export function AboutDialog({ onClose }: Props) {
           </p>
           <p className="mdyar-about-tagline">{t("app.tagline")}</p>
           <p className="mdyar-about-license">{t("about.license")}</p>
+
+          {update?.outdated && (
+            <p className="mdyar-about-update">
+              {t("about.updateAvailableLong", { version: update.latest })}{" "}
+              <button
+                type="button"
+                className="mdyar-link-btn"
+                onClick={() => openLink(update.url)}
+              >
+                {t("about.openLatest")}
+              </button>
+            </p>
+          )}
 
           <div className="mdyar-about-actions">
             <button

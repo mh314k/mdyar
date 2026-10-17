@@ -35,6 +35,7 @@ type Props = {
   onThemes: () => void;
   onAbout: () => void;
   language: AppLanguage;
+  updateVersion?: string;
 };
 
 export function Toolbar({
@@ -51,6 +52,7 @@ export function Toolbar({
   onThemes,
   onAbout,
   language,
+  updateVersion,
 }: Props) {
   const { t } = useTranslation();
 
@@ -171,10 +173,18 @@ export function Toolbar({
         </button>
         <button
           type="button"
-          className="mdyar-icon-btn"
+          className={updateVersion ? "mdyar-icon-btn has-update" : "mdyar-icon-btn"}
           onClick={onAbout}
-          title={t("toolbar.about")}
-          aria-label={t("toolbar.about")}
+          title={
+            updateVersion
+              ? t("status.updateAvailable", { version: updateVersion })
+              : t("toolbar.about")
+          }
+          aria-label={
+            updateVersion
+              ? t("status.updateAvailable", { version: updateVersion })
+              : t("toolbar.about")
+          }
         >
           <IconAbout />
         </button>

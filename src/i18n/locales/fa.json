@@ -43,7 +43,8 @@
     "unsaved": "ذخیره‌نشده",
     "saved": "ذخیره‌شده",
     "chars": "{{count}} نویسه",
-    "webHint": "حالت وب — فایل‌ها در مرورگر می‌مانند"
+    "webHint": "حالت وب — فایل‌ها در مرورگر می‌مانند",
+    "updateAvailable": "نسخهٔ جدید v{{version}}"
   },
   "dialogs": {
     "unsavedTitle": "تغییرات ذخیره‌نشده",
@@ -71,7 +72,9 @@
     "title": "دربارهٔ MDyar",
     "license": "نرم‌افزار آزاد با مجوز GPL-3.0-or-later.",
     "github": "گیت‌هاب",
-    "website": "وب‌اپ"
+    "website": "وب‌اپ",
+    "updateAvailableLong": "نسخهٔ تازه‌تری منتشر شده: v{{version}}.",
+    "openLatest": "باز کردن آخرین نسخه"
   },
   "roadmap": {
     "title": "به‌زودی",
