@@ -2,6 +2,7 @@
 export const APP_VERSION = __APP_VERSION__;
 export const APP_NAME = "MDyar";
 export const GITHUB_URL = "https://github.com/mh314k/mdyar";
+export const GITHUB_REPO = "mh314k/mdyar";
 export const WEB_APP_URL = "https://mh314k.github.io/mdyar/";
 
 export function appWindowTitle(): string {

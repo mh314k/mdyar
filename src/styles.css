@@ -516,6 +516,40 @@ body {
   color: var(--mdyar-accent);
 }
 
+.mdyar-update-link,
+.mdyar-link-btn {
+  margin-inline-start: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mdyar-accent);
+  font: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mdyar-update-link:hover,
+.mdyar-link-btn:hover {
+  text-decoration: underline;
+}
+
+.mdyar-icon-btn.has-update {
+  position: relative;
+}
+
+.mdyar-icon-btn.has-update::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mdyar-accent);
+  box-shadow: 0 0 0 1.5px var(--mdyar-surface);
+}
+
 .mdyar-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -602,6 +636,19 @@ body {
   justify-content: center;
   gap: 0.5rem;
   margin-top: 0.55rem;
+}
+
+.mdyar-about-update {
+  margin: 0.15rem 0 0;
+  max-width: 32ch;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--mdyar-fg);
+}
+
+.mdyar-about-update .mdyar-link-btn {
+  margin-inline-start: 0;
+  display: inline;
 }
 
 .mdyar-about-url {

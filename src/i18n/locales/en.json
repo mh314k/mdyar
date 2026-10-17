@@ -43,7 +43,8 @@
     "unsaved": "Unsaved",
     "saved": "Saved",
     "chars": "{{count}} characters",
-    "webHint": "Web mode — files stay in the browser"
+    "webHint": "Web mode — files stay in the browser",
+    "updateAvailable": "New version v{{version}}"
   },
   "dialogs": {
     "unsavedTitle": "Unsaved changes",
@@ -71,7 +72,9 @@
     "title": "About MDyar",
     "license": "Free software under GPL-3.0-or-later.",
     "github": "GitHub",
-    "website": "Web app"
+    "website": "Web app",
+    "updateAvailableLong": "A newer version is available: v{{version}}.",
+    "openLatest": "Open the latest release"
   },
   "roadmap": {
     "title": "Coming soon",
