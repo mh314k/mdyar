@@ -2,7 +2,7 @@
 
 ویرایشگر مارک‌داون برای متن دوجهته. فارسی، عربی و انگلیسی در یک پاراگراف، جدول یا فهرست کنار هم می‌مانند و جهت هر بند از خود همان بند تعیین می‌شود.
 
-نسخهٔ **۰٫۵٫۰**. وب و دسکتاپ (ویندوز، مک، لینوکس). مجوز: **GPL-3.0-or-later**.
+نسخهٔ **۰٫۶٫۰**. وب و دسکتاپ (ویندوز، مک، لینوکس). مجوز: **GPL-3.0-or-later**.
 
 وب‌اپ: **https://mh314k.github.io/mdyar/**
 
@@ -126,7 +126,7 @@ React 19، TypeScript، Vite 6، unified، `docx`، Tauri 2.
 
 ## انتشار دسکتاپ
 
-تگ `v*` (مثلاً `v0.5.0`) ورک‌فلؤ `.github/workflows/tauri.yml` را اجرا می‌کند و Release برای ویندوز، لینوکس (Ubuntu 22.04) و مک (Apple Silicon و Intel) می‌سازد.
+تگ `v*` (مثلاً `v0.6.0`) ورک‌فلؤ `.github/workflows/tauri.yml` را اجرا می‌کند و Release برای ویندوز، لینوکس (Ubuntu 22.04) و مک (Apple Silicon و Intel) می‌سازد.
 
 ## مشارکت
 
@@ -140,7 +140,7 @@ React 19، TypeScript، Vite 6، unified، `docx`، Tauri 2.
 
 MDyar is a Markdown editor for bidirectional text. Persian, Arabic, and English can share a paragraph, table, or list; each block takes its direction from its own first strong character.
 
-Version **0.5.0**. Browser and desktop (Windows, macOS, Linux). License: **GPL-3.0-or-later**.
+Version **0.6.0**. Browser and desktop (Windows, macOS, Linux). License: **GPL-3.0-or-later**.
 
 Web app: **https://mh314k.github.io/mdyar/**
 
