@@ -35,19 +35,31 @@ import { AboutDialog } from "./AboutDialog";
 import { appWindowTitle } from "./meta";
 import { checkLatestRelease, type UpdateInfo } from "./updateCheck";
 import { openExternalUrl } from "../platform/fs";
+import { loadWebDocument, saveWebDocument } from "../platform/webDocument";
 
 /** Keeps each filename on its own line so mixed LTR/RTL text does not reorder the prompt. */
 function closeUnsavedMessage(prompt: string, names: string[]): string {
   return `${prompt}\n\n${names.join("\n")}`;
 }
 
+const initialDocument = (() => {
+  const stored = loadWebDocument();
+  if (stored) return stored;
+  return {
+    content: SAMPLE_MARKDOWN,
+    fileName: "welcome.md",
+    viewMode: "preview" as ViewMode,
+    dirty: false,
+  };
+})();
+
 export function App() {
   const { t, i18n } = useTranslation();
-  const [content, setContent] = useState(SAMPLE_MARKDOWN);
-  const [fileName, setFileName] = useState("welcome.md");
+  const [content, setContent] = useState(initialDocument.content);
+  const [fileName, setFileName] = useState(initialDocument.fileName);
   const [filePath, setFilePath] = useState<string | null>(null);
-  const [dirty, setDirty] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("preview");
+  const [dirty, setDirty] = useState(initialDocument.dirty);
+  const [viewMode, setViewMode] = useState<ViewMode>(initialDocument.viewMode);
   const [theme, setTheme] = useState<MdyarTheme>(() => resolveTheme(getActiveThemeId()));
   const [themesOpen, setThemesOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -66,6 +78,8 @@ export function App() {
   contentRef.current = content;
   const filePathRef = useRef(filePath);
   filePathRef.current = filePath;
+  const viewModeRef = useRef(viewMode);
+  viewModeRef.current = viewMode;
   const loadOsPathsRef = useRef<(paths: string[]) => Promise<void>>(async () => {});
   const saveRef = useRef<(saveAs?: boolean) => Promise<boolean>>(async () => false);
 
@@ -117,6 +131,33 @@ export function App() {
   useEffect(() => {
     void runningOnDesktop().then(setIsDesktop);
   }, []);
+
+  useEffect(() => {
+    if (isDesktop) return;
+    const timer = window.setTimeout(() => {
+      saveWebDocument({
+        content,
+        fileName,
+        viewMode,
+        dirty,
+      });
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [content, fileName, viewMode, dirty, isDesktop]);
+
+  useEffect(() => {
+    if (isDesktop) return;
+    const flush = () => {
+      saveWebDocument({
+        content: contentRef.current,
+        fileName: fileNameRef.current,
+        viewMode: viewModeRef.current,
+        dirty: dirtyRef.current,
+      });
+    };
+    window.addEventListener("beforeunload", flush);
+    return () => window.removeEventListener("beforeunload", flush);
+  }, [isDesktop]);
 
   useEffect(() => {
     let cancelled = false;
