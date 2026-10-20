@@ -3,6 +3,13 @@
     "name": "MDyar",
     "tagline": "BiDi-first Markdown editor"
   },
+  "menu": {
+    "bar": "Application menu",
+    "file": "File",
+    "view": "View",
+    "tools": "Tools",
+    "help": "Help"
+  },
   "toolbar": {
     "open": "Open",
     "save": "Save",

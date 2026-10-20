@@ -13,7 +13,8 @@
   --mdyar-font-size: 15px;
   --mdyar-line-height: 1.65;
   --mdyar-radius: 8px;
-  --mdyar-toolbar-h: 52px;
+  --mdyar-menubar-h: 28px;
+  --mdyar-toolbar-h: 48px;
   --mdyar-status-h: 26px;
   --mdyar-focus: color-mix(in srgb, var(--mdyar-accent) 55%, transparent);
   --mdyar-elev: 0 1px 0 color-mix(in srgb, #fff 35%, transparent),
@@ -64,10 +65,160 @@ body {
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--mdyar-accent) 7%, var(--mdyar-bg)) 0,
-      var(--mdyar-bg) 52px
+      var(--mdyar-bg) 80px
     );
   padding-top: env(safe-area-inset-top, 0);
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.mdyar-chrome {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border-bottom: 1px solid var(--mdyar-border);
+  background: color-mix(in srgb, var(--mdyar-surface) 92%, var(--mdyar-bg));
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--mdyar-accent) 12%, transparent);
+}
+
+.mdyar-menubar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: var(--mdyar-menubar-h);
+  overflow: visible;
+  padding: 0.1rem 0.4rem;
+  padding-inline: max(0.4rem, env(safe-area-inset-left, 0px))
+    max(0.45rem, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid color-mix(in srgb, var(--mdyar-border) 70%, transparent);
+  font-size: 0.8rem;
+}
+
+.mdyar-menubar .mdyar-lang {
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.mdyar-menubar .mdyar-lang svg {
+  width: 15px;
+  height: 15px;
+}
+
+.mdyar-menubar-start {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.mdyar-menu {
+  position: relative;
+}
+
+.mdyar-menu-trigger {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.28rem 0.55rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.mdyar-menu-trigger:hover,
+.mdyar-menu-trigger[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--mdyar-accent) 14%, var(--mdyar-surface));
+}
+
+.mdyar-menu-trigger.has-update {
+  position: relative;
+}
+
+.mdyar-menu-trigger.has-update::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  inset-inline-end: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mdyar-accent);
+  box-shadow: 0 0 0 1.5px var(--mdyar-surface);
+}
+
+.mdyar-menu-popup {
+  position: absolute;
+  top: calc(100% + 2px);
+  inset-inline-start: 0;
+  z-index: 60;
+  min-width: 13.5rem;
+  max-width: min(22rem, calc(100vw - 0.8rem));
+  margin: 0;
+  padding: 0.28rem;
+  list-style: none;
+  background: var(--mdyar-surface);
+  color: var(--mdyar-fg);
+  border: 1px solid var(--mdyar-border);
+  border-radius: 8px;
+  box-shadow: var(--mdyar-elev);
+}
+
+.mdyar-menu-sep {
+  height: 1px;
+  margin: 0.28rem 0.4rem;
+  background: var(--mdyar-border);
+}
+
+.mdyar-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  padding: 0.38rem 0.55rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.mdyar-menu-item:hover,
+.mdyar-menu-item:focus-visible {
+  background: color-mix(in srgb, var(--mdyar-accent) 16%, var(--mdyar-surface));
+  outline: none;
+}
+
+.mdyar-menu-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mdyar-menu-item-label {
+  min-width: 0;
+}
+
+.mdyar-menu-item.is-checked .mdyar-menu-item-label::before {
+  content: "✓";
+  display: inline-block;
+  width: 1.1em;
+  margin-inline-end: 0.35rem;
+  font-size: 0.85em;
+  color: var(--mdyar-accent);
+}
+
+.mdyar-menu-item kbd {
+  font: inherit;
+  font-size: 0.72rem;
+  color: var(--mdyar-muted);
+  white-space: nowrap;
 }
 
 .mdyar-toolbar {
@@ -76,12 +227,9 @@ body {
   flex-wrap: wrap;
   gap: 0.45rem 0.65rem;
   min-height: var(--mdyar-toolbar-h);
-  padding: 0.35rem 0.75rem;
+  padding: 0.3rem 0.75rem;
   padding-inline: max(0.75rem, env(safe-area-inset-left, 0px))
     max(0.75rem, env(safe-area-inset-right, 0px));
-  border-bottom: 1px solid var(--mdyar-border);
-  background: color-mix(in srgb, var(--mdyar-surface) 92%, var(--mdyar-bg));
-  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--mdyar-accent) 12%, transparent);
 }
 
 .mdyar-brand {
@@ -187,6 +335,7 @@ body {
 .mdyar-btn:focus-visible,
 .mdyar-segmented button:focus-visible,
 .mdyar-icon-btn:focus-visible,
+.mdyar-menu-trigger:focus-visible,
 .mdyar-lang:focus-within,
 .mdyar-theme-item:focus-visible {
   outline: 2px solid var(--mdyar-focus);
@@ -850,6 +999,10 @@ body {
     flex: 1 1 100%;
   }
 
+  .mdyar-menu-popup {
+    min-width: 12rem;
+  }
+
   .mdyar-main.is-split {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
@@ -960,6 +1113,8 @@ body {
   .mdyar-btn,
   .mdyar-segmented button,
   .mdyar-icon-btn,
+  .mdyar-menu-trigger,
+  .mdyar-menu-item,
   .mdyar-main,
   .mdyar-modal,
   .mdyar-modal-backdrop,
