@@ -1,4 +1,7 @@
-/** Desktop workspace folder tree (Tauri only). */
+/** Desktop workspace folder tree (Tauri only). Lazy: one directory level at a time. */
+
+import { shouldSkipExplorerEntry, sortExplorerNodes } from "./explorerCommon";
+import { isTauriShell } from "./fs";
 
 export type ExplorerFileNode = {
   kind: "file";
@@ -12,6 +15,8 @@ export type ExplorerDirNode = {
   name: string;
   path: string;
   children: ExplorerNode[];
+  /** false until this directory has been listed (lazy trees). */
+  childrenLoaded: boolean;
 };
 
 export type ExplorerNode = ExplorerFileNode | ExplorerDirNode;
@@ -22,38 +27,9 @@ export function isExplorerEditableFile(name: string): boolean {
   return EDITABLE_EXT.test(name);
 }
 
-export function explorerFileIcon(name: string): string {
-  const lower = name.toLowerCase();
-  if (/\.(md|markdown|mdown)$/.test(lower)) return "markdown";
-  if (/\.(txt|text|log)$/.test(lower)) return "text_snippet";
-  if (/\.(png|jpe?g|gif|webp|svg|bmp|ico)$/.test(lower)) return "image";
-  if (/\.(pdf)$/.test(lower)) return "picture_as_pdf";
-  if (/\.(json|yaml|yml|toml|xml)$/.test(lower)) return "data_object";
-  if (/\.(html?|css|scss|sass|less)$/.test(lower)) return "html";
-  if (/\.(js|jsx|ts|tsx|mjs|cjs)$/.test(lower)) return "javascript";
-  if (/\.(py|rb|go|rs|java|kt|cs|cpp|c|h|swift)$/.test(lower)) return "code";
-  if (/\.(zip|rar|7z|tar|gz)$/.test(lower)) return "folder_zip";
-  if (/\.(doc|docx)$/.test(lower)) return "description";
-  if (/\.(mp3|wav|ogg|flac)$/.test(lower)) return "audio_file";
-  if (/\.(mp4|webm|mov|avi|mkv)$/.test(lower)) return "video_file";
-  return "insert_drive_file";
-}
-
-function shouldSkipEntry(name: string): boolean {
-  return name.startsWith(".");
-}
-
-function sortNodes(nodes: ExplorerNode[]): ExplorerNode[] {
-  return [...nodes].sort((a, b) => {
-    if (a.kind !== b.kind) return a.kind === "dir" ? -1 : 1;
-    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
-  });
-}
-
 export async function pickDesktopWorkspaceFolder(): Promise<string | null> {
   try {
-    const { isTauri } = await import("@tauri-apps/api/core");
-    if (!isTauri()) return null;
+    if (!isTauriShell()) return null;
     const { open } = await import("@tauri-apps/plugin-dialog");
     const selected = await open({ directory: true, multiple: false });
     if (!selected || Array.isArray(selected)) return null;
@@ -63,41 +39,96 @@ export async function pickDesktopWorkspaceFolder(): Promise<string | null> {
   }
 }
 
-export async function loadExplorerTree(root: string): Promise<ExplorerNode[]> {
-  const { isTauri } = await import("@tauri-apps/api/core");
-  if (!isTauri()) return [];
+/** List a single directory (files + unloaded child dirs). */
+export async function loadExplorerChildren(dir: string): Promise<ExplorerNode[]> {
+  if (!isTauriShell()) return [];
 
   const { readDir } = await import("@tauri-apps/plugin-fs");
   const { join } = await import("@tauri-apps/api/path");
 
-  async function walk(dir: string): Promise<ExplorerNode[]> {
-    let entries;
-    try {
-      entries = await readDir(dir);
-    } catch {
-      return [];
-    }
-
-    const nodes: ExplorerNode[] = [];
-    for (const entry of entries) {
-      if (shouldSkipEntry(entry.name)) continue;
-      const full = await join(dir, entry.name);
-      if (entry.isDirectory) {
-        const children = await walk(full);
-        nodes.push({ kind: "dir", name: entry.name, path: full, children });
-      } else if (entry.isFile) {
-        nodes.push({
-          kind: "file",
-          name: entry.name,
-          path: full,
-          editable: isExplorerEditableFile(entry.name),
-        });
-      }
-    }
-    return sortNodes(nodes);
+  let entries;
+  try {
+    entries = await readDir(dir);
+  } catch {
+    return [];
   }
 
-  return walk(root);
+  const nodes: ExplorerNode[] = [];
+  for (const entry of entries) {
+    if (shouldSkipExplorerEntry(entry.name)) continue;
+    const full = await join(dir, entry.name);
+    if (entry.isDirectory) {
+      nodes.push({
+        kind: "dir",
+        name: entry.name,
+        path: full,
+        children: [],
+        childrenLoaded: false,
+      });
+    } else if (entry.isFile) {
+      nodes.push({
+        kind: "file",
+        name: entry.name,
+        path: full,
+        editable: isExplorerEditableFile(entry.name),
+      });
+    }
+  }
+  return sortExplorerNodes(nodes);
+}
+
+export async function loadExplorerTree(root: string): Promise<ExplorerNode[]> {
+  return loadExplorerChildren(root);
+}
+
+/** Re-list root, then rehydrate any currently expanded directories. */
+export async function loadExplorerTreeHydrated(
+  root: string,
+  expandedDirs: ReadonlySet<string>,
+): Promise<ExplorerNode[]> {
+  const nodes = await loadExplorerChildren(root);
+  return hydrateExpandedDirs(nodes, expandedDirs);
+}
+
+export async function hydrateExpandedDirs(
+  nodes: ExplorerNode[],
+  expandedDirs: ReadonlySet<string>,
+): Promise<ExplorerNode[]> {
+  const out: ExplorerNode[] = [];
+  for (const node of nodes) {
+    if (node.kind !== "dir") {
+      out.push(node);
+      continue;
+    }
+    if (!expandedDirs.has(node.path)) {
+      out.push({ ...node, children: [], childrenLoaded: false });
+      continue;
+    }
+    const children = await loadExplorerChildren(node.path);
+    const hydrated = await hydrateExpandedDirs(children, expandedDirs);
+    out.push({ ...node, children: hydrated, childrenLoaded: true });
+  }
+  return out;
+}
+
+/** Patch one directory's children in an immutable tree. */
+export function replaceExplorerChildren(
+  nodes: ExplorerNode[],
+  dirPath: string,
+  children: ExplorerNode[],
+): ExplorerNode[] {
+  const key = dirPath.replace(/\\/g, "/").toLowerCase();
+  return nodes.map((node) => {
+    if (node.kind !== "dir") return node;
+    if (node.path.replace(/\\/g, "/").toLowerCase() === key) {
+      return { ...node, children, childrenLoaded: true };
+    }
+    if (!node.childrenLoaded || node.children.length === 0) return node;
+    return {
+      ...node,
+      children: replaceExplorerChildren(node.children, dirPath, children),
+    };
+  });
 }
 
 export function folderDisplayName(root: string): string {

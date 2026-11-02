@@ -1,8 +1,14 @@
 import type { ExplorerNode } from "./desktopExplorer";
-import { loadExplorerTree, pickDesktopWorkspaceFolder } from "./desktopExplorer";
+import {
+  loadExplorerChildren,
+  loadExplorerTreeHydrated,
+  pickDesktopWorkspaceFolder,
+  replaceExplorerChildren,
+} from "./desktopExplorer";
 import {
   clearWebWorkspaceFolder,
-  loadWebExplorerTree,
+  loadWebExplorerChildren,
+  loadWebExplorerTreeHydrated,
   pickWebWorkspaceFolder,
   readWebExplorerFile,
   restoreWebWorkspaceFolder,
@@ -10,7 +16,7 @@ import {
 } from "./webExplorer";
 import type { OpenResult } from "./fs";
 
-export { webDirectoryPickerSupported };
+export { webDirectoryPickerSupported, replaceExplorerChildren };
 
 export function folderExplorerAvailable(isDesktop: boolean): boolean {
   return isDesktop || webDirectoryPickerSupported();
@@ -24,10 +30,19 @@ export async function pickWorkspaceFolder(isDesktop: boolean): Promise<string | 
 export async function loadWorkspaceExplorerTree(
   root: string | null,
   isDesktop: boolean,
+  expandedDirs: ReadonlySet<string> = new Set(),
 ): Promise<ExplorerNode[]> {
   if (!root) return [];
-  if (isDesktop) return loadExplorerTree(root);
-  return loadWebExplorerTree(root);
+  if (isDesktop) return loadExplorerTreeHydrated(root, expandedDirs);
+  return loadWebExplorerTreeHydrated(root, expandedDirs);
+}
+
+export async function loadWorkspaceExplorerChildren(
+  dirPath: string,
+  isDesktop: boolean,
+): Promise<ExplorerNode[]> {
+  if (isDesktop) return loadExplorerChildren(dirPath);
+  return loadWebExplorerChildren(dirPath);
 }
 
 export async function restoreWorkspaceFolder(

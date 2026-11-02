@@ -102,6 +102,7 @@ UI strings: English, فارسی, العربية (`src/i18n/`). App language from
 
 ```
 src/app/        Shell, workbench, dialogs, sample doc
+  hooks/        Workspace, explorer, scroll sync, desktop lifecycle
 src/bidi/       Direction detection and MDyar comment parser
 src/editor/     CodeMirror, highlighting, completion
 src/preview/    Markdown transform, preview, scroll sync

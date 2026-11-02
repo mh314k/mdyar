@@ -160,6 +160,7 @@ export function MenuBar({
       className={embedded ? "mdyar-menubar is-embedded" : "mdyar-menubar"}
       role="menubar"
       aria-label={t("menu.bar")}
+      data-tauri-drag-region="false"
     >
       <div className="mdyar-menubar-start">
         {menus.map((menu) => (

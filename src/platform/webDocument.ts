@@ -36,11 +36,3 @@ export function loadWebDocument(): WebDocumentSnapshot | null {
   }
 }
 
-export function saveWebDocument(snapshot: WebDocumentSnapshot): void {
-  if (!isWebShell()) return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-  } catch {
-    // localStorage full or disabled — session restore is best-effort on web
-  }
-}

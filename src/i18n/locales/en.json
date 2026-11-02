@@ -56,7 +56,21 @@
     "loading": "Loading…",
     "emptyFolder": "This folder is empty.",
     "openFolderHint": "Open a folder to browse files here.",
-    "webFolderUnsupported": "Folder explorer needs a Chromium-based browser (Chrome, Edge, Opera)."
+    "webFolderUnsupported": "Folder explorer needs a Chromium-based browser (Chrome, Edge, Opera).",
+    "newFile": "New File",
+    "newFolder": "New Folder",
+    "newFilePrompt": "New file name",
+    "newFolderPrompt": "New folder name",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "rename": "Rename",
+    "renamePrompt": "Rename",
+    "delete": "Delete",
+    "deleteFileConfirm": "Delete \"{{name}}\" permanently?",
+    "deleteFolderConfirm": "Delete folder \"{{name}}\" and all of its contents permanently?",
+    "pasteIntoSelf": "Cannot paste a folder into itself.",
+    "opFailed": "That file operation failed."
   },
   "settings": {
     "preferences": "Preferences",

@@ -56,7 +56,21 @@
     "loading": "در حال بارگذاری…",
     "emptyFolder": "این پوشه خالی است.",
     "openFolderHint": "برای مرور فایل‌ها یک پوشه باز کنید.",
-    "webFolderUnsupported": "اکسپلورر پوشه به مرورگر Chromium (Chrome، Edge، Opera) نیاز دارد."
+    "webFolderUnsupported": "اکسپلورر پوشه به مرورگر Chromium (Chrome، Edge، Opera) نیاز دارد.",
+    "newFile": "فایل جدید",
+    "newFolder": "پوشه جدید",
+    "newFilePrompt": "نام فایل جدید",
+    "newFolderPrompt": "نام پوشه جدید",
+    "cut": "برش",
+    "copy": "کپی",
+    "paste": "چسباندن",
+    "rename": "تغییر نام",
+    "renamePrompt": "نام جدید",
+    "delete": "حذف",
+    "deleteFileConfirm": "«{{name}}» برای همیشه حذف شود؟",
+    "deleteFolderConfirm": "پوشه «{{name}}» با همهٔ محتویاتش برای همیشه حذف شود؟",
+    "pasteIntoSelf": "نمی‌توان پوشه را داخل خودش چسباند.",
+    "opFailed": "عملیات فایل انجام نشد."
   },
   "settings": {
     "preferences": "ترجیحات",

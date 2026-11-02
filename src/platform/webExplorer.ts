@@ -1,5 +1,6 @@
 import type { ExplorerNode } from "./desktopExplorer";
 import { isExplorerEditableFile } from "./desktopExplorer";
+import { shouldSkipExplorerEntry, sortExplorerNodes } from "./explorerCommon";
 
 const IDB_NAME = "mdyar-web-explorer";
 const IDB_STORE = "folder";
@@ -9,17 +10,6 @@ type DirHandle = FileSystemDirectoryHandle;
 
 let cachedRoot: DirHandle | null = null;
 let cachedRootLabel: string | null = null;
-
-function shouldSkipEntry(name: string): boolean {
-  return name.startsWith(".");
-}
-
-function sortNodes(nodes: ExplorerNode[]): ExplorerNode[] {
-  return [...nodes].sort((a, b) => {
-    if (a.kind !== b.kind) return a.kind === "dir" ? -1 : 1;
-    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
-  });
-}
 
 export function webDirectoryPickerSupported(): boolean {
   return typeof window !== "undefined" && "showDirectoryPicker" in window;
@@ -131,18 +121,37 @@ export async function clearWebWorkspaceFolder(): Promise<void> {
   await clearPersistedHandle();
 }
 
-async function walkDirectory(dir: DirHandle, relPrefix: string): Promise<ExplorerNode[]> {
+async function resolveDirHandle(relativeDir: string): Promise<DirHandle | null> {
+  if (!cachedRoot) return null;
+  const parts = relativeDir.split("/").filter(Boolean);
+  let dir = cachedRoot;
+  for (const part of parts) {
+    dir = await dir.getDirectoryHandle(part);
+  }
+  return dir;
+}
+
+/** List one web directory level (relative paths). */
+export async function loadWebExplorerChildren(relativeDir = ""): Promise<ExplorerNode[]> {
+  const dir = relativeDir ? await resolveDirHandle(relativeDir) : cachedRoot;
+  if (!dir) return [];
+
   const nodes: ExplorerNode[] = [];
   const iterable = dir as DirHandle & {
     entries: () => AsyncIterableIterator<[string, FileSystemHandle]>;
   };
 
   for await (const [name, handle] of iterable.entries()) {
-    if (shouldSkipEntry(name)) continue;
-    const rel = relPrefix ? `${relPrefix}/${name}` : name;
+    if (shouldSkipExplorerEntry(name)) continue;
+    const rel = relativeDir ? `${relativeDir}/${name}` : name;
     if (handle.kind === "directory") {
-      const children = await walkDirectory(handle as DirHandle, rel);
-      nodes.push({ kind: "dir", name, path: rel, children });
+      nodes.push({
+        kind: "dir",
+        name,
+        path: rel,
+        children: [],
+        childrenLoaded: false,
+      });
     } else if (handle.kind === "file") {
       nodes.push({
         kind: "file",
@@ -152,7 +161,7 @@ async function walkDirectory(dir: DirHandle, relPrefix: string): Promise<Explore
       });
     }
   }
-  return sortNodes(nodes);
+  return sortExplorerNodes(nodes);
 }
 
 export async function loadWebExplorerTree(rootLabel: string | null): Promise<ExplorerNode[]> {
@@ -161,7 +170,37 @@ export async function loadWebExplorerTree(rootLabel: string | null): Promise<Exp
     const ok = await restoreWebWorkspaceFolder(rootLabel);
     if (!ok || !cachedRoot) return [];
   }
-  return walkDirectory(cachedRoot, "");
+  return loadWebExplorerChildren("");
+}
+
+export async function loadWebExplorerTreeHydrated(
+  rootLabel: string | null,
+  expandedDirs: ReadonlySet<string>,
+): Promise<ExplorerNode[]> {
+  const nodes = await loadWebExplorerTree(rootLabel);
+  // Web loadExplorerChildren for nested uses relative path as dir key.
+  return hydrateWebExpanded(nodes, expandedDirs);
+}
+
+async function hydrateWebExpanded(
+  nodes: ExplorerNode[],
+  expandedDirs: ReadonlySet<string>,
+): Promise<ExplorerNode[]> {
+  const out: ExplorerNode[] = [];
+  for (const node of nodes) {
+    if (node.kind !== "dir") {
+      out.push(node);
+      continue;
+    }
+    if (!expandedDirs.has(node.path)) {
+      out.push({ ...node, children: [], childrenLoaded: false });
+      continue;
+    }
+    const children = await loadWebExplorerChildren(node.path);
+    const hydrated = await hydrateWebExpanded(children, expandedDirs);
+    out.push({ ...node, children: hydrated, childrenLoaded: true });
+  }
+  return out;
 }
 
 export async function readWebExplorerFile(relativePath: string): Promise<{

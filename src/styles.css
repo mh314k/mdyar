@@ -770,6 +770,20 @@ body {
   padding-inline: 0.5rem;
   overflow: hidden;
   user-select: none;
+  cursor: default;
+}
+
+.mdyar-app.is-desktop .mdyar-chrome-bar {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.mdyar-app.is-desktop .mdyar-menubar,
+.mdyar-app.is-desktop .mdyar-window-controls,
+.mdyar-app.is-desktop .mdyar-menu-trigger,
+.mdyar-app.is-desktop .mdyar-window-btn {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .mdyar-chrome-title-text {
@@ -1081,6 +1095,68 @@ body {
   border: 1px solid var(--mdyar-border);
   border-radius: 8px;
   box-shadow: var(--mdyar-elev);
+}
+
+.mdyar-context-menu {
+  position: fixed;
+  z-index: 80;
+  min-width: 12.5rem;
+  max-width: min(20rem, calc(100vw - 0.8rem));
+  margin: 0;
+  padding: 0.28rem;
+  list-style: none;
+  background: var(--mdyar-surface);
+  color: var(--mdyar-fg);
+  border: 1px solid var(--mdyar-border);
+  border-radius: 8px;
+  box-shadow: var(--mdyar-elev);
+}
+
+.mdyar-context-menu .mdyar-menu-item:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.mdyar-context-menu .mdyar-menu-item.is-danger {
+  color: #f14c4c;
+}
+
+.mdyar-explorer-pane {
+  min-height: 2rem;
+  outline: none;
+}
+
+.mdyar-tree-row.is-selected {
+  background: color-mix(in srgb, var(--mdyar-accent) 22%, transparent);
+}
+
+.mdyar-tree-row.is-cut {
+  opacity: 0.55;
+}
+
+.mdyar-tree-row.is-inline-edit {
+  gap: 0.25rem;
+  padding-block: 0.1rem;
+}
+
+.mdyar-explorer-inline-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 1.45rem;
+  margin: 0;
+  padding: 0 0.3rem;
+  border: 1px solid var(--mdyar-accent);
+  border-radius: 3px;
+  background: var(--mdyar-bg);
+  color: var(--mdyar-fg);
+  font: inherit;
+  font-size: 0.78rem;
+  outline: none;
+}
+
+.mdyar-tree-loading {
+  padding-inline-start: 1.5rem;
+  font-size: 0.75rem;
 }
 
 .mdyar-menu-sep {

@@ -3,6 +3,7 @@ import { APP_NAME } from "./meta";
 import { formatTabLabel } from "./fileTypeIcon";
 import { WindowControls } from "./WindowControls";
 import type { ViewMode } from "./viewMode";
+import { isWindowDragBlocked, startWindowDrag } from "./windowDrag";
 
 export type { ViewMode };
 
@@ -51,10 +52,18 @@ export function Toolbar({
 
   return (
     <header className="mdyar-chrome">
-      <div className="mdyar-chrome-bar">
+      <div
+        className="mdyar-chrome-bar"
+        {...(isDesktop ? { "data-tauri-drag-region": true } : {})}
+        onPointerDown={(event) => {
+          if (!isDesktop || event.button !== 0) return;
+          if (isWindowDragBlocked(event.target)) return;
+          void startWindowDrag();
+        }}
+      >
         <div
           className="mdyar-chrome-mark"
-          data-tauri-drag-region={isDesktop ? true : undefined}
+          {...(isDesktop ? { "data-tauri-drag-region": true } : {})}
         >
           <img
             src={`${import.meta.env.BASE_URL}mdyar.svg`}
@@ -62,6 +71,7 @@ export function Toolbar({
             width={16}
             height={16}
             draggable={false}
+            {...(isDesktop ? { "data-tauri-drag-region": true } : {})}
           />
         </div>
 
@@ -85,13 +95,21 @@ export function Toolbar({
 
         <div
           className="mdyar-chrome-title"
-          data-tauri-drag-region={isDesktop ? true : undefined}
           title={title}
+          {...(isDesktop ? { "data-tauri-drag-region": true } : {})}
         >
-          <span className="mdyar-chrome-title-text">{title}</span>
+          <span
+            className="mdyar-chrome-title-text"
+            {...(isDesktop ? { "data-tauri-drag-region": true } : {})}
+          >
+            {title}
+          </span>
         </div>
 
-        <div className="mdyar-chrome-trailing">
+        <div
+          className="mdyar-chrome-trailing"
+          data-tauri-drag-region="false"
+        >
           {isDesktop ? <WindowControls /> : null}
         </div>
       </div>

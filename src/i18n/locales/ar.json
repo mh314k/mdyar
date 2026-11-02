@@ -56,7 +56,21 @@
     "loading": "جاري التحميل…",
     "emptyFolder": "هذا المجلد فارغ.",
     "openFolderHint": "افتح مجلداً لتصفح الملفات هنا.",
-    "webFolderUnsupported": "مستكشف المجلد يحتاج متصفح Chromium (Chrome أو Edge أو Opera)."
+    "webFolderUnsupported": "مستكشف المجلد يحتاج متصفح Chromium (Chrome أو Edge أو Opera).",
+    "newFile": "ملف جديد",
+    "newFolder": "مجلد جديد",
+    "newFilePrompt": "اسم الملف الجديد",
+    "newFolderPrompt": "اسم المجلد الجديد",
+    "cut": "قص",
+    "copy": "نسخ",
+    "paste": "لصق",
+    "rename": "إعادة تسمية",
+    "renamePrompt": "الاسم الجديد",
+    "delete": "حذف",
+    "deleteFileConfirm": "هل تريد حذف «{{name}}» نهائياً؟",
+    "deleteFolderConfirm": "هل تريد حذف المجلد «{{name}}» وكل محتوياته نهائياً؟",
+    "pasteIntoSelf": "لا يمكن لصق مجلد داخل نفسه.",
+    "opFailed": "فشلت عملية الملف."
   },
   "settings": {
     "preferences": "التفضيلات",

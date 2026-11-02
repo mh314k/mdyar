@@ -1,24 +1,37 @@
-import type { ExplorerNode } from "../platform/desktopExplorer";
 import { normalizeFsPath } from "./documents";
 
-/** Folder node paths that must expand to reveal any open tab file in the tree. */
-export function explorerDirsToReveal(
-  nodes: ExplorerNode[],
-  openFilePaths: ReadonlySet<string>,
+/**
+ * Ancestor folders between workspace root and a file path (path-based, works with lazy trees).
+ */
+export function ancestorDirsBetween(root: string, filePath: string): string[] {
+  const rootKey = normalizeFsPath(root).replace(/\/$/, "");
+  const fileKey = normalizeFsPath(filePath);
+  if (fileKey === rootKey || !fileKey.startsWith(`${rootKey}/`)) return [];
+
+  const sep = root.includes("\\") ? "\\" : "/";
+  const rootParts = root.replace(/[/\\]+$/, "").split(/[/\\]/).filter(Boolean);
+  const fileParts = filePath.split(/[/\\]/).filter(Boolean);
+  if (fileParts.length <= rootParts.length + 1) return [];
+
+  const dirs: string[] = [];
+  let current = root.replace(/[/\\]+$/, "");
+  for (let i = rootParts.length; i < fileParts.length - 1; i++) {
+    current = `${current}${sep}${fileParts[i]}`;
+    dirs.push(current);
+  }
+  return dirs;
+}
+
+export function dirsToRevealForOpenFiles(
+  folderRoot: string,
+  openFilePaths: Iterable<string>,
 ): string[] {
   const dirs = new Set<string>();
-
-  function walk(list: ExplorerNode[], ancestors: string[]): void {
-    for (const node of list) {
-      if (node.kind === "dir") {
-        walk(node.children, [...ancestors, node.path]);
-      } else if (openFilePaths.has(normalizeFsPath(node.path))) {
-        for (const dir of ancestors) dirs.add(dir);
-      }
+  for (const path of openFilePaths) {
+    for (const dir of ancestorDirsBetween(folderRoot, path)) {
+      dirs.add(dir);
     }
   }
-
-  walk(nodes, []);
   return [...dirs];
 }
 
