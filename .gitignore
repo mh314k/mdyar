@@ -1,13 +1,14 @@
 # Dependencies
 node_modules/
 
-graphify-out/
 # Build
 dist/
 dist-ssr/
 *.local
 
-# Editor
+# Editor / local agent tooling (keep on disk, never commit)
+.cursor/
+graphify-out/
 .vscode/*
 !.vscode/extensions.json
 .idea/
