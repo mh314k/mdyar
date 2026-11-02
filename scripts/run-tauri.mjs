@@ -5,18 +5,31 @@ import { join, delimiter } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(fileURLToPath(new URL(".", import.meta.url)), "..");
-const cargoBin = join(homedir(), ".cargo", "bin");
-const cargoExe = join(cargoBin, process.platform === "win32" ? "cargo.exe" : "cargo");
+const cargoHome = process.env.CARGO_HOME || join(homedir(), ".cargo");
+const defaultCargoBin = join(cargoHome, "bin");
+const cargoName = process.platform === "win32" ? "cargo.exe" : "cargo";
 const npmBin = join(root, "node_modules", ".bin");
 const tauriCmd = join(
   npmBin,
   process.platform === "win32" ? "tauri.cmd" : "tauri",
 );
 
-if (!existsSync(cargoExe)) {
+function findCargoBinDir() {
+  const defaultExe = join(defaultCargoBin, cargoName);
+  if (existsSync(defaultExe)) return defaultCargoBin;
+
+  for (const dir of (process.env.PATH ?? "").split(delimiter)) {
+    if (!dir) continue;
+    if (existsSync(join(dir, cargoName))) return dir;
+  }
+  return null;
+}
+
+const cargoBin = findCargoBinDir();
+if (!cargoBin) {
   console.error(
     "Rust/Cargo not found. Install from https://rustup.rs/ then reopen the terminal.\n" +
-      `Expected: ${cargoExe}`,
+      `Looked for ${cargoName} under CARGO_HOME (${cargoHome}) and PATH.`,
   );
   process.exit(1);
 }

@@ -16,8 +16,10 @@ jobs:
         include:
           - platform: macos-latest
             args: --target aarch64-apple-darwin
+            rust_target: aarch64-apple-darwin
           - platform: macos-latest
             args: --target x86_64-apple-darwin
+            rust_target: x86_64-apple-darwin
           - platform: ubuntu-22.04
             args: ""
           - platform: windows-latest
@@ -37,9 +39,20 @@ jobs:
           node-version: 22
           cache: npm
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add macOS Rust target
+        if: runner.os == 'macOS'
+        run: rustup target add ${{ matrix.rust_target }}
+
+      - name: Ensure cargo on PATH
+        shell: bash
+        run: |
+          echo "${CARGO_HOME:-$HOME/.cargo}/bin" >> "$GITHUB_PATH"
+          export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"
+          cargo --version
+          rustc --version
 
       - run: npm ci
 
@@ -55,4 +68,6 @@ jobs:
           releaseBody: "See README for features and license (GPL-3.0)."
           releaseDraft: false
           prerelease: false
+          # Bypass scripts/run-tauri.mjs (local PATH helper); CI already has cargo.
+          tauriScript: npx tauri
           args: ${{ matrix.args }}
