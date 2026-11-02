@@ -2,7 +2,7 @@
 
 Technical setup, build, and repository layout. For product overview see the [README](../README.md) (and localized copies).
 
-**Version:** 0.6.0 · **License:** [GPL-3.0-or-later](../LICENSE)
+**Version:** 0.7.0 · **License:** [GPL-3.0-or-later](../LICENSE)
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ npm run build
 GITHUB_PAGES=true npm run build
 ```
 
-Output: `dist/`. Pushing a version tag `v*` (e.g. `v0.6.0`) runs this workflow and `.github/workflows/tauri.yml`. Manual run: Actions → **Deploy to GitHub Pages** → **Run workflow**. Repository **Settings → Pages → Source → GitHub Actions**.
+Output: `dist/`. Pushing a version tag `v*` (e.g. `v0.7.0`) runs this workflow and `.github/workflows/tauri.yml`. Manual run: Actions → **Deploy to GitHub Pages** → **Run workflow**. Repository **Settings → Pages → Source → GitHub Actions**.
 
 ## Desktop (Tauri 2)
 
@@ -62,7 +62,7 @@ Proxifier Portable can inject into WebView2 and crash MDyar (`WS2_32.dll`). If `
 | Capability | Web | Desktop |
 | --- | --- | --- |
 | Open file | Browser picker; no persistent path | Native dialog; path on disk |
-| Open folder / tree explorer | — | Yes |
+| Open folder / tree explorer | Chromium folder picker (lazy tree) | Yes — lazy tree; create/rename/delete/copy/cut/paste |
 | Save | Download `.md` | Write to current path |
 | Save as | — | Yes |
 | HTML / Word export | Download | Save dialog |
@@ -117,7 +117,7 @@ Stack: React 19, TypeScript, Vite 6, unified/remark/rehype, docx, Tauri 2.
 
 ## Releases
 
-Tag `v*` (e.g. `v0.6.0`) runs `.github/workflows/tauri.yml` — Windows, Linux (Ubuntu 22.04), macOS (Apple Silicon and Intel).
+Tag `v*` (e.g. `v0.7.0`) runs `.github/workflows/tauri.yml` — Windows, Linux (Ubuntu 22.04), macOS (Apple Silicon and Intel).
 
 ## Contributing
 

@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# Same version gate as desktop: push a semver tag (e.g. v0.6.0).
+# Same version gate as desktop: push a semver tag (e.g. v0.7.0).
 on:
   push:
     tags: ["v*"]

@@ -4,7 +4,7 @@
 
 在同一文档中混排波斯语、阿拉伯语、英语等文本 — 每个块自动保持正确的书写方向。
 
-**版本 0.6.0** · [在线使用](https://mh314k.github.io/mdyar/) · [下载发布版](https://github.com/mh314k/mdyar/releases) · [开发者指南](docs/DEVELOPMENT.md) · **GPL-3.0-or-later**
+**版本 0.7.0** · [在线使用](https://mh314k.github.io/mdyar/) · [下载发布版](https://github.com/mh314k/mdyar/releases) · [开发者指南](docs/DEVELOPMENT.md) · **GPL-3.0-or-later**
 
 | [English](README.md) | [فارسی](README.fa.md) | [العربية](README.ar.md) | [Русский](README.ru.md) | [中文](README.zh-CN.md) |
 | --- | --- | --- | --- | --- |
@@ -42,8 +42,9 @@
 从 **[Releases](https://github.com/mh314k/mdyar/releases)** 下载最新构建。
 
 - 保存与**另存为**写入真实磁盘路径  
-- **打开文件夹**与项目树（可编辑 MD/文本文件）  
-- 多标签；未保存时标签显示 `*`  
+- **打开文件夹**，项目树按需懒加载（可编辑 MD/文本文件）  
+- 桌面端文件操作：新建文件/文件夹、重命名、删除、复制/剪切/粘贴（右键菜单 + 快捷键）  
+- 多标签；未保存时标签显示 `*`；移动或删除文件时标签路径同步更新  
 - 安装后可关联 `.md` / `.markdown` / `.mdown`  
 - 下次启动恢复工作区  
 
@@ -54,7 +55,7 @@
 | | 网页 | 桌面 |
 | --- | --- | --- |
 | 打开文件 | 浏览器选择 | 系统对话框 |
-| 项目文件夹 | — | 资源管理器树 |
+| 项目文件夹 | 文件夹选择器（Chromium） | 资源管理器树 + 文件操作 |
 | 保存 | 下载 | 写入路径 |
 | 另存为 | — | ✓ |
 | HTML / Word | 下载 | 保存对话框 |

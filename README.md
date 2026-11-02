@@ -4,7 +4,7 @@
 
 Write Persian, Arabic, English, and mixed scripts in one document — each block keeps the correct direction automatically.
 
-**Version 0.6.0** · [Try online](https://mh314k.github.io/mdyar/) · [Releases](https://github.com/mh314k/mdyar/releases) · [Developer guide](docs/DEVELOPMENT.md) · **GPL-3.0-or-later**
+**Version 0.7.0** · [Try online](https://mh314k.github.io/mdyar/) · [Releases](https://github.com/mh314k/mdyar/releases) · [Developer guide](docs/DEVELOPMENT.md) · **GPL-3.0-or-later**
 
 | [English](README.md) | [فارسی](README.fa.md) | [العربية](README.ar.md) | [Русский](README.ru.md) | [中文](README.zh-CN.md) |
 | --- | --- | --- | --- | --- |
@@ -42,8 +42,9 @@ Open files from your device; **Save** downloads an updated `.md`. Your session i
 Download the latest build from **[Releases](https://github.com/mh314k/mdyar/releases)** (Windows, Linux, macOS).
 
 - Save and **Save as** to real paths on disk  
-- **Open folder** and browse the project tree (Markdown/text editable files)  
-- Multiple tabs, unsaved indicator (`*` on tab titles)  
+- **Open folder** with a lazy project tree (Markdown/text editable files)  
+- Explorer file ops on desktop: new file/folder, rename, delete, copy/cut/paste (context menu + shortcuts)  
+- Multiple tabs, unsaved indicator (`*` on tab titles); open tabs stay in sync when files move or are deleted  
 - Associate `.md` / `.markdown` / `.mdown` after installation  
 - Workspace restored on next launch  
 
@@ -54,7 +55,7 @@ Build from source: see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 | | Web | Desktop |
 | --- | --- | --- |
 | Open file | File picker | Native dialog |
-| Project folder | — | Explorer tree |
+| Project folder | Chromium folder picker | Explorer tree + file ops |
 | Save | Download | Write to path |
 | Save as | — | ✓ |
 | HTML / Word | Download | Save dialog |
