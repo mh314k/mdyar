@@ -35,7 +35,7 @@ npm run build
 GITHUB_PAGES=true npm run build
 ```
 
-Output: `dist/`. Pushes to `main` or `master` run the Pages workflow. Repository **Settings → Pages → Source → GitHub Actions**.
+Output: `dist/`. Pushing a version tag `v*` (e.g. `v0.6.0`) runs this workflow and `.github/workflows/tauri.yml`. Manual run: Actions → **Deploy to GitHub Pages** → **Run workflow**. Repository **Settings → Pages → Source → GitHub Actions**.
 
 ## Desktop (Tauri 2)
 
