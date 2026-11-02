@@ -4,7 +4,15 @@
 
 فارسی، عربی، انگلیسی و متن ترکیبی در یک سند — جهت هر بلوک به‌صورت خودکار درست می‌ماند.
 
-**نسخه ۰٫۷٫۰** · [استفاده در مرورگر](https://mh314k.github.io/mdyar/) · [دانلود](https://github.com/mh314k/mdyar/releases) · [راهنمای توسعه‌دهندگان](docs/DEVELOPMENT.md) · **GPL-3.0-or-later**
+[![Latest release](https://img.shields.io/github/v/release/mh314k/mdyar?display_name=tag&sort=semver)](https://github.com/mh314k/mdyar/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/mh314k/mdyar/total)](https://github.com/mh314k/mdyar/releases)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/mh314k/mdyar)](https://github.com/mh314k/mdyar/stargazers)
+[![Issues](https://img.shields.io/github/issues/mh314k/mdyar)](https://github.com/mh314k/mdyar/issues)
+[![Desktop build](https://img.shields.io/github/actions/workflow/status/mh314k/mdyar/tauri.yml?label=desktop%20build)](https://github.com/mh314k/mdyar/actions/workflows/tauri.yml)
+[![Web deploy](https://img.shields.io/github/actions/workflow/status/mh314k/mdyar/pages.yml?label=web%20deploy)](https://github.com/mh314k/mdyar/actions/workflows/pages.yml)
+
+[استفاده در مرورگر](https://mh314k.github.io/mdyar/) · [دانلود](https://github.com/mh314k/mdyar/releases) · [راهنمای توسعه‌دهندگان](docs/DEVELOPMENT.md)
 
 | [English](README.md) | [فارسی](README.fa.md) | [العربية](README.ar.md) | [Русский](README.ru.md) | [中文](README.zh-CN.md) |
 | --- | --- | --- | --- | --- |
@@ -60,6 +68,16 @@
 | ذخیره به‌عنوان | — | ✓ |
 | HTML / Word | دانلود | گفتگوی ذخیره |
 | دوبار کلیک `.md` | — | ✓ (پس از نصب) |
+
+## مشارکت و بازخورد
+
+گزارش باگ، ایده و پول‌ریکویست خوش‌آمد است.
+
+- [ثبت ایشو](https://github.com/mh314k/mdyar/issues/new/choose) — باگ، درخواست قابلیت، نقص ترجمه  
+- قبل از ایشوی تکراری، [ایشوهای موجود](https://github.com/mh314k/mdyar/issues) را ببینید  
+- برای پول‌ریکویست: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)؛ مشارکت‌ها تحت **GPL-3.0-or-later** هستند
+
+اگر MDyar به کارت آمد، یک [ستاره در گیت‌هاب](https://github.com/mh314k/mdyar) کمک‌کننده است.
 
 ## مجوز
 

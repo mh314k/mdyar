@@ -4,7 +4,15 @@
 
 Пишите на персидском, арабском, английском и в смешанных текстах в одном документе — направление каждого блока определяется автоматически.
 
-**Версия 0.7.0** · [Открыть в браузере](https://mh314k.github.io/mdyar/) · [Сборки](https://github.com/mh314k/mdyar/releases) · [Руководство разработчика](docs/DEVELOPMENT.md) · **GPL-3.0-or-later**
+[![Latest release](https://img.shields.io/github/v/release/mh314k/mdyar?display_name=tag&sort=semver)](https://github.com/mh314k/mdyar/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/mh314k/mdyar/total)](https://github.com/mh314k/mdyar/releases)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/mh314k/mdyar)](https://github.com/mh314k/mdyar/stargazers)
+[![Issues](https://img.shields.io/github/issues/mh314k/mdyar)](https://github.com/mh314k/mdyar/issues)
+[![Desktop build](https://img.shields.io/github/actions/workflow/status/mh314k/mdyar/tauri.yml?label=desktop%20build)](https://github.com/mh314k/mdyar/actions/workflows/tauri.yml)
+[![Web deploy](https://img.shields.io/github/actions/workflow/status/mh314k/mdyar/pages.yml?label=web%20deploy)](https://github.com/mh314k/mdyar/actions/workflows/pages.yml)
+
+[Открыть в браузере](https://mh314k.github.io/mdyar/) · [Сборки](https://github.com/mh314k/mdyar/releases) · [Руководство разработчика](docs/DEVELOPMENT.md)
 
 | [English](README.md) | [فارسی](README.fa.md) | [العربية](README.ar.md) | [Русский](README.ru.md) | [中文](README.zh-CN.md) |
 | --- | --- | --- | --- | --- |
@@ -60,6 +68,16 @@
 | Сохранить как | — | ✓ |
 | HTML / Word | Скачивание | Диалог сохранения |
 | Двойной щелчок по `.md` | — | ✓ (после установки) |
+
+## Участие и отзывы
+
+Сообщения об ошибках, идеи и pull request’ы приветствуются.
+
+- [Создать issue](https://github.com/mh314k/mdyar/issues/new/choose) — баги, идеи функций, пробелы локализации  
+- Сначала посмотрите [существующие issues](https://github.com/mh314k/mdyar/issues)  
+- Для PR: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md); вклад лицензируется под **GPL-3.0-or-later**
+
+Если MDyar полезен — поставьте [звезду на GitHub](https://github.com/mh314k/mdyar).
 
 ## Лицензия
 

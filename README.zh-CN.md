@@ -4,7 +4,15 @@
 
 在同一文档中混排波斯语、阿拉伯语、英语等文本 — 每个块自动保持正确的书写方向。
 
-**版本 0.7.0** · [在线使用](https://mh314k.github.io/mdyar/) · [下载发布版](https://github.com/mh314k/mdyar/releases) · [开发者指南](docs/DEVELOPMENT.md) · **GPL-3.0-or-later**
+[![Latest release](https://img.shields.io/github/v/release/mh314k/mdyar?display_name=tag&sort=semver)](https://github.com/mh314k/mdyar/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/mh314k/mdyar/total)](https://github.com/mh314k/mdyar/releases)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/mh314k/mdyar)](https://github.com/mh314k/mdyar/stargazers)
+[![Issues](https://img.shields.io/github/issues/mh314k/mdyar)](https://github.com/mh314k/mdyar/issues)
+[![Desktop build](https://img.shields.io/github/actions/workflow/status/mh314k/mdyar/tauri.yml?label=desktop%20build)](https://github.com/mh314k/mdyar/actions/workflows/tauri.yml)
+[![Web deploy](https://img.shields.io/github/actions/workflow/status/mh314k/mdyar/pages.yml?label=web%20deploy)](https://github.com/mh314k/mdyar/actions/workflows/pages.yml)
+
+[在线使用](https://mh314k.github.io/mdyar/) · [下载发布版](https://github.com/mh314k/mdyar/releases) · [开发者指南](docs/DEVELOPMENT.md)
 
 | [English](README.md) | [فارسی](README.fa.md) | [العربية](README.ar.md) | [Русский](README.ru.md) | [中文](README.zh-CN.md) |
 | --- | --- | --- | --- | --- |
@@ -60,6 +68,16 @@
 | 另存为 | — | ✓ |
 | HTML / Word | 下载 | 保存对话框 |
 | 双击 `.md` | — | ✓（安装后） |
+
+## 参与与反馈
+
+欢迎提交缺陷报告、想法与 Pull Request。
+
+- [新建 Issue](https://github.com/mh314k/mdyar/issues/new/choose) — 缺陷、功能建议、本地化缺口  
+- 提交前请先查看 [现有 Issues](https://github.com/mh314k/mdyar/issues)  
+- PR 请参阅 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)；贡献按 **GPL-3.0-or-later** 许可
+
+若 MDyar 对你有帮助，欢迎在 GitHub 上点一颗 [Star](https://github.com/mh314k/mdyar)。
 
 ## 许可证
 
