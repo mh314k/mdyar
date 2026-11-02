@@ -23,6 +23,7 @@ type Props = {
   onAbout: () => void;
   updateVersion?: string;
   isDesktop?: boolean;
+  folderExplorerAvailable?: boolean;
 };
 
 export function Toolbar({
@@ -42,6 +43,7 @@ export function Toolbar({
   onAbout,
   updateVersion,
   isDesktop = false,
+  folderExplorerAvailable = false,
 }: Props) {
   const title = hasOpenDocument
     ? `${formatTabLabel(fileName, dirty)} — ${APP_NAME}`
@@ -78,6 +80,7 @@ export function Toolbar({
           onAbout={onAbout}
           updateVersion={updateVersion}
           isDesktop={isDesktop}
+          folderExplorerAvailable={folderExplorerAvailable}
         />
 
         <div

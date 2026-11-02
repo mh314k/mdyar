@@ -55,7 +55,8 @@
     "closeFolder": "إغلاق المجلد",
     "loading": "جاري التحميل…",
     "emptyFolder": "هذا المجلد فارغ.",
-    "openFolderHint": "افتح مجلداً لتصفح الملفات هنا."
+    "openFolderHint": "افتح مجلداً لتصفح الملفات هنا.",
+    "webFolderUnsupported": "مستكشف المجلد يحتاج متصفح Chromium (Chrome أو Edge أو Opera)."
   },
   "settings": {
     "preferences": "التفضيلات",

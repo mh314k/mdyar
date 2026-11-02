@@ -26,10 +26,14 @@ import {
   type OpenResult,
 } from "../platform/fs";
 import {
-  loadExplorerTree,
-  pickDesktopWorkspaceFolder,
-  type ExplorerNode,
-} from "../platform/desktopExplorer";
+  closeWorkspaceFolder,
+  folderExplorerAvailable,
+  loadWorkspaceExplorerTree,
+  pickWorkspaceFolder,
+  readWorkspaceTextFile,
+  restoreWorkspaceFolder,
+} from "../platform/workspaceExplorer";
+import type { ExplorerNode } from "../platform/desktopExplorer";
 import { loadWebWorkspace, saveWebWorkspace } from "../platform/webWorkspace";
 import {
   applyThemeToDocument,
@@ -352,54 +356,64 @@ export function App() {
   }, []);
 
   const handleOpenFolder = useCallback(async () => {
-    if (!isDesktop) {
+    if (!folderExplorerAvailable(isDesktop)) {
       window.alert(t("dialogs.folderPickerUnsupported"));
       return;
     }
-    const root = await pickDesktopWorkspaceFolder();
+    const root = await pickWorkspaceFolder(isDesktop);
     if (!root) return;
     setWorkspace((ws) => ({ ...ws, folderRoot: root }));
   }, [isDesktop, t]);
 
-  const refreshExplorerTree = useCallback(async (root: string | null) => {
-    if (!root || !isDesktop) {
-      setExplorerNodes([]);
-      setExplorerLoading(false);
-      return;
-    }
-    setExplorerLoading(true);
-    try {
-      const nodes = await loadExplorerTree(root);
-      setExplorerNodes(nodes);
-    } catch {
-      setExplorerNodes([]);
-    } finally {
-      setExplorerLoading(false);
-    }
-  }, [isDesktop]);
+  const refreshExplorerTree = useCallback(
+    async (root: string | null) => {
+      if (!root) {
+        setExplorerNodes([]);
+        setExplorerLoading(false);
+        return;
+      }
+      setExplorerLoading(true);
+      try {
+        if (!isDesktop) {
+          await restoreWorkspaceFolder(root, false);
+        }
+        const nodes = await loadWorkspaceExplorerTree(root, isDesktop);
+        setExplorerNodes(nodes);
+      } catch {
+        setExplorerNodes([]);
+      } finally {
+        setExplorerLoading(false);
+      }
+    },
+    [isDesktop],
+  );
 
   useEffect(() => {
     void refreshExplorerTree(workspace.folderRoot);
   }, [workspace.folderRoot, refreshExplorerTree]);
 
   const handleCloseFolder = useCallback(() => {
+    void closeWorkspaceFolder(isDesktop);
     setWorkspace((ws) => ({ ...ws, folderRoot: null }));
-  }, []);
+  }, [isDesktop]);
 
-  const handleOpenExplorerFile = useCallback(async (path: string) => {
-    const ws = workspaceRef.current;
-    const existing = findDocumentByPath(ws.documents, path);
-    if (existing) {
-      setWorkspace((prev) => ({ ...prev, activeId: existing.id }));
-      return;
-    }
-    const result = await readTextAtPath(path);
-    if (!result) {
-      window.alert(t("dialogs.openFailed", { name: path }));
-      return;
-    }
-    setWorkspace((prev) => mergeOpens(prev, [result]));
-  }, [t]);
+  const handleOpenExplorerFile = useCallback(
+    async (path: string) => {
+      const ws = workspaceRef.current;
+      const existing = findDocumentByPath(ws.documents, path);
+      if (existing) {
+        setWorkspace((prev) => ({ ...prev, activeId: existing.id }));
+        return;
+      }
+      const result = await readWorkspaceTextFile(path, isDesktop);
+      if (!result) {
+        window.alert(t("dialogs.openFailed", { name: path }));
+        return;
+      }
+      setWorkspace((prev) => mergeOpens(prev, [result]));
+    },
+    [isDesktop, t],
+  );
 
   const handleSave = useCallback(
     async (saveAs = false): Promise<boolean> => {
@@ -591,7 +605,7 @@ export function App() {
         e.preventDefault();
         void saveRef.current(e.shiftKey && isDesktop);
       } else if (key === "o" && e.shiftKey) {
-        if (!isDesktop) return;
+        if (!folderExplorerAvailable(isDesktop)) return;
         e.preventDefault();
         void handleOpenFolder();
       } else if (key === "o" && !e.shiftKey) {
@@ -657,11 +671,13 @@ export function App() {
   };
 
   const dirtyCount = workspace.documents.filter((d) => d.dirty).length;
+  const explorerEnabled = folderExplorerAvailable(isDesktop);
 
   return (
     <div className={isDesktop ? "mdyar-app is-desktop" : "mdyar-app"}>
       <Toolbar
         isDesktop={isDesktop}
+        folderExplorerAvailable={explorerEnabled}
         fileName={fileName}
         dirty={dirty}
         hasOpenDocument={hasOpenDocument}
@@ -689,8 +705,9 @@ export function App() {
         <SideBar
           visible={sidebarPrefs.open}
           view={sidebarPrefs.view}
-          isDesktop={isDesktop}
+          folderExplorerAvailable={explorerEnabled}
           documents={workspace.documents}
+          activeId={workspace.activeId}
           folderRoot={workspace.folderRoot}
           explorerNodes={explorerNodes}
           explorerLoading={explorerLoading}
@@ -703,6 +720,8 @@ export function App() {
           onCloseFolder={handleCloseFolder}
           onOpenExplorerFile={(path) => void handleOpenExplorerFile(path)}
           onRefreshExplorer={() => void refreshExplorerTree(workspace.folderRoot)}
+          onSelectTab={handleSelectTab}
+          onCloseTab={(id) => void handleCloseTab(id)}
           onThemes={() => setThemesOpen(true)}
           onAbout={() => setAboutOpen(true)}
         />
@@ -768,7 +787,7 @@ export function App() {
         </span>
         <span>{t("status.chars", { count: content.length })}</span>
         <span>{t("status.tabs", { count: workspace.documents.length })}</span>
-        {isDesktop && workspace.folderRoot ? (
+        {workspace.folderRoot ? (
           <span className="mdyar-status-folder" title={workspace.folderRoot}>
             {t("status.folder", { name: workspace.folderRoot })}
           </span>

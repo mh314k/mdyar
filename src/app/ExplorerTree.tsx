@@ -13,6 +13,7 @@ type Props = {
   nodes: ExplorerNode[];
   loading: boolean;
   activeFilePath: string | null;
+  openFilePaths: ReadonlySet<string>;
   dirtyFilePaths: ReadonlySet<string>;
   expandedDirs: Set<string>;
   onExpandedDirsChange: (updater: (prev: Set<string>) => Set<string>) => void;
@@ -25,6 +26,7 @@ export function ExplorerFolderSection({
   nodes,
   loading,
   activeFilePath,
+  openFilePaths,
   dirtyFilePaths,
   expandedDirs,
   onExpandedDirsChange,
@@ -86,6 +88,7 @@ export function ExplorerFolderSection({
               expanded={expandedDirs}
               onToggleDir={toggleDir}
               activeFilePath={activeFilePath}
+              openFilePaths={openFilePaths}
               dirtyFilePaths={dirtyFilePaths}
               onOpenFile={onOpenFile}
             />
@@ -143,6 +146,7 @@ function ExplorerTreeNode({
   expanded,
   onToggleDir,
   activeFilePath,
+  openFilePaths,
   dirtyFilePaths,
   onOpenFile,
 }: {
@@ -151,6 +155,7 @@ function ExplorerTreeNode({
   expanded: Set<string>;
   onToggleDir: (path: string) => void;
   activeFilePath: string | null;
+  openFilePaths: ReadonlySet<string>;
   dirtyFilePaths: ReadonlySet<string>;
   onOpenFile: (path: string) => void;
 }) {
@@ -184,6 +189,7 @@ function ExplorerTreeNode({
                 expanded={expanded}
                 onToggleDir={onToggleDir}
                 activeFilePath={activeFilePath}
+                openFilePaths={openFilePaths}
                 dirtyFilePaths={dirtyFilePaths}
                 onOpenFile={onOpenFile}
               />
@@ -196,6 +202,7 @@ function ExplorerTreeNode({
 
   const pathKey = normalizeFsPath(node.path);
   const active = activeFilePath !== null && normalizeFsPath(activeFilePath) === pathKey;
+  const isOpenTab = openFilePaths.has(pathKey);
   const dirty = dirtyFilePaths.has(pathKey);
   const displayName = formatTabLabel(node.name, dirty);
   const rowClass = [
@@ -203,6 +210,7 @@ function ExplorerTreeNode({
     "mdyar-tree-row",
     "is-file",
     active ? "is-active" : "",
+    isOpenTab && !active ? "is-open-tab" : "",
     !node.editable ? "is-disabled" : "",
   ]
     .filter(Boolean)

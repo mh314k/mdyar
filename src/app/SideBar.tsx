@@ -11,13 +11,16 @@ import {
 import type { ActivityView } from "./activityView";
 import type { ExplorerNode } from "../platform/desktopExplorer";
 import { ExplorerFolderSection } from "./ExplorerTree";
+import { OpenEditorsSection } from "./OpenEditorsSection";
+import { explorerDirsToReveal, mergeExpandedDirs } from "./explorerPaths";
 import { SettingsPanel } from "./SettingsPanel";
 
 type Props = {
   visible: boolean;
   view: ActivityView;
-  isDesktop?: boolean;
+  folderExplorerAvailable?: boolean;
   documents: MdyarDocument[];
+  activeId: string | null;
   folderRoot: string | null;
   explorerNodes?: ExplorerNode[];
   explorerLoading?: boolean;
@@ -30,6 +33,8 @@ type Props = {
   onCloseFolder?: () => void;
   onOpenExplorerFile?: (path: string) => void;
   onRefreshExplorer?: () => void;
+  onSelectTab: (id: string) => void;
+  onCloseTab: (id: string) => void;
   onThemes: () => void;
   onAbout: () => void;
 };
@@ -37,8 +42,9 @@ type Props = {
 export function SideBar({
   visible,
   view,
-  isDesktop = false,
+  folderExplorerAvailable = false,
   documents,
+  activeId,
   folderRoot,
   explorerNodes = [],
   explorerLoading = false,
@@ -51,6 +57,8 @@ export function SideBar({
   onCloseFolder,
   onOpenExplorerFile,
   onRefreshExplorer,
+  onSelectTab,
+  onCloseTab,
   onThemes,
   onAbout,
 }: Props) {
@@ -68,6 +76,21 @@ export function SideBar({
     }
     return paths;
   }, [documents]);
+
+  const openFilePaths = useMemo(() => {
+    const paths = new Set<string>();
+    for (const doc of documents) {
+      if (doc.filePath) paths.add(normalizeFsPath(doc.filePath));
+    }
+    return paths;
+  }, [documents]);
+
+  useEffect(() => {
+    if (!folderRoot || explorerNodes.length === 0 || openFilePaths.size === 0) return;
+    const reveal = explorerDirsToReveal(explorerNodes, openFilePaths);
+    if (reveal.length === 0) return;
+    setFolderExpandedDirs((prev) => mergeExpandedDirs(prev, reveal));
+  }, [folderRoot, explorerNodes, openFilePaths]);
 
   const titles: Record<ActivityView, string> = {
     explorer: t("activity.explorer"),
@@ -94,21 +117,21 @@ export function SideBar({
               label={t("toolbar.open")}
               onClick={onOpen}
             />
-            {isDesktop ? (
+            {folderExplorerAvailable ? (
               <ActionIcon
                 icon={<IconOpenFolder />}
                 label={t("toolbar.openFolder")}
                 onClick={onOpenFolder}
               />
             ) : null}
-            {isDesktop && folderRoot && onRefreshExplorer ? (
+            {folderExplorerAvailable && folderRoot && onRefreshExplorer ? (
               <ActionIcon
                 icon={<MdIcon name="refresh" />}
                 label={t("sidebar.refreshExplorer")}
                 onClick={onRefreshExplorer}
               />
             ) : null}
-            {isDesktop && folderRoot ? (
+            {folderExplorerAvailable && folderRoot ? (
               <ActionIcon
                 icon={<MdIcon name="unfold_less" />}
                 label={t("sidebar.collapseFolders")}
@@ -122,21 +145,31 @@ export function SideBar({
       <div className="mdyar-sidebar-body">
         {view === "explorer" ? (
           <>
-            {isDesktop && folderRoot && onCloseFolder && onOpenExplorerFile ? (
+            <OpenEditorsSection
+              documents={documents}
+              activeId={activeId}
+              onSelectTab={onSelectTab}
+              onCloseTab={onCloseTab}
+            />
+
+            {folderRoot && onCloseFolder && onOpenExplorerFile ? (
               <ExplorerFolderSection
                 root={folderRoot}
                 nodes={explorerNodes}
                 loading={explorerLoading}
                 activeFilePath={activeFilePath}
+                openFilePaths={openFilePaths}
                 dirtyFilePaths={dirtyFilePaths}
                 expandedDirs={folderExpandedDirs}
                 onExpandedDirsChange={setFolderExpandedDirs}
                 onOpenFile={onOpenExplorerFile}
                 onCloseFolder={onCloseFolder}
               />
-            ) : isDesktop ? (
+            ) : folderExplorerAvailable ? (
               <p className="mdyar-sidebar-empty mdyar-explorer-hint">{t("explorer.openFolderHint")}</p>
-            ) : null}
+            ) : (
+              <p className="mdyar-sidebar-empty mdyar-explorer-hint">{t("explorer.webFolderUnsupported")}</p>
+            )}
           </>
         ) : null}
 

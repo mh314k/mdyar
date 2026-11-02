@@ -55,7 +55,8 @@
     "closeFolder": "بستن پوشه",
     "loading": "در حال بارگذاری…",
     "emptyFolder": "این پوشه خالی است.",
-    "openFolderHint": "برای مرور فایل‌ها یک پوشه باز کنید."
+    "openFolderHint": "برای مرور فایل‌ها یک پوشه باز کنید.",
+    "webFolderUnsupported": "اکسپلورر پوشه به مرورگر Chromium (Chrome، Edge، Opera) نیاز دارد."
   },
   "settings": {
     "preferences": "ترجیحات",

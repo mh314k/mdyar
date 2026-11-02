@@ -55,7 +55,8 @@
     "closeFolder": "Close folder",
     "loading": "Loading…",
     "emptyFolder": "This folder is empty.",
-    "openFolderHint": "Open a folder to browse files here."
+    "openFolderHint": "Open a folder to browse files here.",
+    "webFolderUnsupported": "Folder explorer needs a Chromium-based browser (Chrome, Edge, Opera)."
   },
   "settings": {
     "preferences": "Preferences",

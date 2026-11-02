@@ -31,6 +31,7 @@ type Props = {
   updateVersion?: string;
   embedded?: boolean;
   isDesktop?: boolean;
+  folderExplorerAvailable?: boolean;
 };
 
 export function MenuBar({
@@ -47,7 +48,7 @@ export function MenuBar({
   onAbout,
   updateVersion,
   embedded = false,
-  isDesktop = false,
+  folderExplorerAvailable = false,
 }: Props) {
   const { t } = useTranslation();
   const [open, setOpen] = useState<MenuId | null>(null);
@@ -56,7 +57,7 @@ export function MenuBar({
   const fileItems: MenuEntry[] = [
     { kind: "item", label: t("toolbar.newFile"), shortcut: "Ctrl+N", onSelect: onNew },
     { kind: "item", label: t("toolbar.open"), shortcut: "Ctrl+O", onSelect: onOpen },
-    ...(isDesktop
+    ...(folderExplorerAvailable
       ? ([
           {
             kind: "item",

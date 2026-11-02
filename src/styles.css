@@ -459,6 +459,11 @@ body {
   font-weight: 500;
 }
 
+.mdyar-tree-row.is-file.is-open-tab:not(.is-active) {
+  color: var(--mdyar-fg);
+  font-style: italic;
+}
+
 .mdyar-tree-row.is-disabled {
   opacity: 0.45;
   pointer-events: none;
