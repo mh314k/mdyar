@@ -1,11 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  LANGUAGE_META,
-  setAppLanguage,
-  type AppLanguage,
-} from "../i18n";
-import { IconLanguage } from "./icons";
+
 import type { ViewMode } from "./viewMode";
 
 type MenuId = "file" | "view" | "tools" | "help";
@@ -26,14 +21,16 @@ type Props = {
   onViewMode: (mode: ViewMode) => void;
   onNew: () => void;
   onOpen: () => void;
+  onOpenFolder: () => void;
   onSave: () => void;
   onSaveAs?: () => void;
   onExportHtml: () => void;
   onExportWord: () => void;
   onThemes: () => void;
   onAbout: () => void;
-  language: AppLanguage;
   updateVersion?: string;
+  embedded?: boolean;
+  isDesktop?: boolean;
 };
 
 export function MenuBar({
@@ -41,14 +38,16 @@ export function MenuBar({
   onViewMode,
   onNew,
   onOpen,
+  onOpenFolder,
   onSave,
   onSaveAs,
   onExportHtml,
   onExportWord,
   onThemes,
   onAbout,
-  language,
   updateVersion,
+  embedded = false,
+  isDesktop = false,
 }: Props) {
   const { t } = useTranslation();
   const [open, setOpen] = useState<MenuId | null>(null);
@@ -57,6 +56,16 @@ export function MenuBar({
   const fileItems: MenuEntry[] = [
     { kind: "item", label: t("toolbar.newFile"), shortcut: "Ctrl+N", onSelect: onNew },
     { kind: "item", label: t("toolbar.open"), shortcut: "Ctrl+O", onSelect: onOpen },
+    ...(isDesktop
+      ? ([
+          {
+            kind: "item",
+            label: t("toolbar.openFolder"),
+            shortcut: "Ctrl+Shift+O",
+            onSelect: onOpenFolder,
+          },
+        ] as MenuEntry[])
+      : []),
     { kind: "item", label: t("toolbar.save"), shortcut: "Ctrl+S", onSelect: onSave },
     ...(onSaveAs
       ? ([
@@ -147,7 +156,7 @@ export function MenuBar({
   return (
     <nav
       ref={barRef}
-      className="mdyar-menubar"
+      className={embedded ? "mdyar-menubar is-embedded" : "mdyar-menubar"}
       role="menubar"
       aria-label={t("menu.bar")}
     >
@@ -168,22 +177,6 @@ export function MenuBar({
           />
         ))}
       </div>
-
-      <label className="mdyar-lang" title="Language · زبان · اللغة">
-        <IconLanguage />
-        <span className="sr-only">Language · زبان · اللغة</span>
-        <select
-          value={language}
-          aria-label="Language · زبان · اللغة"
-          onChange={(e) => void setAppLanguage(e.target.value as AppLanguage)}
-        >
-          {(Object.keys(LANGUAGE_META) as AppLanguage[]).map((code) => (
-            <option key={code} value={code}>
-              {LANGUAGE_META[code].label}
-            </option>
-          ))}
-        </select>
-      </label>
     </nav>
   );
 }

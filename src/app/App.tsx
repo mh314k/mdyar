@@ -12,13 +12,25 @@ import { markdownToHtml } from "../preview/markdown";
 import { exportHtmlDocument } from "../export/html";
 import { exportWordDocument } from "../export/docx";
 import {
+  flushDesktopSession,
+  loadDesktopWorkspace,
+  saveDesktopWorkspace,
+} from "../platform/desktopSession";
+import {
   drainOsOpenPaths,
   listenForOsOpen,
-  openMarkdownFile,
-  readMarkdownAtPath,
+  openMarkdownFiles,
+  readTextAtPath,
   runningOnDesktop,
   saveMarkdownFile,
+  type OpenResult,
 } from "../platform/fs";
+import {
+  loadExplorerTree,
+  pickDesktopWorkspaceFolder,
+  type ExplorerNode,
+} from "../platform/desktopExplorer";
+import { loadWebWorkspace, saveWebWorkspace } from "../platform/webWorkspace";
 import {
   applyThemeToDocument,
   getActiveThemeId,
@@ -32,64 +44,239 @@ import { getStoredLanguage, type AppLanguage } from "../i18n";
 import { SAMPLE_MARKDOWN } from "./sample";
 import { Toolbar, type ViewMode } from "./Toolbar";
 import { AboutDialog } from "./AboutDialog";
-import { appWindowTitle } from "./meta";
+import { ActivityBar } from "./ActivityBar";
+import { EditorTabBar } from "./EditorTabBar";
+import { EditorViewBar } from "./EditorViewBar";
+import { SideBar } from "./SideBar";
+import {
+  loadSidebarPrefs,
+  saveSidebarPrefs,
+  type ActivityView,
+} from "./activityView";
+import {
+  createDocument,
+  findDocumentByPath,
+  getActiveDocument,
+  type MdyarDocument,
+  type WorkspaceSnapshot,
+} from "./documents";
+import { APP_NAME } from "./meta";
+import { formatTabLabel } from "./fileTypeIcon";
 import { checkLatestRelease, type UpdateInfo } from "./updateCheck";
 import { openExternalUrl } from "../platform/fs";
-import { loadWebDocument, saveWebDocument } from "../platform/webDocument";
 
 /** Keeps each filename on its own line so mixed LTR/RTL text does not reorder the prompt. */
 function closeUnsavedMessage(prompt: string, names: string[]): string {
   return `${prompt}\n\n${names.join("\n")}`;
 }
 
-const initialDocument = (() => {
-  const stored = loadWebDocument();
-  if (stored) return stored;
-  return {
+function defaultWorkspace(): WorkspaceSnapshot {
+  const doc = createDocument({
     content: SAMPLE_MARKDOWN,
     fileName: "welcome.md",
-    viewMode: "preview" as ViewMode,
+    viewMode: "preview",
     dirty: false,
+  });
+  return { documents: [doc], activeId: doc.id, folderRoot: null };
+}
+
+function bootstrapWorkspace(): WorkspaceSnapshot {
+  return loadWebWorkspace() ?? defaultWorkspace();
+}
+
+function mergeOpens(
+  workspace: WorkspaceSnapshot,
+  results: OpenResult[],
+  folderRoot?: string | null,
+): WorkspaceSnapshot {
+  if (results.length === 0) return workspace;
+  let documents = [...workspace.documents];
+  let activeId = workspace.activeId;
+  for (const result of results) {
+    const existing = findDocumentByPath(documents, result.path);
+    if (existing) {
+      activeId = existing.id;
+      continue;
+    }
+    const doc = createDocument({
+      content: result.content,
+      fileName: result.name,
+      filePath: result.path,
+      dirty: false,
+      viewMode: "preview",
+    });
+    documents.push(doc);
+    activeId = doc.id;
+  }
+  return {
+    documents,
+    activeId,
+    folderRoot: folderRoot === undefined ? workspace.folderRoot : folderRoot,
   };
-})();
+}
+
+function patchActiveDoc(
+  workspace: WorkspaceSnapshot,
+  patch: Partial<MdyarDocument>,
+): WorkspaceSnapshot {
+  if (!workspace.activeId) return workspace;
+  return {
+    ...workspace,
+    documents: workspace.documents.map((d) =>
+      d.id === workspace.activeId ? { ...d, ...patch } : d,
+    ),
+  };
+}
 
 export function App() {
   const { t, i18n } = useTranslation();
-  const [content, setContent] = useState(initialDocument.content);
-  const [fileName, setFileName] = useState(initialDocument.fileName);
-  const [filePath, setFilePath] = useState<string | null>(null);
-  const [dirty, setDirty] = useState(initialDocument.dirty);
-  const [viewMode, setViewMode] = useState<ViewMode>(initialDocument.viewMode);
+  const [workspace, setWorkspace] = useState<WorkspaceSnapshot>(bootstrapWorkspace);
   const [theme, setTheme] = useState<MdyarTheme>(() => resolveTheme(getActiveThemeId()));
   const [themesOpen, setThemesOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [update, setUpdate] = useState<UpdateInfo | null>(null);
+  const [sidebarPrefs, setSidebarPrefs] = useState(loadSidebarPrefs);
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window,
   );
-  const language = (i18n.language?.slice(0, 2) as AppLanguage) || getStoredLanguage();
+  const [explorerNodes, setExplorerNodes] = useState<ExplorerNode[]>([]);
+  const [explorerLoading, setExplorerLoading] = useState(false);
+
+  const activeDoc = getActiveDocument(workspace);
+  const hasOpenDocument = workspace.documents.length > 0;
+  const content = activeDoc?.content ?? "";
+  const fileName = activeDoc?.fileName ?? APP_NAME;
+  const dirty = activeDoc?.dirty ?? false;
+  const viewMode = activeDoc?.viewMode ?? "preview";
   const syncScroll = viewMode === "split";
 
-  const dirtyRef = useRef(false);
-  dirtyRef.current = dirty;
-  const fileNameRef = useRef(fileName);
-  fileNameRef.current = fileName;
-  const contentRef = useRef(content);
-  contentRef.current = content;
-  const filePathRef = useRef(filePath);
-  filePathRef.current = filePath;
-  const viewModeRef = useRef(viewMode);
-  viewModeRef.current = viewMode;
-  const loadOsPathsRef = useRef<(paths: string[]) => Promise<void>>(async () => {});
+  const workspaceRef = useRef(workspace);
+  workspaceRef.current = workspace;
   const saveRef = useRef<(saveAs?: boolean) => Promise<boolean>>(async () => false);
+  const loadOsPathsRef = useRef<(paths: string[]) => Promise<void>>(async () => {});
 
   const editorRef = useRef<EditorScrollHandle>(null);
   const previewRef = useRef<PreviewScrollHandle>(null);
   const driverRef = useRef<"editor" | "preview" | null>(null);
   const lastLineRef = useRef(0);
   const clearDriverTimer = useRef(0);
-
   const ignoreEditorSyncUntil = useRef(0);
+
+  const language = (i18n.language?.slice(0, 2) as AppLanguage) || getStoredLanguage();
+
+  const persistWorkspace = useCallback(
+    (snapshot: WorkspaceSnapshot) => {
+      if (isDesktop) {
+        void saveDesktopWorkspace(snapshot);
+      } else {
+        saveWebWorkspace(snapshot);
+      }
+    },
+    [isDesktop],
+  );
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    const title = `${formatTabLabel(fileName, dirty)} — ${APP_NAME}`;
+    void import("@tauri-apps/api/window").then(({ getCurrentWindow }) =>
+      getCurrentWindow().setTitle(title),
+    );
+  }, [fileName, dirty, isDesktop]);
+
+  useEffect(() => {
+    applyThemeToDocument(theme);
+  }, [theme]);
+
+  useEffect(() => {
+    void runningOnDesktop().then(setIsDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    let cancelled = false;
+    void loadDesktopWorkspace().then((stored) => {
+      if (!cancelled && stored) setWorkspace(stored);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isDesktop]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      persistWorkspace(workspaceRef.current);
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [workspace, persistWorkspace]);
+
+  useEffect(() => {
+    const flush = () => persistWorkspace(workspaceRef.current);
+    window.addEventListener("beforeunload", flush);
+    return () => window.removeEventListener("beforeunload", flush);
+  }, [persistWorkspace]);
+
+  useEffect(() => {
+    saveSidebarPrefs(sidebarPrefs);
+  }, [sidebarPrefs]);
+
+  const selectActivityView = useCallback((view: ActivityView) => {
+    setSidebarPrefs((current) => {
+      if (current.view === view && current.open) {
+        return { ...current, open: false };
+      }
+      return { open: true, view };
+    });
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarPrefs((current) => ({ ...current, open: !current.open }));
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void checkLatestRelease().then((info) => {
+      if (!cancelled) setUpdate(info);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  loadOsPathsRef.current = async (paths: string[]) => {
+    if (paths.length === 0) return;
+    const results: OpenResult[] = [];
+    for (const path of paths) {
+      const result = await readTextAtPath(path);
+      if (!result) {
+        window.alert(t("dialogs.openFailed", { name: path }));
+        continue;
+      }
+      results.push(result);
+    }
+    if (results.length === 0) return;
+    setWorkspace((ws) => mergeOpens(ws, results));
+  };
+
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    let cancelled = false;
+    void (async () => {
+      const stop = await listenForOsOpen(() => {
+        void drainOsOpenPaths().then((paths) => loadOsPathsRef.current(paths));
+      });
+      if (cancelled) {
+        stop();
+        return;
+      }
+      unlisten = stop;
+      const paths = await drainOsOpenPaths();
+      if (!cancelled) await loadOsPathsRef.current(paths);
+    })();
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  }, [t]);
 
   const onEditorScrollLine = useCallback(
     (line: number) => {
@@ -124,159 +311,262 @@ export function App() {
     [syncScroll],
   );
 
-  useEffect(() => {
-    applyThemeToDocument(theme);
-  }, [theme]);
-
-  useEffect(() => {
-    void runningOnDesktop().then(setIsDesktop);
-  }, []);
-
-  useEffect(() => {
-    if (isDesktop) return;
-    const timer = window.setTimeout(() => {
-      saveWebDocument({
-        content,
-        fileName,
-        viewMode,
-        dirty,
-      });
-    }, 400);
-    return () => window.clearTimeout(timer);
-  }, [content, fileName, viewMode, dirty, isDesktop]);
-
-  useEffect(() => {
-    if (isDesktop) return;
-    const flush = () => {
-      saveWebDocument({
-        content: contentRef.current,
-        fileName: fileNameRef.current,
-        viewMode: viewModeRef.current,
-        dirty: dirtyRef.current,
-      });
-    };
-    window.addEventListener("beforeunload", flush);
-    return () => window.removeEventListener("beforeunload", flush);
-  }, [isDesktop]);
-
-  useEffect(() => {
-    let cancelled = false;
-    void checkLatestRelease().then((info) => {
-      if (!cancelled) setUpdate(info);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    const title = appWindowTitle();
-    document.title = title;
-    if (!isDesktop) return;
-    void (async () => {
-      const { getCurrentWindow } = await import("@tauri-apps/api/window");
-      await getCurrentWindow().setTitle(title);
-    })();
-  }, [isDesktop]);
-
-  loadOsPathsRef.current = async (paths: string[]) => {
-    if (paths.length === 0) return;
-    if (dirtyRef.current && !window.confirm(t("dialogs.unsavedBody"))) return;
-    for (const path of paths) {
-      const result = await readMarkdownAtPath(path);
-      if (!result) {
-        window.alert(t("dialogs.openFailed", { name: path }));
-        continue;
-      }
-      setContent(result.content);
-      setFileName(result.name);
-      setFilePath(result.path);
-      setDirty(false);
-      dirtyRef.current = false;
-      setViewMode("preview");
-    }
-  };
-
-  useEffect(() => {
-    let unlisten: (() => void) | undefined;
-    let cancelled = false;
-    void (async () => {
-      const stop = await listenForOsOpen(() => {
-        void drainOsOpenPaths().then((paths) => loadOsPathsRef.current(paths));
-      });
-      if (cancelled) {
-        stop();
-        return;
-      }
-      unlisten = stop;
-      const paths = await drainOsOpenPaths();
-      if (!cancelled) await loadOsPathsRef.current(paths);
-    })();
-    return () => {
-      cancelled = true;
-      unlisten?.();
-    };
-  }, []);
-
   const onChange = useCallback((value: string) => {
-    setContent(value);
-    setDirty(true);
+    setWorkspace((ws) => patchActiveDoc(ws, { content: value, dirty: true }));
   }, []);
 
   const onPreviewChange = useCallback(
     (value: string) => {
-      // CodeMirror may emit a top-of-doc scroll when the value is replaced.
-      // Keep preview in charge until it restores position and resyncs the editor.
       ignoreEditorSyncUntil.current = performance.now() + 400;
       onChange(value);
     },
     [onChange],
   );
 
-  const handleNew = () => {
-    if (dirty && !window.confirm(t("dialogs.unsavedBody"))) return;
-    setContent("");
-    setFileName("untitled.md");
-    setFilePath(null);
-    setDirty(false);
-    setViewMode("edit");
-  };
+  const setViewMode = useCallback((mode: ViewMode) => {
+    setWorkspace((ws) => patchActiveDoc(ws, { viewMode: mode }));
+  }, []);
 
-  const handleOpen = async () => {
-    if (dirty && !window.confirm(t("dialogs.unsavedBody"))) return;
-    const result = await openMarkdownFile();
-    if (!result) return;
-    setContent(result.content);
-    setFileName(result.name);
-    setFilePath(result.path);
-    setDirty(false);
-    setViewMode("preview");
-  };
+  const handleSelectTab = useCallback((id: string) => {
+    setWorkspace((ws) => ({ ...ws, activeId: id }));
+  }, []);
 
-  const handleSave = async (saveAs = false): Promise<boolean> => {
+  const handleNew = useCallback(() => {
+    const doc = createDocument({
+      content: "",
+      fileName: "untitled.md",
+      viewMode: "edit",
+      dirty: false,
+    });
+    setWorkspace((ws) => ({
+      ...ws,
+      documents: [...ws.documents, doc],
+      activeId: doc.id,
+    }));
+  }, []);
+
+  const handleOpen = useCallback(async () => {
+    const results = await openMarkdownFiles();
+    if (results.length === 0) return;
+    setWorkspace((ws) => mergeOpens(ws, results));
+  }, []);
+
+  const handleOpenFolder = useCallback(async () => {
+    if (!isDesktop) {
+      window.alert(t("dialogs.folderPickerUnsupported"));
+      return;
+    }
+    const root = await pickDesktopWorkspaceFolder();
+    if (!root) return;
+    setWorkspace((ws) => ({ ...ws, folderRoot: root }));
+  }, [isDesktop, t]);
+
+  const refreshExplorerTree = useCallback(async (root: string | null) => {
+    if (!root || !isDesktop) {
+      setExplorerNodes([]);
+      setExplorerLoading(false);
+      return;
+    }
+    setExplorerLoading(true);
     try {
-      const result = await saveMarkdownFile(
-        contentRef.current,
-        filePathRef.current,
-        fileNameRef.current,
-        saveAs,
-      );
-      if (!result) return false;
-      setFilePath(result.path);
-      setFileName(result.name);
-      setDirty(false);
-      dirtyRef.current = false;
-      return true;
+      const nodes = await loadExplorerTree(root);
+      setExplorerNodes(nodes);
     } catch {
-      window.alert(t("dialogs.saveFailed"));
-      return false;
+      setExplorerNodes([]);
+    } finally {
+      setExplorerLoading(false);
+    }
+  }, [isDesktop]);
+
+  useEffect(() => {
+    void refreshExplorerTree(workspace.folderRoot);
+  }, [workspace.folderRoot, refreshExplorerTree]);
+
+  const handleCloseFolder = useCallback(() => {
+    setWorkspace((ws) => ({ ...ws, folderRoot: null }));
+  }, []);
+
+  const handleOpenExplorerFile = useCallback(async (path: string) => {
+    const ws = workspaceRef.current;
+    const existing = findDocumentByPath(ws.documents, path);
+    if (existing) {
+      setWorkspace((prev) => ({ ...prev, activeId: existing.id }));
+      return;
+    }
+    const result = await readTextAtPath(path);
+    if (!result) {
+      window.alert(t("dialogs.openFailed", { name: path }));
+      return;
+    }
+    setWorkspace((prev) => mergeOpens(prev, [result]));
+  }, [t]);
+
+  const handleSave = useCallback(
+    async (saveAs = false): Promise<boolean> => {
+      const doc = getActiveDocument(workspaceRef.current);
+      if (!doc) return false;
+      try {
+        const result = await saveMarkdownFile(
+          doc.content,
+          doc.filePath,
+          doc.fileName,
+          saveAs,
+        );
+        if (!result) return false;
+        setWorkspace((ws) =>
+          patchActiveDoc(ws, {
+            filePath: result.path,
+            fileName: result.name,
+            dirty: false,
+          }),
+        );
+        return true;
+      } catch {
+        window.alert(t("dialogs.saveFailed"));
+        return false;
+      }
+    },
+    [t],
+  );
+
+  saveRef.current = handleSave;
+
+  const saveDocumentById = useCallback(
+    async (docId: string, saveAs = false): Promise<boolean> => {
+      const ws = workspaceRef.current;
+      const doc = ws.documents.find((d) => d.id === docId);
+      if (!doc) return false;
+      const forceSaveAs = saveAs || (isDesktop && !doc.filePath);
+      try {
+        const result = await saveMarkdownFile(
+          doc.content,
+          doc.filePath,
+          doc.fileName,
+          forceSaveAs,
+        );
+        if (!result) return false;
+        setWorkspace((current) => ({
+          ...current,
+          documents: current.documents.map((d) =>
+            d.id === docId
+              ? {
+                  ...d,
+                  filePath: result.path,
+                  fileName: result.name,
+                  dirty: false,
+                }
+              : d,
+          ),
+        }));
+        return true;
+      } catch {
+        window.alert(t("dialogs.saveFailed"));
+        return false;
+      }
+    },
+    [isDesktop, t],
+  );
+
+  const confirmCloseTab = useCallback(
+    async (doc: MdyarDocument): Promise<"cancel" | "discard" | "save"> => {
+      if (!doc.dirty) return "discard";
+
+      if (isDesktop) {
+        const { message } = await import("@tauri-apps/plugin-dialog");
+        const yes = i18n.t("dialogs.yes");
+        const no = i18n.t("dialogs.no");
+        const cancel = i18n.t("dialogs.cancel");
+        const choice = await message(
+          closeUnsavedMessage(i18n.t("dialogs.tabCloseUnsavedBody"), [doc.fileName]),
+          {
+            title: i18n.t("dialogs.tabCloseUnsavedTitle"),
+            kind: "warning",
+            buttons: { yes, no, cancel },
+          },
+        );
+        if (choice === yes || choice === "Yes") return "save";
+        if (choice === no || choice === "No") return "discard";
+        return "cancel";
+      }
+
+      if (window.confirm(t("dialogs.tabCloseSavePrompt"))) {
+        return "save";
+      }
+      if (window.confirm(t("dialogs.unsavedBody"))) {
+        return "discard";
+      }
+      return "cancel";
+    },
+    [isDesktop, i18n, t],
+  );
+
+  const removeTabFromWorkspace = useCallback(
+    (ws: WorkspaceSnapshot, id: string): WorkspaceSnapshot => {
+      if (ws.documents.length === 1) {
+        return { documents: [], activeId: null, folderRoot: ws.folderRoot };
+      }
+      const index = ws.documents.findIndex((d) => d.id === id);
+      const remaining = ws.documents.filter((d) => d.id !== id);
+      const nextActive =
+        ws.activeId === id
+          ? remaining[Math.min(index, remaining.length - 1)]?.id ?? remaining[0]?.id ?? null
+          : ws.activeId;
+      return { ...ws, documents: remaining, activeId: nextActive };
+    },
+    [],
+  );
+
+  const handleCloseTab = useCallback(
+    async (id: string) => {
+      const ws = workspaceRef.current;
+      const doc = ws.documents.find((d) => d.id === id);
+      if (!doc) return;
+
+      const decision = await confirmCloseTab(doc);
+      if (decision === "cancel") return;
+      if (decision === "save") {
+        const saved = await saveDocumentById(id, false);
+        if (!saved) return;
+      }
+
+      const next = removeTabFromWorkspace(workspaceRef.current, id);
+      setWorkspace(next);
+      persistWorkspace(next);
+    },
+    [confirmCloseTab, persistWorkspace, removeTabFromWorkspace, saveDocumentById],
+  );
+
+  const handleExport = async () => {
+    const doc = getActiveDocument(workspaceRef.current);
+    if (!doc) return;
+    try {
+      const htmlBody = await markdownToHtml(doc.content);
+      const saved = await exportHtmlDocument({
+        title: doc.fileName,
+        htmlBody,
+        theme,
+        filename: doc.fileName,
+      });
+      if (!saved) return;
+    } catch {
+      window.alert(t("dialogs.exportFailed"));
     }
   };
-  const newRef = useRef<() => void>(() => {});
-  const openRef = useRef<() => Promise<void>>(async () => {});
-  newRef.current = handleNew;
-  openRef.current = handleOpen;
-  saveRef.current = handleSave;
+
+  const handleExportWord = async () => {
+    const doc = getActiveDocument(workspaceRef.current);
+    if (!doc) return;
+    try {
+      const saved = await exportWordDocument({
+        markdown: doc.content,
+        filename: doc.fileName,
+        language,
+      });
+      if (!saved) return;
+    } catch {
+      window.alert(t("dialogs.exportWordFailed"));
+    }
+  };
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -300,77 +590,51 @@ export function App() {
       if (key === "s") {
         e.preventDefault();
         void saveRef.current(e.shiftKey && isDesktop);
+      } else if (key === "o" && e.shiftKey) {
+        if (!isDesktop) return;
+        e.preventDefault();
+        void handleOpenFolder();
       } else if (key === "o" && !e.shiftKey) {
         e.preventDefault();
-        void openRef.current();
+        void handleOpen();
       } else if (key === "n" && !e.shiftKey) {
         e.preventDefault();
-        newRef.current();
+        handleNew();
+      } else if (key === "w" && !e.shiftKey) {
+        e.preventDefault();
+        const tabId = workspaceRef.current.activeId;
+        if (tabId) void handleCloseTab(tabId);
+      } else if (key === "b" && !e.shiftKey) {
+        e.preventDefault();
+        toggleSidebar();
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [aboutOpen, themesOpen, isDesktop]);
+  }, [aboutOpen, themesOpen, isDesktop, handleNew, handleOpen, handleOpenFolder, handleCloseTab, toggleSidebar]);
 
   useEffect(() => {
     if (!isDesktop) return;
     let unlisten: (() => void) | undefined;
     let disposed = false;
-    let prompting = false;
+    let closing = false;
 
     void (async () => {
       const { getCurrentWindow } = await import("@tauri-apps/api/window");
-      const { message } = await import("@tauri-apps/plugin-dialog");
       const win = getCurrentWindow();
       const stop = await win.onCloseRequested(async (event) => {
-        if (!dirtyRef.current) return;
-        if (prompting) {
-          event.preventDefault();
-          return;
-        }
-        prompting = true;
+        event.preventDefault();
+        if (closing || disposed) return;
+        closing = true;
         try {
-          const yes = i18n.t("dialogs.yes");
-          const no = i18n.t("dialogs.no");
-          const cancel = i18n.t("dialogs.cancel");
-          const choice = await message(
-            closeUnsavedMessage(i18n.t("dialogs.closeUnsavedBody"), [
-              fileNameRef.current,
-            ]),
-            {
-              title: i18n.t("dialogs.closeUnsavedTitle"),
-              kind: "warning",
-              buttons: {
-                yes,
-                no,
-                cancel,
-              },
-            },
-          );
-          if (disposed) {
-            event.preventDefault();
-            return;
-          }
-          const saveAndClose = choice === yes || choice === "Yes";
-          const discardAndClose = choice === no || choice === "No";
-          if (saveAndClose) {
-            const saved = await saveRef.current(false);
-            if (!saved || disposed) {
-              event.preventDefault();
-              return;
-            }
-            // Allow the pending close to finish (destroy after this handler).
-            return;
-          }
-          if (discardAndClose) {
-            dirtyRef.current = false;
-            setDirty(false);
-            return;
-          }
-          event.preventDefault();
+          await flushDesktopSession(workspaceRef.current);
+          if (disposed) return;
+          await win.destroy();
+        } catch {
+          window.alert(t("dialogs.autosaveFailed"));
         } finally {
-          prompting = false;
+          closing = false;
         }
       });
       if (disposed) {
@@ -384,35 +648,7 @@ export function App() {
       disposed = true;
       unlisten?.();
     };
-  }, [isDesktop, i18n]);
-
-  const handleExport = async () => {
-    try {
-      const htmlBody = await markdownToHtml(content);
-      const saved = await exportHtmlDocument({
-        title: fileName,
-        htmlBody,
-        theme,
-        filename: fileName,
-      });
-      if (!saved) return;
-    } catch {
-      window.alert(t("dialogs.exportFailed"));
-    }
-  };
-
-  const handleExportWord = async () => {
-    try {
-      const saved = await exportWordDocument({
-        markdown: content,
-        filename: fileName,
-        language,
-      });
-      if (!saved) return;
-    } catch {
-      window.alert(t("dialogs.exportWordFailed"));
-    }
-  };
+  }, [isDesktop, t]);
 
   const applyTheme = (next: MdyarTheme) => {
     setTheme(next);
@@ -420,55 +656,127 @@ export function App() {
     applyThemeToDocument(next);
   };
 
+  const dirtyCount = workspace.documents.filter((d) => d.dirty).length;
+
   return (
-    <div className="mdyar-app">
+    <div className={isDesktop ? "mdyar-app is-desktop" : "mdyar-app"}>
       <Toolbar
+        isDesktop={isDesktop}
         fileName={fileName}
         dirty={dirty}
+        hasOpenDocument={hasOpenDocument}
         viewMode={viewMode}
         onViewMode={setViewMode}
         onNew={handleNew}
         onOpen={() => void handleOpen()}
+        onOpenFolder={() => void handleOpenFolder()}
         onSave={() => void handleSave(false)}
         onSaveAs={isDesktop ? () => void handleSave(true) : undefined}
         onExportHtml={() => void handleExport()}
         onExportWord={() => void handleExportWord()}
         onThemes={() => setThemesOpen(true)}
         onAbout={() => setAboutOpen(true)}
-        language={language}
         updateVersion={update?.outdated ? update.latest : undefined}
       />
 
-      <main
-        className={
-          viewMode === "split" ? "mdyar-main is-split" : "mdyar-main is-single"
-        }
-      >
-        {(viewMode === "edit" || viewMode === "split") && (
-          <MarkdownEditor
-            ref={editorRef}
-            value={content}
-            onChange={onChange}
-            dark={isDarkTheme(theme)}
-            onScrollLine={syncScroll ? onEditorScrollLine : undefined}
-          />
-        )}
-        {(viewMode === "preview" || viewMode === "split") && (
-          <MarkdownPreview
-            ref={previewRef}
-            source={content}
-            onChange={onPreviewChange}
-            onScrollLine={syncScroll ? onPreviewScrollLine : undefined}
-          />
-        )}
-      </main>
+      <div className="mdyar-workbench">
+        <ActivityBar
+          activeView={sidebarPrefs.open ? sidebarPrefs.view : null}
+          sidebarOpen={sidebarPrefs.open}
+          onSelectView={selectActivityView}
+          onToggleSidebar={toggleSidebar}
+        />
+        <SideBar
+          visible={sidebarPrefs.open}
+          view={sidebarPrefs.view}
+          isDesktop={isDesktop}
+          documents={workspace.documents}
+          folderRoot={workspace.folderRoot}
+          explorerNodes={explorerNodes}
+          explorerLoading={explorerLoading}
+          activeFilePath={activeDoc?.filePath ?? null}
+          language={language}
+          updateVersion={update?.outdated ? update.latest : undefined}
+          onNew={handleNew}
+          onOpen={() => void handleOpen()}
+          onOpenFolder={() => void handleOpenFolder()}
+          onCloseFolder={handleCloseFolder}
+          onOpenExplorerFile={(path) => void handleOpenExplorerFile(path)}
+          onRefreshExplorer={() => void refreshExplorerTree(workspace.folderRoot)}
+          onThemes={() => setThemesOpen(true)}
+          onAbout={() => setAboutOpen(true)}
+        />
+
+        <div className="mdyar-center">
+          <div className="mdyar-editor-pane">
+            <EditorTabBar
+              documents={workspace.documents}
+              activeId={workspace.activeId}
+              onSelectTab={handleSelectTab}
+              onCloseTab={(id) => void handleCloseTab(id)}
+            />
+
+            <div className="mdyar-editor-body">
+              {hasOpenDocument ? (
+                <>
+                  <EditorViewBar viewMode={viewMode} onViewMode={setViewMode} />
+
+                  <main
+                    className={
+                      viewMode === "split" ? "mdyar-main is-split" : "mdyar-main is-single"
+                    }
+                  >
+                    {(viewMode === "edit" || viewMode === "split") && (
+                      <div className="mdyar-doc-window">
+                        <MarkdownEditor
+                          key={`${workspace.activeId}-edit`}
+                          ref={editorRef}
+                          value={content}
+                          onChange={onChange}
+                          dark={isDarkTheme(theme)}
+                          onScrollLine={syncScroll ? onEditorScrollLine : undefined}
+                        />
+                      </div>
+                    )}
+                    {(viewMode === "preview" || viewMode === "split") && (
+                      <div className="mdyar-doc-window">
+                        <MarkdownPreview
+                          key={`${workspace.activeId}-preview`}
+                          ref={previewRef}
+                          source={content}
+                          onChange={onPreviewChange}
+                          onScrollLine={syncScroll ? onPreviewScrollLine : undefined}
+                        />
+                      </div>
+                    )}
+                  </main>
+                </>
+              ) : (
+                <div className="mdyar-empty-editor">
+                  <p className="mdyar-empty-editor-title">{t("workspace.allClosed")}</p>
+                  <p className="mdyar-empty-editor-hint">{t("workspace.allClosedHint")}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <footer className="mdyar-status">
         <span className={dirty ? "is-dirty" : undefined}>
           {dirty ? t("status.unsaved") : t("status.saved")}
         </span>
         <span>{t("status.chars", { count: content.length })}</span>
+        <span>{t("status.tabs", { count: workspace.documents.length })}</span>
+        {isDesktop && workspace.folderRoot ? (
+          <span className="mdyar-status-folder" title={workspace.folderRoot}>
+            {t("status.folder", { name: workspace.folderRoot })}
+          </span>
+        ) : null}
         {!isDesktop && <span>{t("status.webHint")}</span>}
+        {dirtyCount > 1 ? (
+          <span>{t("status.dirtyTabs", { count: dirtyCount })}</span>
+        ) : null}
         {update?.outdated && (
           <button
             type="button"

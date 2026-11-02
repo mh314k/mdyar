@@ -3,6 +3,13 @@
     "name": "MDyar",
     "tagline": "BiDi-first Markdown editor"
   },
+  "window": {
+    "controls": "Window controls",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore down",
+    "close": "Close"
+  },
   "menu": {
     "bar": "Application menu",
     "file": "File",
@@ -22,7 +29,46 @@
     "themes": "Themes",
     "language": "Language",
     "newFile": "New",
+    "openFolder": "Open folder",
     "about": "About"
+  },
+  "tabs": {
+    "list": "Open documents",
+    "close": "Close {{name}}"
+  },
+  "activity": {
+    "bar": "Primary side bar",
+    "explorer": "Explorer",
+    "view": "View",
+    "manage": "Manage",
+    "settings": "Settings",
+    "toggleSidebar": "Toggle side bar"
+  },
+  "sidebar": {
+    "openEditors": "Open editors",
+    "folder": "Folder",
+    "explorerActions": "Explorer actions",
+    "refreshExplorer": "Refresh explorer",
+    "collapseFolders": "Collapse folders"
+  },
+  "explorer": {
+    "closeFolder": "Close folder",
+    "loading": "Loading…",
+    "emptyFolder": "This folder is empty.",
+    "openFolderHint": "Open a folder to browse files here."
+  },
+  "settings": {
+    "preferences": "Preferences",
+    "help": "Help"
+  },
+  "viewPane": {
+    "editor": "Editor",
+    "preview": "Preview"
+  },
+  "workspace": {
+    "noOpenTabs": "No open tabs",
+    "allClosed": "All tabs are closed",
+    "allClosedHint": "Use File → New or Open to start editing."
   },
   "themes": {
     "title": "Theme manager",
@@ -50,7 +96,10 @@
     "unsaved": "Unsaved",
     "saved": "Saved",
     "chars": "{{count}} characters",
-    "webHint": "Web mode — files stay in the browser",
+    "webHint": "Web mode — open tabs are saved in this browser",
+    "tabs": "{{count}} tabs",
+    "dirtyTabs": "{{count}} unsaved tabs",
+    "folder": "Folder: {{name}}",
     "updateAvailable": "New version v{{version}}"
   },
   "dialogs": {
@@ -60,8 +109,14 @@
     "exportFailed": "Could not save the HTML file.",
     "exportWordFailed": "Could not save the Word file.",
     "saveFailed": "Could not save the file.",
+    "autosaveFailed": "Could not auto-save all files before closing.",
+    "folderPickerUnsupported": "Your browser does not support opening folders. Use Open file or a Chromium-based browser.",
+    "folderEmpty": "No Markdown files were found in that folder.",
     "closeUnsavedTitle": "Save changes?",
     "closeUnsavedBody": "Do you want to save the changes?",
+    "tabCloseUnsavedTitle": "Close tab",
+    "tabCloseUnsavedBody": "Save changes before closing this tab?",
+    "tabCloseSavePrompt": "Save this file before closing the tab?",
     "yes": "Yes",
     "no": "No",
     "confirm": "Continue",

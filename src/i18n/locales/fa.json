@@ -3,6 +3,13 @@
     "name": "MDyar",
     "tagline": "ویرایشگر مارک‌داون با پشتیبانی کامل دوجهته"
   },
+  "window": {
+    "controls": "کنترل‌های پنجره",
+    "minimize": "کوچک‌کردن",
+    "maximize": "بزرگ‌نمایی",
+    "restore": "بازگرداندن اندازه",
+    "close": "بستن"
+  },
   "menu": {
     "bar": "منوی برنامه",
     "file": "فایل",
@@ -22,7 +29,46 @@
     "themes": "تم‌ها",
     "language": "زبان",
     "newFile": "جدید",
+    "openFolder": "باز کردن پوشه",
     "about": "درباره"
+  },
+  "tabs": {
+    "list": "سندهای باز",
+    "close": "بستن {{name}}"
+  },
+  "activity": {
+    "bar": "نوار کناری",
+    "explorer": "کاوشگر",
+    "view": "نما",
+    "manage": "مدیریت",
+    "settings": "تنظیمات",
+    "toggleSidebar": "نمایش/پنهان نوار کناری"
+  },
+  "sidebar": {
+    "openEditors": "ویرایشگرهای باز",
+    "folder": "پوشه",
+    "explorerActions": "عملیات اکسپلورر",
+    "refreshExplorer": "بازخوانی درخت پوشه",
+    "collapseFolders": "جمع کردن پوشه‌ها"
+  },
+  "explorer": {
+    "closeFolder": "بستن پوشه",
+    "loading": "در حال بارگذاری…",
+    "emptyFolder": "این پوشه خالی است.",
+    "openFolderHint": "برای مرور فایل‌ها یک پوشه باز کنید."
+  },
+  "settings": {
+    "preferences": "ترجیحات",
+    "help": "راهنما"
+  },
+  "viewPane": {
+    "editor": "ویرایش",
+    "preview": "پیش‌نمایش"
+  },
+  "workspace": {
+    "noOpenTabs": "تب باز نیست",
+    "allClosed": "همهٔ تب‌ها بسته شدند",
+    "allClosedHint": "از منوی فایل «جدید» یا «باز کردن» را بزنید."
   },
   "themes": {
     "title": "مدیریت تم",
@@ -50,7 +96,10 @@
     "unsaved": "ذخیره‌نشده",
     "saved": "ذخیره‌شده",
     "chars": "{{count}} نویسه",
-    "webHint": "حالت وب — فایل‌ها در مرورگر می‌مانند",
+    "webHint": "حالت وب — تب‌های باز در همین مرورگر ذخیره می‌شوند",
+    "tabs": "{{count}} تب",
+    "dirtyTabs": "{{count}} تب ذخیره‌نشده",
+    "folder": "پوشه: {{name}}",
     "updateAvailable": "نسخهٔ جدید v{{version}}"
   },
   "dialogs": {
@@ -60,8 +109,14 @@
     "exportFailed": "ذخیرهٔ فایل HTML انجام نشد.",
     "exportWordFailed": "ذخیرهٔ فایل ورد انجام نشد.",
     "saveFailed": "ذخیرهٔ فایل انجام نشد.",
+    "autosaveFailed": "قبل از بستن، ذخیرهٔ خودکار همهٔ فایل‌ها انجام نشد.",
+    "folderPickerUnsupported": "مرورگر شما باز کردن پوشه را پشتیبانی نمی‌کند. از «باز کردن» یا مرورگر Chromium استفاده کنید.",
+    "folderEmpty": "در این پوشه فایل مارک‌داونی پیدا نشد.",
     "closeUnsavedTitle": "ذخیرهٔ تغییرات؟",
     "closeUnsavedBody": "می‌خواهید تغییرات ذخیره شود؟",
+    "tabCloseUnsavedTitle": "بستن تب",
+    "tabCloseUnsavedBody": "قبل از بستن این تب، تغییرات ذخیره شود؟",
+    "tabCloseSavePrompt": "قبل از بستن تب، فایل ذخیره شود؟",
     "yes": "بله",
     "no": "خیر",
     "confirm": "ادامه",

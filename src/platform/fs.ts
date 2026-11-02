@@ -18,35 +18,175 @@ async function isTauri(): Promise<boolean> {
   }
 }
 
-export async function openMarkdownFile(): Promise<OpenResult | null> {
+export function isTauriShell(): boolean {
+  return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+}
+
+const MARKDOWN_FILTER = {
+  name: "Markdown",
+  extensions: ["md", "markdown", "mdown"],
+};
+
+function basename(path: string): string {
+  return path.split(/[/\\]/).pop() ?? "untitled.md";
+}
+
+export async function openMarkdownFiles(): Promise<OpenResult[]> {
   if (await isTauri()) {
     const { open } = await import("@tauri-apps/plugin-dialog");
     const { readTextFile } = await import("@tauri-apps/plugin-fs");
     const selected = await open({
-      multiple: false,
-      filters: [{ name: "Markdown", extensions: ["md", "markdown", "mdown"] }],
+      multiple: true,
+      filters: [MARKDOWN_FILTER],
     });
-    if (!selected || Array.isArray(selected)) return null;
-    const content = await readTextFile(selected);
-    const name = selected.split(/[/\\]/).pop() ?? "untitled.md";
-    return { content, path: selected, name };
+    if (!selected) return [];
+    const paths = Array.isArray(selected) ? selected : [selected];
+    const results: OpenResult[] = [];
+    for (const path of paths) {
+      try {
+        const content = await readTextFile(path);
+        results.push({ content, path, name: basename(path) });
+      } catch {
+        // skip unreadable
+      }
+    }
+    return results;
   }
 
   return new Promise((resolve) => {
     const input = document.createElement("input");
     input.type = "file";
+    input.multiple = true;
     input.accept = ".md,.markdown,.mdown,text/markdown";
     input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) {
-        resolve(null);
+      const files = input.files;
+      if (!files?.length) {
+        resolve([]);
         return;
       }
-      const content = await file.text();
-      resolve({ content, path: null, name: file.name });
+      const results: OpenResult[] = [];
+      for (const file of Array.from(files)) {
+        results.push({
+          content: await file.text(),
+          path: null,
+          name: file.name,
+        });
+      }
+      resolve(results);
     };
     input.click();
   });
+}
+
+async function listMarkdownInDirectoryTauri(root: string): Promise<string[]> {
+  const { readDir } = await import("@tauri-apps/plugin-fs");
+  const { join } = await import("@tauri-apps/api/path");
+  const found: string[] = [];
+
+  async function walk(dir: string): Promise<void> {
+    const entries = await readDir(dir);
+    for (const entry of entries) {
+      const full = await join(dir, entry.name);
+      if (entry.isDirectory) {
+        await walk(full);
+      } else if (/\.(md|markdown|mdown)$/i.test(entry.name)) {
+        found.push(full);
+      }
+    }
+  }
+
+  await walk(root);
+  found.sort((a, b) => a.localeCompare(b));
+  return found;
+}
+
+async function listMarkdownInDirectoryWeb(): Promise<{
+  rootLabel: string;
+  files: { name: string; content: string; relativePath: string }[];
+} | null> {
+  type DirHandle = FileSystemDirectoryHandle;
+  const picker = (
+    window as unknown as {
+      showDirectoryPicker?: () => Promise<DirHandle>;
+    }
+  ).showDirectoryPicker;
+  if (!picker) return null;
+
+  const root = await picker();
+  const files: { name: string; content: string; relativePath: string }[] = [];
+
+  async function walk(dir: DirHandle, prefix: string): Promise<void> {
+    const iterable = dir as DirHandle & {
+      entries: () => AsyncIterableIterator<[string, FileSystemHandle]>;
+    };
+    for await (const [name, handle] of iterable.entries()) {
+      const rel = prefix ? `${prefix}/${name}` : name;
+      if (handle.kind === "directory") {
+        await walk(handle as DirHandle, rel);
+      } else if (/\.(md|markdown|mdown)$/i.test(name)) {
+        const file = await (handle as FileSystemFileHandle).getFile();
+        files.push({
+          name,
+          content: await file.text(),
+          relativePath: rel,
+        });
+      }
+    }
+  }
+
+  await walk(root, "");
+  files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+  return { rootLabel: root.name, files };
+}
+
+export type OpenFolderResult = {
+  root: string | null;
+  files: OpenResult[];
+};
+
+export async function openMarkdownFolder(): Promise<OpenFolderResult | null> {
+  if (await isTauri()) {
+    const { open } = await import("@tauri-apps/plugin-dialog");
+    const { readTextFile } = await import("@tauri-apps/plugin-fs");
+    const selected = await open({ directory: true, multiple: false });
+    if (!selected || Array.isArray(selected)) return null;
+    const paths = await listMarkdownInDirectoryTauri(selected);
+    const files: OpenResult[] = [];
+    for (const path of paths) {
+      try {
+        const content = await readTextFile(path);
+        files.push({ content, path, name: basename(path) });
+      } catch {
+        // skip
+      }
+    }
+    return { root: selected, files };
+  }
+
+  const web = await listMarkdownInDirectoryWeb();
+  if (!web) return null;
+  return {
+    root: web.rootLabel,
+    files: web.files.map((f) => ({
+      content: f.content,
+      path: null,
+      name: f.relativePath,
+    })),
+  };
+}
+
+export async function writeMarkdownAtPath(path: string, content: string): Promise<void> {
+  if (await isTauri()) {
+    const { writeTextFile } = await import("@tauri-apps/plugin-fs");
+    await writeTextFile(path, content);
+    return;
+  }
+  throw new Error("writeMarkdownAtPath is desktop-only");
+}
+
+export async function openMarkdownFile(): Promise<OpenResult | null> {
+  const batch = await openMarkdownFiles();
+  return batch[0] ?? null;
 }
 
 export async function saveMarkdownFile(
@@ -172,11 +312,16 @@ export async function openExternalUrl(url: string): Promise<void> {
 }
 
 export async function readMarkdownAtPath(path: string): Promise<OpenResult | null> {
+  return readTextAtPath(path);
+}
+
+/** Read a text file from disk (desktop). */
+export async function readTextAtPath(path: string): Promise<OpenResult | null> {
   if (!(await isTauri())) return null;
   try {
     const { readTextFile } = await import("@tauri-apps/plugin-fs");
     const content = await readTextFile(path);
-    const name = path.split(/[/\\]/).pop() ?? "untitled.md";
+    const name = basename(path);
     return { content, path, name };
   } catch {
     return null;

@@ -23,7 +23,44 @@ const FONTS = {
   preview: '"Vazirmatn", "Sora", system-ui, sans-serif',
 } as const;
 
+const VSCODE_FONTS = {
+  editor: '"JetBrains Mono", Consolas, "Courier New", ui-monospace, monospace',
+  preview: '"Segoe UI", "Vazirmatn", system-ui, sans-serif',
+} as const;
+
 export const BUILTIN_THEMES: MdyarTheme[] = [
+  {
+    id: "vscode-dark",
+    name: "VS Code Dark",
+    builtin: true,
+    colors: {
+      bg: "#1e1e1e",
+      fg: "#cccccc",
+      accent: "#007acc",
+      surface: "#252526",
+      border: "#3c3c3c",
+      muted: "#858585",
+    },
+    fonts: { ...VSCODE_FONTS },
+    fontSize: 14,
+    lineHeight: 1.5,
+  },
+  {
+    id: "vscode-light",
+    name: "VS Code Light",
+    builtin: true,
+    colors: {
+      bg: "#ffffff",
+      fg: "#333333",
+      accent: "#007acc",
+      surface: "#f3f3f3",
+      border: "#e5e5e5",
+      muted: "#6e7681",
+    },
+    fonts: { ...VSCODE_FONTS },
+    fontSize: 14,
+    lineHeight: 1.5,
+  },
   {
     id: "signal-light",
     name: "Signal Light",
@@ -199,7 +236,7 @@ export function getAllThemes(): MdyarTheme[] {
 }
 
 export function getActiveThemeId(): string {
-  const stored = localStorage.getItem(ACTIVE_KEY) ?? "signal-light";
+  const stored = localStorage.getItem(ACTIVE_KEY) ?? "vscode-dark";
   return LEGACY_THEME_IDS[stored] ?? stored;
 }
 
@@ -222,6 +259,15 @@ export function isDarkTheme(theme: MdyarTheme): boolean {
   return luminance < 0.45;
 }
 
+function applyWorkbenchTokens(root: HTMLElement, theme: MdyarTheme) {
+  root.style.setProperty("--mdyar-radius", "3px");
+  root.style.setProperty("--mdyar-titlebar-bg", theme.colors.surface);
+  root.style.setProperty("--mdyar-menubar-bg", theme.colors.bg);
+  root.style.setProperty("--mdyar-chrome-bg", theme.colors.bg);
+  root.style.setProperty("--mdyar-statusbar-bg", theme.colors.accent);
+  root.style.setProperty("--mdyar-statusbar-fg", "#ffffff");
+}
+
 export function applyThemeToDocument(theme: MdyarTheme) {
   const root = document.documentElement;
   root.style.setProperty("--mdyar-bg", theme.colors.bg);
@@ -238,6 +284,7 @@ export function applyThemeToDocument(theme: MdyarTheme) {
     "--mdyar-danger",
     isDarkTheme(theme) ? "#f07178" : "#c0392b",
   );
+  applyWorkbenchTokens(root, theme);
   root.dataset.theme = isDarkTheme(theme) ? "dark" : "light";
   root.style.colorScheme = isDarkTheme(theme) ? "dark" : "light";
 }
@@ -264,7 +311,12 @@ export function themeToCssVariables(theme: MdyarTheme): string {
   --mdyar-border: ${theme.colors.border};
   --mdyar-muted: ${theme.colors.muted};
   --mdyar-danger: ${isDarkTheme(theme) ? "#f07178" : "#c0392b"};
-  --mdyar-radius: 8px;
+  --mdyar-radius: 3px;
+  --mdyar-titlebar-bg: ${theme.colors.surface};
+  --mdyar-menubar-bg: ${theme.colors.bg};
+  --mdyar-chrome-bg: ${theme.colors.bg};
+  --mdyar-statusbar-bg: ${theme.colors.accent};
+  --mdyar-statusbar-fg: #ffffff;
   --mdyar-font-editor: ${theme.fonts.editor};
   --mdyar-font-preview: ${theme.fonts.preview};
   --mdyar-font-size: ${theme.fontSize}px;

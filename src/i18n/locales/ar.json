@@ -3,6 +3,13 @@
     "name": "MDyar",
     "tagline": "محرر ماركداون بدعم كامل للنص ثنائي الاتجاه"
   },
+  "window": {
+    "controls": "عناصر تحكم النافذة",
+    "minimize": "تصغير",
+    "maximize": "تكبير",
+    "restore": "استعادة الحجم",
+    "close": "إغلاق"
+  },
   "menu": {
     "bar": "قائمة البرنامج",
     "file": "ملف",
@@ -22,7 +29,46 @@
     "themes": "السمات",
     "language": "اللغة",
     "newFile": "جديد",
+    "openFolder": "فتح مجلد",
     "about": "حول البرنامج"
+  },
+  "tabs": {
+    "list": "المستندات المفتوحة",
+    "close": "إغلاق {{name}}"
+  },
+  "activity": {
+    "bar": "الشريط الجانبي",
+    "explorer": "المستكشف",
+    "view": "العرض",
+    "manage": "الإدارة",
+    "settings": "الإعدادات",
+    "toggleSidebar": "إظهار/إخفاء الشريط الجانبي"
+  },
+  "sidebar": {
+    "openEditors": "المحررات المفتوحة",
+    "folder": "مجلد",
+    "explorerActions": "إجراءات المستكشف",
+    "refreshExplorer": "تحديث المستكشف",
+    "collapseFolders": "طي المجلدات"
+  },
+  "explorer": {
+    "closeFolder": "إغلاق المجلد",
+    "loading": "جاري التحميل…",
+    "emptyFolder": "هذا المجلد فارغ.",
+    "openFolderHint": "افتح مجلداً لتصفح الملفات هنا."
+  },
+  "settings": {
+    "preferences": "التفضيلات",
+    "help": "المساعدة"
+  },
+  "viewPane": {
+    "editor": "تحرير",
+    "preview": "معاينة"
+  },
+  "workspace": {
+    "noOpenTabs": "لا توجد تبويبات مفتوحة",
+    "allClosed": "تم إغلاق كل التبويبات",
+    "allClosedHint": "استخدم ملف → جديد أو فتح للبدء."
   },
   "themes": {
     "title": "إدارة السمات",
@@ -50,7 +96,10 @@
     "unsaved": "غير محفوظ",
     "saved": "محفوظ",
     "chars": "{{count}} حرفًا",
-    "webHint": "وضع الويب — تبقى الملفات في المتصفح",
+    "webHint": "وضع الويب — تُحفظ التبويبات المفتوحة في هذا المتصفح",
+    "tabs": "{{count}} تبويبات",
+    "dirtyTabs": "{{count}} تبويبات غير محفوظة",
+    "folder": "مجلد: {{name}}",
     "updateAvailable": "إصدار جديد v{{version}}"
   },
   "dialogs": {
@@ -60,8 +109,14 @@
     "exportFailed": "تعذر حفظ ملف HTML.",
     "exportWordFailed": "تعذر حفظ ملف Word.",
     "saveFailed": "تعذر حفظ الملف.",
+    "autosaveFailed": "تعذر الحفظ التلقائي لجميع الملفات قبل الإغلاق.",
+    "folderPickerUnsupported": "متصفحك لا يدعم فتح المجلدات. استخدم «فتح» أو متصفح Chromium.",
+    "folderEmpty": "لم يُعثر على ملفات Markdown في ذلك المجلد.",
     "closeUnsavedTitle": "حفظ التغييرات؟",
     "closeUnsavedBody": "هل تريد حفظ التغييرات؟",
+    "tabCloseUnsavedTitle": "إغلاق التبويب",
+    "tabCloseUnsavedBody": "هل تريد حفظ التغييرات قبل إغلاق هذا التبويب؟",
+    "tabCloseSavePrompt": "هل تريد حفظ الملف قبل إغلاق التبويب؟",
     "yes": "نعم",
     "no": "لا",
     "confirm": "متابعة",
